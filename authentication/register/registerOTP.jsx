@@ -5,12 +5,15 @@ import axios from "axios";
 import authStyles from "../../styles/auth";
 import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
+import Loader from "../../common/loading";
 
 const OtpVerification = ({ nextStep, formData, prevStep }) => {
   const [OTP, setOTP] = useState(0);
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleOTP = async () => {
     try {
+      setIsLoading(true)
       const data = new FormData();
       data.append("username", formData.user.username);
       data.append("otp", OTP);
@@ -32,11 +35,14 @@ const OtpVerification = ({ nextStep, formData, prevStep }) => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
   return (
     <View style={authStyles.container}>
+      <Loader visible={isLoading}/>
       <Text style={authStyles.h1}>OTP Verification</Text>
 
       <Text style={{ marginBottom: 20 }}>

@@ -18,22 +18,11 @@ const RegisterCreator = () => {
     date_of_birth: "",
     area: "",
   });
-  const [verificationData, setVerificationData] = useState({
-    name: "",
-    email: "",
-    username: "",
-  });
 
   const nextStep = () => setCurrentStep(currentStep + 1);
   const prevStep = () => setCurrentStep(currentStep - 1);
 
   const handleChange = (name, value) => {
-    if (name === "name" || name === "email" || name === "username") {
-      setVerificationData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    }
     if (name === "date_of_birth" || name === "area") {
       setFormData((prevState) => ({
         ...prevState,
@@ -53,7 +42,6 @@ const RegisterCreator = () => {
         <BasicInfo
           nextStep={nextStep}
           formData={formData}
-          verificationData={verificationData}
           handleChange={handleChange}
           type="creator"
         />

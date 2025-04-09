@@ -6,16 +6,16 @@ import { useNavigation } from "@react-navigation/native";
 import authStyles from "../../styles/auth";
 import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
+import Loader from "../../common/loading";
 
 const BasicInfo = ({
   nextStep,
   formData,
-  verficationData,
   handleChange,
   type,
 }) => {
+  const [isLoading, setIsLoading] = useState(false)
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigation = useNavigation();
 
   const handleContinue = async () => {
     if (formData.user.password !== confirmPassword) {
@@ -32,6 +32,7 @@ const BasicInfo = ({
     }
 
     try {
+      setIsLoading(true)
       const data = new FormData();
       data.append("name", formData.user.name);
       data.append("username", formData.user.username);
@@ -52,6 +53,8 @@ const BasicInfo = ({
       }
     } catch (error) {
       console.log(response);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -61,6 +64,7 @@ const BasicInfo = ({
 
   return (
     <View style={authStyles.container}>
+      <Loader visible={isLoading}/>
       <Text style={authStyles.h1}>
         Join as a {type === "creator" ? "Creator" : "Business"}
       </Text>

@@ -18,11 +18,13 @@ import { useNavigation } from "@react-navigation/native";
 import authStyles from "../../styles/auth";
 import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
+import Loader from "../../common/loading";
 
 const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAreaModal, setShowAreaModal] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
 
@@ -79,6 +81,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
 
   const handleSubmit = async () => {
     try {
+      setIsLoading(true)
       const data = new FormData();
       data.append("user.name", formData.user.name);
       data.append("user.email", formData.user.email);
@@ -115,6 +118,8 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
       navigation.navigate("Login");
     } catch (error) {
       console.error("Registration error: ", error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -144,6 +149,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
 
   return (
     <View style={authStyles.container}>
+      <Loader visible={isLoading}/>
       <Text style={authStyles.h1}>Additional Information</Text>
 
       <View style={authStyles.input}>
