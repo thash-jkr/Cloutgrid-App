@@ -79,7 +79,7 @@ const Home = () => {
     const delay = 300;
 
     if (now - lastTapRef.current < delay) {
-      handleLike(post.id)
+      handleLike(post.id);
     }
 
     lastTapRef.current = now;
@@ -277,19 +277,6 @@ const Home = () => {
         }
       >
         <View style={homeStyles.modal}>
-          <View style={homeStyles.commentInputContainer}>
-            <TextInput
-              style={homeStyles.commentInput}
-              placeholder="Add a comment..."
-              value={newComment}
-              onChangeText={(value) => setNewComment(value)}
-            />
-            <CustomButton
-              title="Post"
-              onPress={handleAddComment}
-              disabled={newComment.length === 0}
-            />
-          </View>
           <ScrollView showsVerticalScrollIndicator={false}>
             {comments.length > 0 ? (
               comments.map((comment) => (
@@ -321,6 +308,19 @@ const Home = () => {
               </Text>
             )}
           </ScrollView>
+          <View style={homeStyles.commentInputContainer}>
+            <TextInput
+              style={homeStyles.commentInput}
+              placeholder="Add a comment..."
+              value={newComment}
+              onChangeText={(value) => setNewComment(value)}
+            />
+            <CustomButton
+              title="Post"
+              onPress={handleAddComment}
+              disabled={newComment.length === 0}
+            />
+          </View>
         </View>
       </Modalize>
     </SafeAreaView>
