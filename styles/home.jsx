@@ -147,6 +147,7 @@ const homeStyles = StyleSheet.create({
   },
   modal: {
     padding: 20,
+    paddingVertical: 0,
     height: height * 0.6,
     // position: "relative",
   },

@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 
 import Config from "../config";
+import commonStyles from "../styles/common";
 
 const Search = () => {
   const [user, setUser] = useState(null);
@@ -104,7 +105,7 @@ const Search = () => {
   return (
     <SafeAreaView style={searchStyles.container}>
       <TextInput
-        style={searchStyles.searchBar}
+        style={commonStyles.input}
         placeholder="Search users..."
         value={searchQuery}
         onChangeText={handleSearch}

@@ -6,6 +6,8 @@ import {
   TextInput,
   Text,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -39,7 +41,11 @@ const QuestionModal = ({
   return (
     <Modal visible={showQuestion} transparent={true} animationType="slide">
       <View style={jobsStyles.modalContainer}>
-        <View style={jobsStyles.modalContent}>
+        <KeyboardAvoidingView
+          style={jobsStyles.modalContent}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={1}
+        >
           <TouchableOpacity
             style={{ position: "absolute", right: 10, top: 10 }}
             onPress={onClose}
@@ -78,7 +84,7 @@ const QuestionModal = ({
               onPress={onSubmit}
             />
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

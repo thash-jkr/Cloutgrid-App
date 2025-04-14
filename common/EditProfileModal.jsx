@@ -1,36 +1,48 @@
-import { View, Text, Modal, TextInput, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useState } from "react";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
 import CustomButton from "./CustomButton";
 import * as ImagePicker from "expo-image-picker";
+import commonStyles from "../styles/common";
+import { Picker } from "@react-native-picker/picker";
 
 const EditProfileModal = ({ profile, onClose, onSave, type }) => {
-  const [formData, setFormData] = type === "creator"
-    ? useState({
-        user: {
-          name: profile.user.name,
-          username: profile.user.username,
-          email: profile.user.email,
-          password: "",
-          profile_photo: null,
-          bio: profile.user.bio,
-        },
-        date_of_birth: profile.date_of_birth,
-        area: profile.area
-      })
-    : useState({
-        user: {
-          name: profile.user.name,
-          username: profile.user.username,
-          email: profile.user.email,
-          password: "",
-          profile_photo: null,
-          bio: profile.user.bio,
-        },
-        website: profile.website,
-        target_audience: profile.target_audience
-      });
+  const [showAreaModal, setShowAreaModal] = useState(false);
+  const [filename, setFilename] = useState("no file selected!");
+  const [formData, setFormData] =
+    type === "creator"
+      ? useState({
+          user: {
+            name: profile.user.name,
+            username: profile.user.username,
+            email: profile.user.email,
+            password: "",
+            profile_photo: null,
+            bio: profile.user.bio,
+          },
+          date_of_birth: profile.date_of_birth,
+          area: profile.area,
+        })
+      : useState({
+          user: {
+            name: profile.user.name,
+            username: profile.user.username,
+            email: profile.user.email,
+            password: "",
+            profile_photo: null,
+            bio: profile.user.bio,
+          },
+          website: profile.website,
+          target_audience: profile.target_audience,
+        });
 
   const handleChange = (name, value) => {
     if (
@@ -55,13 +67,14 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [4, 4],
-      quality: 1,
+      aspect: [4, 3],
+      quality: 0.7,
     });
 
     if (!result.canceled) {
       const localUri = result.assets[0]["uri"];
       const fileName = localUri.split("/").pop();
+      setFilename(fileName);
       const match = /\.(\w+)$/.exec(fileName);
       const fileType = match ? `image/${match[1]}` : `image`;
 
@@ -93,11 +106,39 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
     }
   };
 
+  const AREA_OPTIONS = [
+    { value: "", label: "Select Area" },
+    { value: "art", label: "Art and Photography" },
+    { value: "automotive", label: "Automotive" },
+    { value: "beauty", label: "Beauty and Makeup" },
+    { value: "business", label: "Business" },
+    { value: "diversity", label: "Diversity and Inclusion" },
+    { value: "education", label: "Education" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "fashion", label: "Fashion" },
+    { value: "finance", label: "Finance" },
+    { value: "food", label: "Food and Beverage" },
+    { value: "gaming", label: "Gaming" },
+    { value: "health", label: "Health and Wellness" },
+    { value: "home", label: "Home and Gardening" },
+    { value: "outdoor", label: "Outdoor and Nature" },
+    { value: "parenting", label: "Parenting and Family" },
+    { value: "pets", label: "Pets" },
+    { value: "sports", label: "Sports and Fitness" },
+    { value: "technology", label: "Technology" },
+    { value: "travel", label: "Travel" },
+    { value: "videography", label: "Videography" },
+  ];
+
   return (
     <View>
       <Modal transparent={true} animationType="slide">
         <View style={profileStyles.modalContainer}>
-          <View style={profileStyles.modalContent}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={1}
+            style={profileStyles.modalContent}
+          >
             <Text style={profileStyles.modalTitle}>Edit Profile</Text>
             <TextInput
               style={authStyles.input}
@@ -113,18 +154,6 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
               onChangeText={(value) => handleChange("bio", value)}
             />
 
-            <View style={authStyles.input}>
-              <TouchableOpacity onPress={handleFileChange}>
-                <Text>Update Profile Photo</Text>
-              </TouchableOpacity>
-              {formData.user.profile_photo && (
-                <Image
-                  source={{ uri: profile.user.profile_photo }}
-                  style={{ width: 100, height: 100, marginTop: 10 }}
-                />
-              )}
-            </View>
-
             {type === "business" && (
               <TextInput
                 style={authStyles.input}
@@ -134,12 +163,97 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
               />
             )}
 
-            <View style={profileStyles.button}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                marginBottom: 15,
+              }}
+            >
+              <CustomButton
+                title={"Profile Picture"}
+                onPress={handleFileChange}
+              />
+              <Text style={commonStyles.text}>
+                {filename.length > 20
+                  ? filename.substring(0, 20) + "..."
+                  : filename}
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: "100%",
+                marginBottom: 15,
+              }}
+            >
+              <CustomButton
+                title={"Category"}
+                onPress={() => setShowAreaModal(true)}
+              />
+              <Text style={commonStyles.text}>
+                {type === "creator" ? formData.area : formData.target_audience}
+              </Text>
+            </View>
+
+            <View
+              style={[
+                profileStyles.button,
+                {
+                  borderTopColor: "#ddd",
+                  borderTopWidth: 1,
+                  width: "90%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                },
+              ]}
+            >
               <CustomButton title="Close" onPress={onClose} />
               <CustomButton title="Save" onPress={() => onSave(formData)} />
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
+
+        <Modal visible={showAreaModal} transparent={true} animationType="slide">
+          <View style={profileStyles.modalContainer}>
+            <View style={profileStyles.modalContent}>
+              <View style={authStyles.input}>
+                <Picker
+                  selectedValue={
+                    type === "creator"
+                      ? formData.area
+                      : formData.target_audience
+                  }
+                  style={authStyles.picker}
+                  onValueChange={(value) => {
+                    type === "creator"
+                      ? handleChange("area", value)
+                      : handleChange("target_audience", value);
+                  }}
+                >
+                  {AREA_OPTIONS.map((area) => (
+                    <Picker.Item
+                      key={area.value}
+                      label={area.label}
+                      value={area.value}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View style={profileStyles.button}>
+                <CustomButton
+                  title={"Close"}
+                  onPress={() => setShowAreaModal(false)}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </Modal>
     </View>
   );

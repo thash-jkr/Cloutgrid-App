@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+
+const { height, width } = Dimensions.get("window");
 
 const commonStyles = StyleSheet.create({
   text: {
@@ -43,7 +45,20 @@ const commonStyles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "sen-400",
     // marginVertical: 3
-  }
+  },
+  input: {
+    width: width * 0.9,
+    height: height * 0.06,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    fontFamily: "sen-400",
+  },
 });
 
 export default commonStyles;

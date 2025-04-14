@@ -94,7 +94,8 @@ const authStyles = StyleSheet.create({
     justifyContent: "center",
   },
   picker: {
-    width: width * 0.6,
+    width: width * 0.85,
+    height: 20,
     color: "#000",
   },
   footer: {

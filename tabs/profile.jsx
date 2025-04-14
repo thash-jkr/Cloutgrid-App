@@ -296,13 +296,7 @@ const Profile = () => {
           />
           <CustomButton
             title="Settings"
-            onPress={() =>
-              navigation.navigate("Settings", {
-                type: type,
-                profile: profile,
-                handleSave: handleSave,
-              })
-            }
+            onPress={() => navigation.navigate("Settings")}
           />
         </View>
       </View>

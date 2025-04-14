@@ -69,14 +69,14 @@ const AppTabs = () => {
           return;
         }
         const response = await axios.get(
-          `${Config.BASE_URL}/user-type/`,
+          `${Config.BASE_URL}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setType(response.data.type);
+        setType(response.data.area ? "creator" : "business");
       } catch (error) {
         console.error("Error checking user type:", error);
       }
