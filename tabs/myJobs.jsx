@@ -1,5 +1,14 @@
-import { View, Text, Image, RefreshControl, ScrollView, TouchableOpacity, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  RefreshControl,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { Modalize } from "react-native-modalize";
@@ -19,8 +28,10 @@ const MyJobs = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [questions, setQuestions] = useState([])
-  const [answers, setAnswers] = useState([])
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]);
+
+  const navigation = useNavigation()
 
   const modalizeRef = useRef(null);
 
@@ -84,7 +95,7 @@ const MyJobs = () => {
 
   return (
     <SafeAreaView style={jobsStyles.container}>
-      <Text style={commonStyles.h1}>Your Jobs</Text>
+      <Text style={commonStyles.h2}>Your Jobs</Text>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}
@@ -144,10 +155,16 @@ const MyJobs = () => {
                   key={application.id}
                   style={jobsStyles.job}
                   onPress={() => {
-                    setApplicant(application.creator);
-                    setShowAnswer(true);
-                    setQuestions(application.job.questions)
-                    setAnswers(application.answers)
+                    if (selectedJob.questions.length > 0) {
+                      setApplicant(application.creator);
+                      setShowAnswer(true);
+                      setQuestions(application.job.questions);
+                      setAnswers(application.answers);
+                    } else {
+                      navigation.navigate("Profiles", {
+                        username: application.creator.user.username
+                      })
+                    }
                   }}
                 >
                   <Image

@@ -94,7 +94,7 @@ const authStyles = StyleSheet.create({
     justifyContent: "center",
   },
   picker: {
-    width: width * 0.85,
+    width: width * 0.65,
     height: 20,
     color: "#000",
   },

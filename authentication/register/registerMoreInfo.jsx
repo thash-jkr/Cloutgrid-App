@@ -6,12 +6,12 @@ import {
   Modal,
   Alert,
   TextInput,
+  Dimensions,
+  Platform,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
 
@@ -19,12 +19,17 @@ import authStyles from "../../styles/auth";
 import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
+import commonStyles from "../../styles/common";
+
+const { height, width } = Dimensions.get("window");
 
 const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAreaModal, setShowAreaModal] = useState(false);
+  const [showDateModal, setShowDateModal] = useState(false);
   const [date, setDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
+  const [filename, setFilename] = useState("no file selected!");
 
   const navigation = useNavigation();
 
@@ -39,7 +44,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
 
   const handleFileChange = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ["images"],
       allowsEditing: true,
       aspect: [4, 4],
       quality: 0.7,
@@ -48,6 +53,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
     if (!result.canceled) {
       const localUri = result.assets[0]["uri"];
       const fileName = localUri.split("/").pop();
+      setFilename(fileName);
       const match = /\.(\w+)$/.exec(fileName);
       const fileType = match ? `image/${match[1]}` : `image`;
 
@@ -81,7 +87,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
 
   const handleSubmit = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const data = new FormData();
       data.append("user.name", formData.user.name);
       data.append("user.email", formData.user.email);
@@ -119,7 +125,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
     } catch (error) {
       console.error("Registration error: ", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -149,46 +155,59 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
 
   return (
     <View style={authStyles.container}>
-      <Loader visible={isLoading}/>
+      <Loader visible={isLoading} />
       <Text style={authStyles.h1}>Additional Information</Text>
 
-      <View style={authStyles.input}>
-        <TouchableOpacity onPress={handleFileChange}>
-          <Text style={{ color: "#000", fontFamily: "FacultyGlyphic-Regular" }}>
-            Select a Profile Photo:
-          </Text>
-        </TouchableOpacity>
-        <View
-          style={{
-            marginLeft: "auto",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {formData.user.profile_photo && (
-            <FontAwesomeIcon icon={faCheck} color="green" size={20} />
-          )}
-        </View>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          width: width * 0.95,
+          marginBottom: 15,
+          borderBottomColor: "#ddd",
+          borderBottomWidth: 1,
+          borderTopColor: "#ddd",
+          borderTopWidth: 1,
+        }}
+      >
+        <CustomButton title={"Select Image"} onPress={handleFileChange} />
+        <Text style={[commonStyles.text, { marginRight: 10 }]}>
+          {filename.length > 20 ? filename.substring(0, 20) + "..." : filename}
+        </Text>
       </View>
 
       {type === "creator" ? (
-        <View>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={authStyles.input}
-          >
-            <Text
-              style={{ color: "#000", fontFamily: "FacultyGlyphic-Regular" }}
-            >
-              Date of Birth: {formData.date_of_birth}
-            </Text>
-          </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: width * 0.95,
+            marginBottom: 15,
+            borderBottomColor: "#ddd",
+            borderBottomWidth: 1,
+          }}
+        >
+          <CustomButton
+            title={"Date of Birth"}
+            onPress={() =>
+              Platform.OS === "ios"
+                ? setShowDateModal(true)
+                : setShowDatePicker(true)
+            }
+          />
+          <Text style={[commonStyles.text, { marginRight: 10 }]}>
+            {formData.date_of_birth
+              ? formData.date_of_birth
+              : "Select your DOB!"}
+          </Text>
 
           {showDatePicker && (
             <DateTimePicker
               value={date}
               mode="date"
-              display="default"
+              display={"spinner"}
               onChange={handleDateChange}
             />
           )}
@@ -203,43 +222,97 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
         />
       )}
 
-      <TouchableOpacity
-        onPress={() => setShowAreaModal(true)}
-        style={authStyles.input}
+      <View
+        style={[
+          {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: width * 0.95,
+            marginBottom: 15,
+            borderBottomColor: "#ddd",
+            borderBottomWidth: 1,
+          },
+          type === "creator"
+            ? {}
+            : {
+                borderTopColor: "#ddd",
+                borderTopWidth: 1,
+              },
+        ]}
       >
-        <Text style={{ color: "#000", fontFamily: "FacultyGlyphic-Regular" }}>
+        <CustomButton
+          title={"Category"}
+          onPress={() => setShowAreaModal(true)}
+        />
+        <Text style={[commonStyles.text, { marginRight: 10 }]}>
           {type === "creator"
             ? formData.area
               ? formData.area
-              : "Select your area of expertise:"
+              : "Select your area of expertise"
             : formData.target_audience
             ? formData.target_audience
-            : "Select your business category:"}
+            : "Select your business category"}
         </Text>
-      </TouchableOpacity>
+      </View>
+
+      <Modal visible={showDateModal} transparent={true} animationType="slide">
+        <View style={authStyles.modalOverlay}>
+          <View style={authStyles.modalContainer}>
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display={"spinner"}
+              onChange={handleDateChange}
+            />
+            <CustomButton
+              title="Close"
+              onPress={() => setShowDateModal(false)}
+            />
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={showAreaModal} transparent={true} animationType="slide">
         <View style={authStyles.modalOverlay}>
           <View style={authStyles.modalContainer}>
-            <Picker
-              selectedValue={
-                type === "creator" ? formData.area : formData.target_audience
+            <View
+              style={
+                Platform.OS === "ios"
+                  ? {}
+                  : [
+                      authStyles.input,
+                      { width: width * 0.7, flexDirection: "column" },
+                    ]
               }
-              style={authStyles.picker}
-              onValueChange={(value) => {
-                type === "creator"
-                  ? handleChange("area", value)
-                  : handleChange("target_audience", value);
-              }}
             >
-              {AREA_OPTIONS.map((option) => (
-                <Picker.Item
-                  key={option.value}
-                  label={option.label}
-                  value={option.value}
-                />
-              ))}
-            </Picker>
+              {Platform.OS === "android" && (
+                <Text>Select from dropdown 👉🏻</Text>
+              )}
+              <Picker
+                selectedValue={
+                  type === "creator" ? formData.area : formData.target_audience
+                }
+                style={[
+                  authStyles.picker,
+                  { marginBottom: Platform.OS === "ios" ? 250 : 10 },
+                ]}
+                onValueChange={(value) => {
+                  type === "creator"
+                    ? handleChange("area", value)
+                    : handleChange("target_audience", value);
+                  setShowAreaModal(false);
+                }}
+              >
+                {AREA_OPTIONS.map((area) => (
+                  <Picker.Item
+                    key={area.value}
+                    label={area.label}
+                    value={area.value}
+                  />
+                ))}
+              </Picker>
+            </View>
             <CustomButton
               title="Close"
               onPress={() => setShowAreaModal(false)}

@@ -10,7 +10,6 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
-  Animated,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -26,8 +25,6 @@ import CustomButton from "../common/CustomButton";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
 
-const HEADER_HEIGHT = 60;
-
 const Home = () => {
   const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
@@ -39,15 +36,6 @@ const Home = () => {
 
   const commentModal = useRef(null);
   const lastTapRef = useRef(null);
-
-  const scrollY = useRef(new Animated.Value(0)).current;
-  const clampedScroll = Animated.diffClamp(scrollY, 0, HEADER_HEIGHT);
-
-  const headerTranslateY = clampedScroll.interpolate({
-    inputRange: [0, HEADER_HEIGHT],
-    outputRange: [0, -HEADER_HEIGHT],
-    extrapolate: "clamp",
-  });
 
   const fetchPosts = async () => {
     try {
@@ -183,24 +171,8 @@ const Home = () => {
 
   return (
     <SafeAreaView style={homeStyles.home}>
-      <StatusBar backgroundColor="#fff" barStyle={"dark-content"}/>
-      <Animated.View
-        style={[
-          homeStyles.header,
-          {
-            transform: [{ translateY: headerTranslateY }],
-            position: "absolute",
-            top: Platform.OS == "ios" ? 30 : 0,
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            backgroundColor: "#fff",
-            height: HEADER_HEIGHT- 10,
-            borderBottomWidth: 1,
-            borderBottomColor: "#ddd"
-          },
-        ]}
-      >
+      <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
+      <View style={[homeStyles.header]}>
         <View>
           <Text style={homeStyles.h2}>
             CLOUT<Text style={homeStyles.logoSide}>Grid</Text>
@@ -212,18 +184,13 @@ const Home = () => {
         >
           <FontAwesomeIcon icon={faBell} size={20} />
         </TouchableOpacity>
-      </Animated.View>
-      <Animated.ScrollView
+      </View>
+      <ScrollView
         showsVerticalScrollIndicator={false}
-        style={[homeStyles.postContainer, { paddingTop: HEADER_HEIGHT - 25 }]}
+        style={[homeStyles.postContainer]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={32}
       >
         {posts.length > 0 ? (
           posts.map((post) => (
@@ -298,7 +265,7 @@ const Home = () => {
         ) : (
           <LoadingSpinner />
         )}
-      </Animated.ScrollView>
+      </ScrollView>
 
       <Modalize
         ref={commentModal}

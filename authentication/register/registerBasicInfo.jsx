@@ -1,4 +1,11 @@
-import { View, Text, TextInput, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
@@ -8,13 +15,8 @@ import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
 
-const BasicInfo = ({
-  nextStep,
-  formData,
-  handleChange,
-  type,
-}) => {
-  const [isLoading, setIsLoading] = useState(false)
+const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleContinue = async () => {
@@ -32,7 +34,7 @@ const BasicInfo = ({
     }
 
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const data = new FormData();
       data.append("name", formData.user.name);
       data.append("username", formData.user.username);
@@ -54,7 +56,7 @@ const BasicInfo = ({
     } catch (error) {
       console.log(response);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
@@ -63,8 +65,11 @@ const BasicInfo = ({
   };
 
   return (
-    <View style={authStyles.container}>
-      <Loader visible={isLoading}/>
+    <KeyboardAvoidingView
+      style={authStyles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Loader visible={isLoading} />
       <Text style={authStyles.h1}>
         Join as a {type === "creator" ? "Creator" : "Business"}
       </Text>
@@ -112,7 +117,7 @@ const BasicInfo = ({
       />
 
       <CustomButton title="Continue" onPress={handleContinue} />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

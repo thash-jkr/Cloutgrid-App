@@ -4,6 +4,8 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import React, { useState, useRef } from "react";
 import authStyles from "../styles/auth";
@@ -35,7 +37,10 @@ const Login = () => {
   };
 
   return (
-    <View style={authStyles.container}>
+    <KeyboardAvoidingView
+      style={authStyles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <Animated.View
         style={{
           transform: [{ translateX }],
@@ -81,12 +86,12 @@ const Login = () => {
           )}
         </TouchableOpacity>
       </View>
-      <View style={authStyles.footer}>
+      <View style={[authStyles.footer]}>
         <TouchableOpacity onPress={() => navigation.navigate("ResetPassword")}>
           <Text style={authStyles.footerText}>Forgot password?</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

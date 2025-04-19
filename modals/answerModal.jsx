@@ -49,11 +49,12 @@ const AnswerModal = ({ showAnswer, onClose, questions, answers, profile }) => {
             />
             <CustomButton
               title={"Profile"}
-              onPress={() =>
+              onPress={() => {
+                onClose()
                 navigation.navigate("Profiles", {
                   username: profile.user.username,
-                })
-              }
+                });
+              }}
             />
           </View>
         </View>

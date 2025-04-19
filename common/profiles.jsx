@@ -7,23 +7,24 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import profileStyles from "../styles/profile";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
-import CustomButton from "../common/CustomButton";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
-  faFacebook,
   faInstagram,
   faYoutube,
   faTiktok,
 } from "@fortawesome/free-brands-svg-icons";
+import Hyperlink from "react-native-hyperlink";
+import * as SecureStore from "expo-secure-store";
+import React, { useEffect, useState } from "react";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
-import ProfilePosts from "./profilePosts";
 
-import Config from "../config";
+import CustomButton from "../common/CustomButton";
+import profileStyles from "../styles/profile";
+import ProfilePosts from "./profilePosts";
 import LoadingSpinner from "./loading";
+import Config from "../config";
 
 const Profiles = ({ route }) => {
   const { username } = route.params;
@@ -33,6 +34,7 @@ const Profiles = ({ route }) => {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
+  const [type, setType] = useState("");
 
   useEffect(() => {
     const fetchLoggedInUser = async () => {
@@ -70,6 +72,9 @@ const Profiles = ({ route }) => {
         );
         if (response.data) {
           setProfile(response.data);
+          response.data.date_of_birth
+            ? setType("creator")
+            : setType("business");
         }
         const isFollowingResponse = await axios.get(
           `${Config.BASE_URL}/profiles/${username}/is_following/`,
@@ -186,6 +191,35 @@ const Profiles = ({ route }) => {
     return <LoadingSpinner />;
   }
 
+  const AREA_OPTIONS = [
+    { value: "", label: "Select Target Audience" },
+    { value: "art", label: "Art and Photography" },
+    { value: "automotive", label: "Automotive" },
+    { value: "beauty", label: "Beauty and Makeup" },
+    { value: "business", label: "Business" },
+    { value: "diversity", label: "Diversity and Inclusion" },
+    { value: "education", label: "Education" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "fashion", label: "Fashion" },
+    { value: "finance", label: "Finance" },
+    { value: "food", label: "Food and Beverage" },
+    { value: "gaming", label: "Gaming" },
+    { value: "health", label: "Health and Wellness" },
+    { value: "home", label: "Home and Gardening" },
+    { value: "outdoor", label: "Outdoor and Nature" },
+    { value: "parenting", label: "Parenting and Family" },
+    { value: "pets", label: "Pets" },
+    { value: "sports", label: "Sports and Fitness" },
+    { value: "technology", label: "Technology" },
+    { value: "travel", label: "Travel" },
+    { value: "videography", label: "Videography" },
+  ];
+
+  const AREA_OPTIONS_OBJECT = AREA_OPTIONS.reduce((acc, curr) => {
+    acc[curr.value] = curr.label;
+    return acc;
+  }, {});
+
   return (
     <SafeAreaView style={profileStyles.profile}>
       <StatusBar backgroundColor="#fff" />
@@ -199,22 +233,46 @@ const Profiles = ({ route }) => {
           />
           <View style={profileStyles.profileData}>
             <View style={profileStyles.profileCount}>
-              <Text>{posts.length}</Text>
-              <Text>Posts</Text>
+              <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
+              <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
             </View>
             <View style={profileStyles.profileCount}>
-              <Text>{profile.user.followers_count}</Text>
-              <Text>Followers</Text>
+              <Text style={{ fontFamily: "sen-400" }}>
+                {profile.user.followers_count}
+              </Text>
+              <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
             </View>
             <View style={profileStyles.profileCount}>
-              <Text>{profile.user.following_count}</Text>
-              <Text>Following</Text>
+              <Text style={{ fontFamily: "sen-400" }}>
+                {profile.user.following_count}
+              </Text>
+              <Text style={{ fontFamily: "sen-400" }}>Following</Text>
             </View>
           </View>
         </View>
         <View style={profileStyles.profileBio}>
-          <Text style={{ fontWeight: "bold" }}>{profile.user.name}</Text>
-          <Text>{profile.user.bio}</Text>
+          <Text style={{ fontFamily: "sen-500" }}>{profile.user.name}</Text>
+          <Text style={{ fontFamily: "sen-400" }}>{profile.user.bio}</Text>
+          {profile.website && (
+            <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
+              <Text
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontFamily: "sen-400",
+                }}
+              >
+                <FontAwesomeIcon icon={faLink} /> <Text>{profile.website}</Text>
+              </Text>
+            </Hyperlink>
+          )}
+          <View style={profileStyles.profileArea}>
+            <Text style={{ fontFamily: "sen-600" }}>
+              {type === "creator"
+                ? AREA_OPTIONS_OBJECT[profile.area]
+                : AREA_OPTIONS_OBJECT[profile.target_audience]}
+            </Text>
+          </View>
         </View>
         <CustomButton
           title={isFollowing ? "Unfollow" : "Follow"}

@@ -5,6 +5,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from "react-native";
 import React, { useState } from "react";
 import profileStyles from "../styles/profile";
@@ -13,6 +14,8 @@ import CustomButton from "./CustomButton";
 import * as ImagePicker from "expo-image-picker";
 import commonStyles from "../styles/common";
 import { Picker } from "@react-native-picker/picker";
+
+const { height, width } = Dimensions.get("window");
 
 const EditProfileModal = ({ profile, onClose, onSave, type }) => {
   const [showAreaModal, setShowAreaModal] = useState(false);
@@ -67,7 +70,7 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       quality: 0.7,
     });
 
@@ -136,7 +139,6 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
         <View style={profileStyles.modalContainer}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={1}
             style={profileStyles.modalContent}
           >
             <Text style={profileStyles.modalTitle}>Edit Profile</Text>
@@ -168,15 +170,15 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "100%",
-                marginBottom: 15,
+                width: width * 0.95,
+                marginBottom: 5,
               }}
             >
               <CustomButton
                 title={"Profile Picture"}
                 onPress={handleFileChange}
               />
-              <Text style={commonStyles.text}>
+              <Text style={[commonStyles.text, { marginRight: 15 }]}>
                 {filename.length > 20
                   ? filename.substring(0, 20) + "..."
                   : filename}
@@ -188,15 +190,15 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "100%",
-                marginBottom: 15,
+                width: width * 0.95,
+                marginBottom: 5,
               }}
             >
               <CustomButton
                 title={"Category"}
                 onPress={() => setShowAreaModal(true)}
               />
-              <Text style={commonStyles.text}>
+              <Text style={[commonStyles.text, { marginRight: 15 }]}>
                 {type === "creator" ? formData.area : formData.target_audience}
               </Text>
             </View>
@@ -222,18 +224,34 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
         <Modal visible={showAreaModal} transparent={true} animationType="slide">
           <View style={profileStyles.modalContainer}>
             <View style={profileStyles.modalContent}>
-              <View style={authStyles.input}>
+              <View
+                style={
+                  Platform.OS === "ios"
+                    ? {}
+                    : [
+                        authStyles.input,
+                        { width: width * 0.7, flexDirection: "column" },
+                      ]
+                }
+              >
+                {Platform.OS === "android" && (
+                  <Text>Select from dropdown 👉🏻</Text>
+                )}
                 <Picker
                   selectedValue={
                     type === "creator"
                       ? formData.area
                       : formData.target_audience
                   }
-                  style={authStyles.picker}
+                  style={[
+                    authStyles.picker,
+                    { marginBottom: Platform.OS === "ios" ? 250 : 10 },
+                  ]}
                   onValueChange={(value) => {
                     type === "creator"
                       ? handleChange("area", value)
                       : handleChange("target_audience", value);
+                    Platform.OS === "android" && setShowAreaModal(false);
                   }}
                 >
                   {AREA_OPTIONS.map((area) => (
