@@ -95,7 +95,7 @@ const MyJobs = () => {
 
   return (
     <SafeAreaView style={jobsStyles.container}>
-      <Text style={commonStyles.h2}>Your Jobs</Text>
+      <Text style={jobsStyles.h1}>Your Jobs</Text>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}
@@ -117,8 +117,8 @@ const MyJobs = () => {
                 style={jobsStyles.jobImage}
               />
               <View>
-                <Text style={commonStyles.h4}>{job.title}</Text>
-                <Text style={commonStyles.h6}>Due: {job.due_date}</Text>
+                <Text style={jobsStyles.h2}>{job.title}</Text>
+                <Text style={{fontFamily: "sen-400"}}>Due: {job.due_date}</Text>
               </View>
             </TouchableOpacity>
           ))

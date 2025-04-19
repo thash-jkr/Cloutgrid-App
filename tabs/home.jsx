@@ -16,7 +16,11 @@ import * as SecureStore from "expo-secure-store";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faBell, faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBell,
+  faHeart as faHeartSolid,
+} from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
 
@@ -233,11 +237,15 @@ const Home = () => {
               <View style={homeStyles.postFooter}>
                 <View style={homeStyles.postFooterIcons}>
                   <TouchableOpacity onPress={() => handleLike(post.id)}>
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      size={25}
-                      style={{ color: post.is_liked ? "#0096C7" : "black" }}
-                    />
+                    {post.is_liked ? (
+                      <FontAwesomeIcon
+                        icon={faHeartSolid}
+                        size={25}
+                        style={{ color: "#0096C7" }}
+                      />
+                    ) : (
+                      <FontAwesomeIcon icon={faHeart} size={25} />
+                    )}
                   </TouchableOpacity>
                   <Text style={{ fontFamily: "sen-400" }}>
                     <Text>{post.like_count} Likes </Text>
