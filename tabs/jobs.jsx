@@ -10,18 +10,18 @@ import {
 } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
-
-import jobsStyles from "../styles/jobs";
 import { Modalize } from "react-native-modalize";
-import CustomButton from "../common/CustomButton";
-import Config from "../config";
+
 import QuestionModal from "../modals/questionModal";
+import CustomButton from "../common/CustomButton";
+import jobsStyles from "../styles/jobs";
+import Config from "../config";
 
 const JobList = () => {
   const [id, setId] = useState(null);
   const [jobs, setJobs] = useState([]);
-  const [selectedJob, setSelectedJob] = useState(null);
   const [answers, setAnswers] = useState({});
+  const [selectedJob, setSelectedJob] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
 
   const modalizeRef = useRef(null);

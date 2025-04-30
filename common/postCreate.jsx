@@ -1,26 +1,26 @@
 import {
-  View,
   Text,
+  View,
+  Image,
   Alert,
   TextInput,
+  ScrollView,
   SafeAreaView,
   TouchableOpacity,
-  Image,
-  ScrollView,
 } from "react-native";
+import axios from "axios";
 import React, { useState, useRef } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
-import axios from "axios";
+import { Modalize } from "react-native-modalize";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faX } from "@fortawesome/free-solid-svg-icons";
-import { Modalize } from "react-native-modalize";
 
-import jobsStyles from "../styles/jobs";
 import CustomButton from "../common/CustomButton";
-import Config from "../config";
 import commonStyles from "../styles/common";
+import jobsStyles from "../styles/jobs";
+import Config from "../config";
 
 const PostCreate = ({ type }) => {
   const [query, setQuery] = useState(null);
@@ -91,7 +91,7 @@ const PostCreate = ({ type }) => {
 
   const handlePostSubmit = async () => {
     if (!caption || !image) {
-      Alert.alert("Please provide both an image and a caption.");
+      Alert.alert("Error", "Please provide both an image and a caption.");
       return;
     }
 
@@ -193,7 +193,12 @@ const PostCreate = ({ type }) => {
                 </TouchableOpacity>
               </View>
             ) : (
-              <Text style={[commonStyles.text, { maxWidth: 150, textAlign: "right" }]}>
+              <Text
+                style={[
+                  commonStyles.text,
+                  { maxWidth: 150, textAlign: "right" },
+                ]}
+              >
                 If you are collabing with a business for this post, you can add
                 them here (optional)
               </Text>
@@ -201,7 +206,7 @@ const PostCreate = ({ type }) => {
           </View>
         )}
       </View>
-      
+
       <CustomButton title="Create Post" onPress={handlePostSubmit} />
 
       <Modalize
@@ -212,6 +217,10 @@ const PostCreate = ({ type }) => {
             <Text style={jobsStyles.headerText}>Search for businesses</Text>
           </View>
         }
+        onClose={() => {
+          setQuery("");
+          setResults([]);
+        }}
       >
         <View style={jobsStyles.modal}>
           <TextInput
@@ -220,32 +229,38 @@ const PostCreate = ({ type }) => {
             value={query}
             onChangeText={handleSearch}
           />
-          {results.length > 0 ? (
-            results.map((item) => (
-              <TouchableOpacity
-                key={item.user.username}
-                style={jobsStyles.job}
-                onPress={() => {
-                  setCollab(item.user.username);
-                  modalizeRef.current?.close();
-                }}
-              >
-                <Image
-                  source={{
-                    uri: `${Config.BASE_URL}${item.user.profile_photo}`,
+          <ScrollView>
+            {results.length > 0 ? (
+              results.map((item) => (
+                <TouchableOpacity
+                  key={item.user.username}
+                  style={jobsStyles.job}
+                  onPress={() => {
+                    setCollab(item.user.username);
+                    modalizeRef.current?.close();
                   }}
-                  style={jobsStyles.jobImage}
-                />
-                <Text>{item.user.name}</Text>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text>No results</Text>
-          )}
+                >
+                  <Image
+                    source={{
+                      uri: `${Config.BASE_URL}${item.user.profile_photo}`,
+                    }}
+                    style={jobsStyles.jobImage}
+                  />
+                  <Text>{item.user.name}</Text>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <Text>No results</Text>
+            )}
+          </ScrollView>
           <View style={jobsStyles.button}>
             <CustomButton
               title={"Close"}
-              onPress={() => modalizeRef.current?.close()}
+              onPress={() => {
+                setQuery("");
+                setResults([]);
+                modalizeRef.current?.close();
+              }}
             />
           </View>
         </View>

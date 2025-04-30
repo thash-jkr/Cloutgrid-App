@@ -23,7 +23,7 @@ const { height, width } = Dimensions.get("window");
 
 const HomeStack = () => {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, navigationBarColor: "white" }}>
       <Stack.Screen name="HomeMain" component={Home} />
       <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="Profiles" component={Profiles} />
@@ -114,6 +114,7 @@ const AppTabs = () => {
         },
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
+        navigationBarColor: "#fff"
       })}
     >
       <Tab.Screen name="Home" component={HomeStack} />

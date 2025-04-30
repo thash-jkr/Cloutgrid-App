@@ -3,6 +3,13 @@ import { StyleSheet, Dimensions } from "react-native";
 const { height, width } = Dimensions.get("window");
 
 const commonStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    width: width
+  },
   text: {
     fontFamily: "sen-400",
   },

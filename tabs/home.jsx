@@ -287,6 +287,7 @@ const Home = () => {
             <Text style={homeStyles.headerText}>Comments</Text>
           </View>
         }
+        avoidKeyboardLikeIOS={true}
       >
         <KeyboardAvoidingView
           style={homeStyles.modal}
