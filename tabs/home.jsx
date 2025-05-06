@@ -4,12 +4,9 @@ import {
   Image,
   StatusBar,
   ScrollView,
-  TextInput,
   RefreshControl,
   SafeAreaView,
   TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -19,15 +16,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faBell,
   faHeart as faHeartSolid,
+  faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
 
 import homeStyles from "../styles/home";
-import CustomButton from "../common/CustomButton";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
+import commonStyles from "../styles/common";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -38,7 +36,7 @@ const Home = () => {
   const [newComment, setNewComment] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
-  const commentModal = useRef(null);
+  const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
 
   const fetchPosts = async () => {
@@ -121,56 +119,15 @@ const Home = () => {
     }
   };
 
-  const handleSelectComment = async (post) => {
+  const openAbout = (post) => {
     setSelectedPost(post);
-    commentModal.current?.open();
-
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.get(
-        `${Config.BASE_URL}/posts/${post.id}/comments/`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      if (response.data) {
-        setComments(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-    }
-  };
-
-  const handleAddComment = async () => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.post(
-        `${Config.BASE_URL}/posts/${selectedPost.id}/comments/`,
-        { content: newComment },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setComments([...comments, response.data]);
-      setNewComment("");
-    } catch (error) {
-      console.error("Error adding comment:", error);
-    }
+    aboutModalize.current?.open();
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchPosts();
     setRefreshing(false);
-  };
-
-  const dateParser = (dateTime) => {
-    const [date, time] = dateTime.split("T");
-    return new Date(date).toDateString();
   };
 
   return (
@@ -199,35 +156,55 @@ const Home = () => {
         {posts.length > 0 ? (
           posts.map((post) => (
             <View key={post.id} style={homeStyles.post}>
-              <TouchableOpacity
-                style={homeStyles.postHeader}
-                onPress={() => {
-                  if (post.author.username === user.username) {
-                    navigation.navigate("Profile");
-                    return;
-                  }
-                  navigation.navigate("Profiles", {
-                    username: post.author.username,
-                  });
-                }}
-              >
-                <Image
-                  style={homeStyles.profilePicture}
-                  source={{
-                    uri: `${post.author.profile_photo}`,
+              <View style={homeStyles.postHeader}>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (post.author.username === user.username) {
+                      navigation.navigate("Profile");
+                      return;
+                    }
+                    navigation.navigate("Profiles", {
+                      username: post.author.username,
+                    });
                   }}
-                />
-                <Text style={homeStyles.postAuthor}>{post.author.name}</Text>
+                  style={commonStyles.center}
+                >
+                  <Image
+                    style={homeStyles.profilePicture}
+                    source={{
+                      uri: `${post.author.profile_photo}`,
+                    }}
+                  />
+                  <Text style={homeStyles.postAuthor}>{post.author.name}</Text>
+                </TouchableOpacity>
                 {post.collaboration && (
-                  <Text>
-                    {" "}
-                    with{" "}
-                    <Text style={homeStyles.postAuthor}>
-                      {post.collaboration.user.name}
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (post.collaboration.user.username === user.username) {
+                        navigation.navigate("Profile");
+                        return;
+                      }
+                      navigation.navigate("Profiles", {
+                        username: post.collaboration.user.username,
+                      });
+                    }}
+                  >
+                    <Text>
+                      {" "}
+                      with{" "}
+                      <Text style={homeStyles.postAuthor}>
+                        {post.collaboration.user.name}
+                      </Text>
                     </Text>
-                  </Text>
+                  </TouchableOpacity>
                 )}
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={{ position: "absolute", right: 10 }}
+                  onPress={() => openAbout(post)}
+                >
+                  <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
+                </TouchableOpacity>
+              </View>
               <TouchableWithoutFeedback onPress={() => handleTap(post)}>
                 <Image
                   style={homeStyles.postImage}
@@ -252,7 +229,11 @@ const Home = () => {
                     <Text>|</Text>
                     <Text> {post.comment_count} Comments</Text>
                   </Text>
-                  <TouchableOpacity onPress={() => handleSelectComment(post)}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("Comments", { post: post })
+                    }
+                  >
                     <FontAwesomeIcon icon={faComment} size={25} />
                   </TouchableOpacity>
                 </View>
@@ -276,69 +257,36 @@ const Home = () => {
       </ScrollView>
 
       <Modalize
-        ref={commentModal}
+        ref={aboutModalize}
         adjustToContentHeight={true}
-        onClose={() => {
-          setNewComment("");
-          setComments([]);
-        }}
         HeaderComponent={
           <View style={homeStyles.modalHeader}>
-            <Text style={homeStyles.headerText}>Comments</Text>
+            <Text style={homeStyles.headerText}>About</Text>
           </View>
         }
         avoidKeyboardLikeIOS={true}
+        onClose={() => setSelectedPost(null)}
       >
-        <KeyboardAvoidingView
-          style={homeStyles.modal}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={110}
-        >
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {comments.length > 0 ? (
-              comments.map((comment) => (
-                <View key={comment.id} style={homeStyles.comment}>
-                  <Text>
-                    <Text style={homeStyles.commentAuthor}>
-                      {comment.user.username}
-                    </Text>
-                    <Text style={{ fontFamily: "sen-400" }}>
-                      {" "}
-                      - {dateParser(comment.commented_at)}
-                    </Text>
-                  </Text>
-                  <Text style={{ fontFamily: "sen-400" }}>
-                    {comment.content}
-                  </Text>
-                </View>
-              ))
-            ) : (
-              <Text
-                style={{
-                  fontFamily: "sen-500",
-                  fontSize: 17,
-                  textAlign: "center",
-                  marginTop: 20,
-                }}
-              >
-                No comments yet
-              </Text>
-            )}
-          </ScrollView>
-          <View style={homeStyles.commentInputContainer}>
-            <TextInput
-              style={homeStyles.commentInput}
-              placeholder="Add a comment..."
-              value={newComment}
-              onChangeText={(value) => setNewComment(value)}
-            />
-            <CustomButton
-              title="Post"
-              onPress={handleAddComment}
-              disabled={newComment.length === 0}
-            />
-          </View>
-        </KeyboardAvoidingView>
+        <View style={{ padding: 10, paddingBottom: 20 }}>
+          <Text
+            style={{
+              padding: 10,
+              borderBottomColor: "#eee",
+              borderBottomWidth: 1,
+            }}
+          >
+            Report Post
+          </Text>
+          <Text
+            style={{
+              padding: 10,
+              borderBottomColor: "#eee",
+              borderBottomWidth: 1,
+            }}
+          >
+            Follow @{selectedPost ? selectedPost.author.username : ""}
+          </Text>
+        </View>
       </Modalize>
     </SafeAreaView>
   );

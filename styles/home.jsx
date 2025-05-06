@@ -148,7 +148,6 @@ const homeStyles = StyleSheet.create({
   modal: {
     padding: 20,
     paddingVertical: 0,
-    height: height * 0.6,
     // position: "relative",
   },
   comment: {
@@ -164,7 +163,7 @@ const homeStyles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
-    // padding: 10,
+    paddingHorizontal: 10,
   },
   commentInput: {
     flex: 1,

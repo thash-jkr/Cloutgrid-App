@@ -13,23 +13,24 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.cloutgrid.iosapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#fff"
       },
-      "package": "com.cloutgrid.Cloutgrid"
+      "package": "com.cloutgrid.Cloutgrid",
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-secure-store",
-      "expo-font",
-      "react-native-edge-to-edge"
-    ],
+    "plugins": ["expo-secure-store", "expo-font", "react-native-edge-to-edge"],
     "extra": {
       "eas": {
         "projectId": "30262200-4591-4225-adb3-db01a536f899"
