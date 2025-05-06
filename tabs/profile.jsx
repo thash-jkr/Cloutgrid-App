@@ -8,19 +8,16 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faInstagram,
-  faYoutube,
-  faTiktok,
-} from "@fortawesome/free-brands-svg-icons";
+import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import Hyperlink from "react-native-hyperlink";
+import { Modalize } from "react-native-modalize";
 
 import profileStyles from "../styles/profile";
 import CustomButton from "../common/CustomButton";
@@ -28,6 +25,7 @@ import EditProfileModal from "../common/EditProfileModal";
 import ProfilePosts from "../common/profilePosts";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
+import homeStyles from "../styles/home";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -37,6 +35,9 @@ const Profile = () => {
   const [collabs, setCollabs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [type, setType] = useState("");
+  const [selectedPost, setSelectedPost] = useState(null);
+
+  const aboutModalize = useRef(null);
 
   const navigation = useNavigation();
 
@@ -167,8 +168,6 @@ const Profile = () => {
         return (
           <ProfilePosts
             posts={posts}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
           />
         );
       case "instagram":
@@ -200,6 +199,11 @@ const Profile = () => {
       default:
         return <Text>Instagram Info</Text>;
     }
+  };
+
+  const openAbout = (post) => {
+    setSelectedPost(post);
+    aboutModalize.current?.open();
   };
 
   if (!profile) {
@@ -238,98 +242,104 @@ const Profile = () => {
   return (
     <SafeAreaView style={profileStyles.profile}>
       <StatusBar backgroundColor="#fff" />
-      <View style={profileStyles.profileTop}>
-        <View style={profileStyles.profileDetails}>
-          <Image
-            source={{
-              uri: `${Config.BASE_URL}${profile.user.profile_photo}`,
-            }}
-            style={profileStyles.profilePicture}
-          />
-          <View style={profileStyles.profileData}>
-            <View style={profileStyles.profileCount}>
-              <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
-              <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
-            </View>
-            <View style={profileStyles.profileCount}>
-              <Text style={{ fontFamily: "sen-400" }}>
-                {profile.user.followers_count}
-              </Text>
-              <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
-            </View>
-            <View style={profileStyles.profileCount}>
-              <Text style={{ fontFamily: "sen-400" }}>
-                {profile.user.following_count}
-              </Text>
-              <Text style={{ fontFamily: "sen-400" }}>Following</Text>
-            </View>
-          </View>
-        </View>
-        <View style={profileStyles.profileBio}>
-          <Text style={{ fontFamily: "sen-500" }}>{profile.user.name}</Text>
-          <Text style={{ fontFamily: "sen-400" }}>{profile.user.bio}</Text>
-          {profile.website && (
-            <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
-              <Text
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  fontFamily: "sen-400",
-                }}
-              >
-                <FontAwesomeIcon icon={faLink} /> <Text>{profile.website}</Text>
-              </Text>
-            </Hyperlink>
-          )}
-          <View style={profileStyles.profileArea}>
-            <Text style={{ fontFamily: "sen-600" }}>
-              {type === "creator"
-                ? AREA_OPTIONS_OBJECT[profile.area]
-                : AREA_OPTIONS_OBJECT[profile.target_audience]}
-            </Text>
-          </View>
-        </View>
-        <View style={profileStyles.button}>
-          <CustomButton
-            title="Edit Profile"
-            onPress={() => setModalVisible(true)}
-          />
-          <CustomButton
-            title="Settings"
-            onPress={() => navigation.navigate("Settings")}
-          />
-        </View>
-      </View>
-      <View style={profileStyles.profileBottom}>
-        <View style={profileStyles.tabsContainer}>
-          <TouchableOpacity
-            style={[
-              profileStyles.tabButton,
-              activeTab === "posts" && profileStyles.activeTab,
-            ]}
-            onPress={() => setActiveTab("posts")}
-          >
-            <Text
-              style={{
-                fontFamily: "sen-600",
-                fontSize: 15,
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <View style={profileStyles.profileTop}>
+          <View style={profileStyles.profileDetails}>
+            <Image
+              source={{
+                uri: `${Config.BASE_URL}${profile.user.profile_photo}`,
               }}
-            >
-              Posts
-            </Text>
-          </TouchableOpacity>
-          {type === "creator" && (
+              style={profileStyles.profilePicture}
+            />
+            <View style={profileStyles.profileData}>
+              <View style={profileStyles.profileCount}>
+                <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
+                <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
+              </View>
+              <View style={profileStyles.profileCount}>
+                <Text style={{ fontFamily: "sen-400" }}>
+                  {profile.user.followers_count}
+                </Text>
+                <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
+              </View>
+              <View style={profileStyles.profileCount}>
+                <Text style={{ fontFamily: "sen-400" }}>
+                  {profile.user.following_count}
+                </Text>
+                <Text style={{ fontFamily: "sen-400" }}>Following</Text>
+              </View>
+            </View>
+          </View>
+          <View style={profileStyles.profileBio}>
+            <Text style={{ fontFamily: "sen-500" }}>{profile.user.name}</Text>
+            <Text style={{ fontFamily: "sen-400" }}>{profile.user.bio}</Text>
+            {profile.website && (
+              <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
+                <Text
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontFamily: "sen-400",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faLink} />{" "}
+                  <Text>{profile.website}</Text>
+                </Text>
+              </Hyperlink>
+            )}
+            <View style={profileStyles.profileArea}>
+              <Text style={{ fontFamily: "sen-600" }}>
+                {type === "creator"
+                  ? AREA_OPTIONS_OBJECT[profile.area]
+                  : AREA_OPTIONS_OBJECT[profile.target_audience]}
+              </Text>
+            </View>
+          </View>
+          <View style={profileStyles.button}>
+            <CustomButton
+              title="Edit Profile"
+              onPress={() => setModalVisible(true)}
+            />
+            <CustomButton
+              title="Settings"
+              onPress={() => navigation.navigate("Settings")}
+            />
+          </View>
+        </View>
+        <View style={profileStyles.profileBottom}>
+          <View style={profileStyles.tabsContainer}>
             <TouchableOpacity
               style={[
                 profileStyles.tabButton,
-                activeTab === "instagram" && profileStyles.activeTab,
+                activeTab === "posts" && profileStyles.activeTab,
               ]}
-              onPress={() => setActiveTab("instagram")}
+              onPress={() => setActiveTab("posts")}
             >
-              <FontAwesomeIcon icon={faInstagram} size={20} />
+              <Text
+                style={{
+                  fontFamily: "sen-600",
+                  fontSize: 15,
+                }}
+              >
+                Posts
+              </Text>
             </TouchableOpacity>
-          )}
-          {type === "creator" && (
+            {type === "creator" && (
+              <TouchableOpacity
+                style={[
+                  profileStyles.tabButton,
+                  activeTab === "instagram" && profileStyles.activeTab,
+                ]}
+                onPress={() => setActiveTab("instagram")}
+              >
+                <FontAwesomeIcon icon={faInstagram} size={20} />
+              </TouchableOpacity>
+            )}
+            {/* {type === "creator" && (
             <TouchableOpacity
               style={[
                 profileStyles.tabButton,
@@ -339,48 +349,48 @@ const Profile = () => {
             >
               <FontAwesomeIcon icon={faTiktok} size={20} />
             </TouchableOpacity>
-          )}
-          {type === "creator" && (
-            <TouchableOpacity
-              style={[
-                profileStyles.tabButton,
-                activeTab === "youtube" && profileStyles.activeTab,
-              ]}
-              onPress={() => setActiveTab("youtube")}
-            >
-              <FontAwesomeIcon icon={faYoutube} size={20} />
-            </TouchableOpacity>
-          )}
-          {type === "business" && (
-            <TouchableOpacity
-              style={[
-                profileStyles.tabButton,
-                activeTab === "collabs" && profileStyles.activeTab,
-              ]}
-              onPress={() => setActiveTab("collabs")}
-            >
-              <Text
-                style={{
-                  fontFamily: "sen-600",
-                  fontSize: 15,
-                }}
+          )} */}
+            {type === "creator" && (
+              <TouchableOpacity
+                style={[
+                  profileStyles.tabButton,
+                  activeTab === "youtube" && profileStyles.activeTab,
+                ]}
+                onPress={() => setActiveTab("youtube")}
               >
-                Collabs
-              </Text>
-            </TouchableOpacity>
-          )}
+                <FontAwesomeIcon icon={faYoutube} size={20} />
+              </TouchableOpacity>
+            )}
+            {type === "business" && (
+              <TouchableOpacity
+                style={[
+                  profileStyles.tabButton,
+                  activeTab === "collabs" && profileStyles.activeTab,
+                ]}
+                onPress={() => setActiveTab("collabs")}
+              >
+                <Text
+                  style={{
+                    fontFamily: "sen-600",
+                    fontSize: 15,
+                  }}
+                >
+                  Collabs
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {renderContent()}
+          </ScrollView>
         </View>
-
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
-          {renderContent()}
-        </ScrollView>
-      </View>
-
+      </ScrollView>
       {modalVisible && (
         <EditProfileModal
           profile={profile}
@@ -389,6 +399,29 @@ const Profile = () => {
           type={type}
         />
       )}
+
+      <Modalize
+        ref={aboutModalize}
+        adjustToContentHeight={true}
+        HeaderComponent={
+          <View style={homeStyles.modalHeader}>
+            <Text style={homeStyles.headerText}>About</Text>
+          </View>
+        }
+        onClose={() => setSelectedPost(null)}
+      >
+        <View style={{ padding: 10, paddingBottom: 20 }}>
+          <Text
+            style={{
+              padding: 10,
+              borderBottomColor: "#eee",
+              borderBottomWidth: 1,
+            }}
+          >
+            Delete Post
+          </Text>
+        </View>
+      </Modalize>
     </SafeAreaView>
   );
 };

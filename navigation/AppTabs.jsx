@@ -12,6 +12,7 @@ import Profiles from "../common/profiles";
 import Notifications from "../common/notifications";
 import Settings from "../common/settings";
 import Comments from "../common/comments";
+import ProfilePostsDetails from "../common/profilePostsDetails";
 import MyJobs from "../tabs/myJobs";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
@@ -56,6 +57,8 @@ const ProfileStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={Profile} />
       <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="ProfilePostsDetails" component={ProfilePostsDetails} />
+      <Stack.Screen name="Comments" component={Comments} />
     </Stack.Navigator>
   );
 };

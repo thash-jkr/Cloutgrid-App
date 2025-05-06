@@ -4,14 +4,17 @@ import {
   ScrollView,
   Image,
   Dimensions,
-  RefreshControl,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React from "react";
 
 import Config from "../config";
+import { useNavigation } from "@react-navigation/native";
 
-const ProfilePosts = ({ posts, onRefresh, refreshing }) => {
+const ProfilePosts = ({ posts }) => {
   const { height, width } = Dimensions.get("window");
+
+  const navigation = useNavigation();
 
   const renderRow = (rowPosts) => {
     return (
@@ -20,15 +23,21 @@ const ProfilePosts = ({ posts, onRefresh, refreshing }) => {
           flexDirection: "row",
           justifyContent: "flex-start",
           marginVertical: 3,
-          width: width - 10
+          width: width - 10,
         }}
       >
         {rowPosts.map((post) => (
           <View key={post.id} style={{ marginHorizontal: 3 }}>
-            <Image
-              style={{ width: width / 3 - 10, height: width / 3 - 10 }}
-              source={{ uri: `${Config.BASE_URL}${post.image}` }}
-            />
+            <TouchableWithoutFeedback
+              onPress={() =>
+                navigation.navigate("ProfilePostsDetails", { postss: posts })
+              }
+            >
+              <Image
+                style={{ width: width / 3 - 10, height: width / 3 - 10 }}
+                source={{ uri: `${post.image}` }}
+              />
+            </TouchableWithoutFeedback>
           </View>
         ))}
       </View>
@@ -41,11 +50,7 @@ const ProfilePosts = ({ posts, onRefresh, refreshing }) => {
   }
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <ScrollView>
       {posts.length > 0 ? (
         postsInRows.map((rowPosts, index) => (
           <React.Fragment key={index}>{renderRow(rowPosts)}</React.Fragment>

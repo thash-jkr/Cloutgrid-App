@@ -29,6 +29,7 @@ import commonStyles from "../styles/common";
 
 const Home = () => {
   const navigation = useNavigation();
+  
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [comments, setComments] = useState([]);
@@ -224,7 +225,7 @@ const Home = () => {
                       <FontAwesomeIcon icon={faHeart} size={25} />
                     )}
                   </TouchableOpacity>
-                  <Text style={{ fontFamily: "sen-400" }}>
+                  <Text style={{ fontFamily: "" }}>
                     <Text>{post.like_count} Likes </Text>
                     <Text>|</Text>
                     <Text> {post.comment_count} Comments</Text>
@@ -243,7 +244,7 @@ const Home = () => {
                       {post.author.username}
                     </Text>
                     {"  "}
-                    <Text style={{ fontFamily: "sen-400" }}>
+                    <Text style={{ fontFamily: "" }}>
                       {post.caption}
                     </Text>
                   </Text>

@@ -16,7 +16,7 @@ const searchStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     marginBottom: 20,
-    fontFamily: "sen-400"
+    // fontFamily: "sen-400"
   },
   searchResult: {
     padding: 10,
@@ -32,7 +32,7 @@ const searchStyles = StyleSheet.create({
     textAlign: "center",
     color: "#888",
     marginTop: 20,
-    fontFamily: "sen-500"
+    // fontFamily: "sen-500"
   },
   searchImage: {
     width: 50,
@@ -41,7 +41,7 @@ const searchStyles = StyleSheet.create({
   },
   resultText: {
     marginLeft: 10,
-    fontFamily: "sen-500"
+    // fontFamily: "sen-500"
   }
 });
 

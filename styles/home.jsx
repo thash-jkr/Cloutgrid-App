@@ -39,7 +39,7 @@ const homeStyles = StyleSheet.create({
   },
   h1: {
     fontSize: 40,
-    fontFamily: "sen-700",
+    // fontFamily: "sen-700",
   },
   h2: {
     fontSize: 25,
@@ -89,7 +89,7 @@ const homeStyles = StyleSheet.create({
     fontSize: 17,
     marginRight: 10,
     marginLeft: 10,
-    fontFamily: "sen-500",
+    // fontFamily: "sen-500",
   },
   postContainer: {
     marginTop: 10,
@@ -115,7 +115,8 @@ const homeStyles = StyleSheet.create({
     borderTopWidth: 1,
   },
   postAuthor: {
-    fontFamily: "sen-600",
+    // fontFamily: "sen-600",
+    fontWeight: "600"
   },
   postFooter: {
     borderTopColor: "#ddd",
@@ -128,13 +129,14 @@ const homeStyles = StyleSheet.create({
   },
   postFooterText: {
     padding: 10,
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
   postFooterTextBold: {
-    fontFamily: "sen-600",
-    fontSize: 17,
+    // fontFamily: "sen-600",
+    fontSize: 15,
+    fontWeight: "600"
   },
   modalHeader: {
     padding: 15,
@@ -143,7 +145,7 @@ const homeStyles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    fontFamily: "sen-600",
+    // fontFamily: "sen-600",
   },
   modal: {
     padding: 20,
@@ -156,7 +158,7 @@ const homeStyles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   commentAuthor: {
-    fontFamily: "sen-500",
+    // fontFamily: "sen-500",
   },
   commentInputContainer: {
     flexDirection: "row",
@@ -172,7 +174,7 @@ const homeStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     marginRight: 10,
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
   },
 });
 

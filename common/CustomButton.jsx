@@ -43,8 +43,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#ECEEEA",
     fontWeight: "Bold",
-    fontSize: 18,
-    fontFamily: "sen-500",
+    fontSize: 14,
+    // fontFamily: "sen-500",
   },
   buttonPressed: {
     backgroundColor: "#023E8A",

@@ -13,13 +13,13 @@ const profileStyles = StyleSheet.create({
     fontSize: 30,
     marginVertical: 10,
     textAlign: "center",
-    fontFamily: "sen-600",
+    // fontFamily: "sen-600",
   },
   h2: {
     fontSize: 20,
     marginVertical: 10,
     textAlign: "center",
-    fontFamily: "sen-500",
+    // fontFamily: "sen-500",
   },
   profileTop: {
     padding: 10,

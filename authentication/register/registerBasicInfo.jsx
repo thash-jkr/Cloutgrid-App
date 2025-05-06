@@ -76,7 +76,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       <TextInput
         style={authStyles.input}
         placeholder="Enter your name:"
-        placeholderTextColor="#000"
+        placeholderTextColor="#777"
         value={formData.user.name}
         onChangeText={(value) => handleChange("name", value)}
       />
@@ -84,7 +84,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       <TextInput
         style={authStyles.input}
         placeholder="Enter your Email:"
-        placeholderTextColor="#000"
+        placeholderTextColor="#777"
         keyboardType="email-address"
         value={formData.user.email}
         onChangeText={(value) => handleChange("email", value)}
@@ -93,7 +93,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       <TextInput
         style={authStyles.input}
         placeholder="Enter a username:"
-        placeholderTextColor="#000"
+        placeholderTextColor="#777"
         value={formData.user.username}
         onChangeText={(value) => handleChange("username", value)}
       />
@@ -101,7 +101,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       <TextInput
         style={authStyles.input}
         placeholder="Choose a strong Password:"
-        placeholderTextColor="#000"
+        placeholderTextColor="#777"
         secureTextEntry={true}
         value={formData.user.password}
         onChangeText={(value) => handleChange("password", value)}
@@ -110,7 +110,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       <TextInput
         style={authStyles.input}
         placeholder="Enter the password again:"
-        placeholderTextColor="#000"
+        placeholderTextColor="#777"
         secureTextEntry={true}
         value={confirmPassword}
         onChangeText={(value) => handleConfirmPassword(value)}

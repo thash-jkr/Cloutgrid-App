@@ -33,17 +33,17 @@ const authStyles = StyleSheet.create({
   h1: {
     fontSize: 30,
     marginBottom: 20,
-    fontFamily: "sen-600",
+    // fontFamily: "sen-600",
   },
   h2: {
     fontSize: 25,
     marginBottom: 20,
-    fontFamily: "sen-500",
+    // fontFamily: "sen-500",
   },
   h3: {
     fontSize: 15,
     marginBottom: 20,
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
   },
   loginButtons: {
     flexDirection: "row",
@@ -53,7 +53,7 @@ const authStyles = StyleSheet.create({
   title: {
     fontSize: 30,
     marginBottom: 20,
-    fontFamily: "sen-600",
+    // fontFamily: "sen-600",
   },
   input: {
     width: width * 0.9,
@@ -66,7 +66,7 @@ const authStyles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
   },
   buttonInput: {
     width: width * 0.9,
@@ -76,7 +76,7 @@ const authStyles = StyleSheet.create({
     paddingBottom: 10
   },
   inputText: {
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
     color: "#8e8e8e"
   },
   modalOverlay: {
@@ -107,7 +107,7 @@ const authStyles = StyleSheet.create({
   footerText: {
     color: "#000",
     marginRight: 5,
-    fontFamily: "sen-400",
+    // fontFamily: "sen-400",
   },
 });
 
