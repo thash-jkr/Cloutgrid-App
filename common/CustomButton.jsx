@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#ECEEEA",
-    fontWeight: "Bold",
+    fontWeight: "700",
     fontSize: 14,
     // fontFamily: "sen-500",
   },

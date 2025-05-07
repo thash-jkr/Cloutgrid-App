@@ -136,11 +136,11 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
   return (
     <View>
       <Modal transparent={true} animationType="slide">
-        <View style={profileStyles.modalContainer}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={profileStyles.modalContent}
-          >
+        <KeyboardAvoidingView
+          style={profileStyles.modalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={profileStyles.modalContent}>
             <Text style={profileStyles.modalTitle}>Edit Profile</Text>
             <TextInput
               style={authStyles.input}
@@ -218,8 +218,8 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
               <CustomButton title="Close" onPress={onClose} />
               <CustomButton title="Save" onPress={() => onSave(formData)} />
             </View>
-          </KeyboardAvoidingView>
-        </View>
+          </View>
+        </KeyboardAvoidingView>
 
         <Modal visible={showAreaModal} transparent={true} animationType="slide">
           <View style={profileStyles.modalContainer}>

@@ -30,9 +30,10 @@ const commonStyles = StyleSheet.create({
     marginVertical: 10,
   },
   h2: {
-    fontSize: 28,
+    fontSize: 24,
     // fontFamily: "sen-700",
     marginVertical: 8,
+    fontWeight: "600"
   },
   h3: {
     fontSize: 24,

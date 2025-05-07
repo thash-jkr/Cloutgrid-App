@@ -14,6 +14,7 @@ const jobsStyles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     // fontFamily: "sen-600",
+    fontWeight: "700"
   },
   jobs: {
     width: width * 0.95,
@@ -118,9 +119,10 @@ const jobsStyles = StyleSheet.create({
     position: "relative"
   },
   modalTitle: {
-    fontSize: 23,
+    fontSize: 18,
     marginBottom: 15,
     textAlign: "center",
+    fontWeight: "500"
     // fontFamily: "sen-500",
   },
 });

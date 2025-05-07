@@ -18,6 +18,8 @@ import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 import Config from "../config";
+import JobCreate from "../common/jobCreate";
+import PostCreate from "../common/postCreate";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -43,6 +45,18 @@ const SearchStack = () => {
   );
 };
 
+const CreateStack = ({ type }) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="CreateMain">
+        {(props) => <Create {...props} type={type} />}
+      </Stack.Screen>
+      <Stack.Screen name="JobCreate" component={JobCreate} />
+      <Stack.Screen name="PostCreate" component={PostCreate} />
+    </Stack.Navigator>
+  );
+};
+
 const JobStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -57,7 +71,10 @@ const ProfileStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={Profile} />
       <Stack.Screen name="Settings" component={Settings} />
-      <Stack.Screen name="ProfilePostsDetails" component={ProfilePostsDetails} />
+      <Stack.Screen
+        name="ProfilePostsDetails"
+        component={ProfilePostsDetails}
+      />
       <Stack.Screen name="Comments" component={Comments} />
     </Stack.Navigator>
   );
@@ -73,14 +90,11 @@ const AppTabs = () => {
         if (!token) {
           return;
         }
-        const response = await axios.get(
-          `${Config.BASE_URL}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${Config.BASE_URL}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setType(response.data.area ? "creator" : "business");
       } catch (error) {
         console.error("Error checking user type:", error);
@@ -119,12 +133,12 @@ const AppTabs = () => {
         },
         tabBarHideOnKeyboard: true,
         tabBarShowLabel: false,
-        navigationBarColor: "#fff"
+        navigationBarColor: "#fff",
       })}
     >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Search" component={SearchStack} />
-      <Tab.Screen name="Create" children={() => <Create type={type} />} />
+      <Tab.Screen name="Create" children={() => <CreateStack type={type} />} />
       {type === "creator" && <Tab.Screen name="Jobs" component={Jobs} />}
       {type === "business" && <Tab.Screen name="MyJobs" component={JobStack} />}
       <Tab.Screen name="Profile" component={ProfileStack} />

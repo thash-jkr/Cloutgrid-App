@@ -22,13 +22,15 @@ import commonStyles from "../styles/common";
 import jobsStyles from "../styles/jobs";
 import Config from "../config";
 
-const PostCreate = ({ type }) => {
+const PostCreate = ({ route }) => {
   const [query, setQuery] = useState(null);
   const [image, setImage] = useState(null);
   const [collab, setCollab] = useState(null);
   const [results, setResults] = useState([]);
   const [caption, setCaption] = useState("");
   const [filename, setFilename] = useState("no file selected!");
+
+  const { type } = route.params;
 
   const navigation = useNavigation();
   const modalizeRef = useRef(null);
@@ -149,7 +151,7 @@ const PostCreate = ({ type }) => {
           }}
         >
           <CustomButton title={"Select Image"} onPress={handleImageChange} />
-          <Text style={commonStyles.text}>
+          <Text style={[commonStyles.text, { color: "#777" }]}>
             {filename.length > 20
               ? filename.substring(0, 20) + "..."
               : filename}
@@ -196,11 +198,10 @@ const PostCreate = ({ type }) => {
               <Text
                 style={[
                   commonStyles.text,
-                  { maxWidth: 150, textAlign: "right" },
+                  { maxWidth: 150, textAlign: "right", color: "#777" },
                 ]}
               >
-                If you are collabing with a business for this post, you can add
-                them here (optional)
+                no collabs selected!
               </Text>
             )}
           </View>
@@ -214,7 +215,10 @@ const PostCreate = ({ type }) => {
         adjustToContentHeight={true}
         HeaderComponent={
           <View style={jobsStyles.modalHeader}>
-            <Text style={jobsStyles.headerText}>Search for businesses</Text>
+            <Text style={{fontWeight: "600", textAlign: "justify"}}>
+              (optional) Tag a business you’ve collaborated with for this post
+              to give them credit and increase visibility.
+            </Text>
           </View>
         }
         onClose={() => {
