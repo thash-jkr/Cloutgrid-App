@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -19,6 +20,7 @@ import jobsStyles from "../styles/jobs";
 import Config from "../config";
 import AnswerModal from "../modals/answerModal";
 import commonStyles from "../styles/common";
+import CustomButton from "../common/CustomButton";
 
 const MyJobs = () => {
   const [id, setId] = useState(null);
@@ -31,7 +33,7 @@ const MyJobs = () => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const modalizeRef = useRef(null);
 
@@ -118,7 +120,9 @@ const MyJobs = () => {
               />
               <View>
                 <Text style={jobsStyles.h2}>{job.title}</Text>
-                <Text style={{fontFamily: "sen-400"}}>Due: {job.due_date}</Text>
+                <Text style={{ fontFamily: "sen-400" }}>
+                  Due: {job.due_date}
+                </Text>
               </View>
             </TouchableOpacity>
           ))
@@ -129,60 +133,71 @@ const MyJobs = () => {
 
       <Modalize
         ref={modalizeRef}
-        adjustToContentHeight={true}
-        onClose={() => setSelectedJob(null)}
+        snapPoint={600}
+        onClose={() => {
+          setSelectedJob(null);
+          setApplications([]);
+          setId(null);
+        }}
         HeaderComponent={
           <View style={jobsStyles.modalHeader}>
-            <Text style={jobsStyles.headerText}>Job Applicants</Text>
+            <Text style={jobsStyles.headerText}>Applicants</Text>
           </View>
         }
+        modalTopOffset={Platform.OS === "ios" ? 130 : 50}
       >
         {selectedJob ? (
-          <View style={jobsStyles.modal}>
-            <Text style={jobsStyles.h1}>{selectedJob.title}</Text>
-            <TouchableOpacity
-              style={jobsStyles.jobDelete}
-              onPress={() => console.log("Delete Job pressed")}
-            >
-              <FontAwesomeIcon
-                icon={faTrashCan}
-                style={jobsStyles.deleteIcon}
-              />
-            </TouchableOpacity>
-            {applications.length > 0 ? (
-              applications.map((application) => (
-                <TouchableOpacity
-                  key={application.id}
-                  style={jobsStyles.job}
-                  onPress={() => {
-                    if (selectedJob.questions.length > 0) {
-                      setApplicant(application.creator);
-                      setShowAnswer(true);
-                      setQuestions(application.job.questions);
-                      setAnswers(application.answers);
-                    } else {
-                      navigation.navigate("Profiles", {
-                        username: application.creator.user.username
-                      })
-                    }
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: `${Config.BASE_URL}${application.creator.user.profile_photo}`,
+          <ScrollView style={jobsStyles.modal}>
+            <View style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 10,
+              paddingBottom: 10,
+              borderBottomColor: "#ddd",
+              borderBottomWidth: 1
+            }}>
+              <CustomButton title={"Download Data"} disabled={applications.length === 0}/>
+              <CustomButton title={"Delete Job"} />
+            </View>
+            <View style={{
+              width: "100%"
+            }}>
+              {applications.length > 0 ? (
+                applications.map((application) => (
+                  <TouchableOpacity
+                    key={application.id}
+                    style={jobsStyles.job}
+                    onPress={() => {
+                      if (selectedJob.questions.length > 0) {
+                        setApplicant(application.creator);
+                        setShowAnswer(true);
+                        setQuestions(application.job.questions);
+                        setAnswers(application.answers);
+                      } else {
+                        navigation.navigate("Profiles", {
+                          username: application.creator.user.username,
+                        });
+                      }
                     }}
-                    style={jobsStyles.jobImage}
-                  />
-                  <View>
-                    <Text>{application.creator.user.name}</Text>
-                    <Text>{application.creator.area}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))
-            ) : (
-              <Text>No applicants yet.</Text>
-            )}
-          </View>
+                  >
+                    <Image
+                      source={{
+                        uri: `${Config.BASE_URL}${application.creator.user.profile_photo}`,
+                      }}
+                      style={jobsStyles.jobImage}
+                    />
+                    <View>
+                      <Text>{application.creator.user.name}</Text>
+                      <Text>{application.creator.area}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text>No applicants yet.</Text>
+              )}
+            </View>
+          </ScrollView>
         ) : null}
       </Modalize>
 

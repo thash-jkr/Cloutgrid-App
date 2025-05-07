@@ -22,6 +22,7 @@ import commonStyles from "../styles/common";
 import jobsStyles from "../styles/jobs";
 import authStyles from "../styles/auth";
 import Config from "../config";
+import { useNavigation } from "@react-navigation/native";
 
 const JobCreate = () => {
   const [formData, setFormData] = useState({
@@ -40,6 +41,8 @@ const JobCreate = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+
+  const navigation = useNavigation();
 
   const { width } = Dimensions.get("window");
 
@@ -89,6 +92,7 @@ const JobCreate = () => {
           questions: "",
           target_creator: "",
         });
+        navigation.navigate("MyJobs")
       }
     } catch (error) {
       console.error("Error creating job:", error);

@@ -56,8 +56,8 @@ const jobsStyles = StyleSheet.create({
   },
   modal: {
     padding: 20,
-    height: height * 0.7,
-    position: "relative",
+    // height: height * 0.7,
+    // position: "relative",
   },
   jobDetail: {
     flexDirection: "column",

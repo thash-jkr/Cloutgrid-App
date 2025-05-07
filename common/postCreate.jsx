@@ -7,6 +7,8 @@ import {
   ScrollView,
   SafeAreaView,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import React, { useState, useRef } from "react";
@@ -128,7 +130,10 @@ const PostCreate = ({ route }) => {
   };
 
   return (
-    <SafeAreaView style={jobsStyles.container}>
+    <KeyboardAvoidingView
+      style={jobsStyles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <Text style={jobsStyles.h1}>Create a Post</Text>
 
       <View
@@ -212,10 +217,10 @@ const PostCreate = ({ route }) => {
 
       <Modalize
         ref={modalizeRef}
-        adjustToContentHeight={true}
+        snapPoint={600}
         HeaderComponent={
           <View style={jobsStyles.modalHeader}>
-            <Text style={{fontWeight: "600", textAlign: "justify"}}>
+            <Text style={{ fontWeight: "600", textAlign: "justify" }}>
               (optional) Tag a business you’ve collaborated with for this post
               to give them credit and increase visibility.
             </Text>
@@ -225,8 +230,12 @@ const PostCreate = ({ route }) => {
           setQuery("");
           setResults([]);
         }}
+        modalTopOffset={Platform.OS === "ios" ? 130 : 50}
       >
-        <View style={jobsStyles.modal}>
+        <KeyboardAvoidingView
+          style={jobsStyles.modal}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
           <TextInput
             placeholder="Search for businesses..."
             style={jobsStyles.input}
@@ -267,9 +276,9 @@ const PostCreate = ({ route }) => {
               }}
             />
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modalize>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

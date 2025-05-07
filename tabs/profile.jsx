@@ -150,7 +150,7 @@ const Profile = () => {
         setModalVisible(false);
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      Alert.alert("Error updating profile:", "Please try again later!");
     }
   };
 

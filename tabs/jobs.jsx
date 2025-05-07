@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   SafeAreaView,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
@@ -118,15 +119,16 @@ const JobList = () => {
 
       <Modalize
         ref={modalizeRef}
-        adjustToContentHeight={true}
+        snapPoint={600}
         HeaderComponent={
           <View style={jobsStyles.modalHeader}>
             <Text style={jobsStyles.headerText}>Details</Text>
           </View>
         }
+        modalTopOffset={Platform.OS === "ios" ? 130 : 50}
       >
         {selectedJob ? (
-          <View style={jobsStyles.modal}>
+          <ScrollView style={jobsStyles.modal}>
             <Text style={jobsStyles.h1}>{selectedJob.title}</Text>
             <View style={jobsStyles.jobDetail}>
               <Text>
@@ -162,7 +164,7 @@ const JobList = () => {
                 disabled={selectedJob.is_applied}
               />
             </View>
-          </View>
+          </ScrollView>
         ) : (
           <Text>Please select a job to view details.</Text>
         )}
