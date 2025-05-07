@@ -70,7 +70,8 @@ const SignUp = () => {
   return (
     <SafeAreaView style={authStyles.container}>
       <Text style={authStyles.h1}>
-        Join <Text style={{ color: "#03045E", fontFamily: "sen-600" }}>CLOUT</Text>
+        Join{" "}
+        <Text style={{ color: "#03045E", fontFamily: "sen-600" }}>CLOUT</Text>
         <Text style={homeStyles.logoSide}>Grid</Text>
       </Text>
       <TouchableOpacity

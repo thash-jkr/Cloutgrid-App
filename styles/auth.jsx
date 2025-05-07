@@ -34,11 +34,14 @@ const authStyles = StyleSheet.create({
     fontSize: 30,
     marginBottom: 20,
     // fontFamily: "sen-600",
+    fontWeight: "700"
   },
   h2: {
     fontSize: 25,
     marginBottom: 20,
     // fontFamily: "sen-500",
+    color: "#000",
+    fontWeight: "700"
   },
   h3: {
     fontSize: 15,

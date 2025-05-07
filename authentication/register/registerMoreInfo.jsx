@@ -20,6 +20,7 @@ import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
 import commonStyles from "../../styles/common";
+import jobsStyles from "../../styles/jobs";
 
 const { height, width } = Dimensions.get("window");
 
@@ -130,7 +131,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
   };
 
   const AREA_OPTIONS = [
-    { value: "", label: "Select Area" },
+    { value: "", label: "Select One" },
     { value: "art", label: "Art and Photography" },
     { value: "automotive", label: "Automotive" },
     { value: "beauty", label: "Beauty and Makeup" },
@@ -256,7 +257,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
         </Text>
       </View>
 
-      <Modal visible={showDateModal} transparent={true} animationType="slide">
+      <Modal visible={showDateModal} transparent={true} animationType="fade">
         <View style={authStyles.modalOverlay}>
           <View style={authStyles.modalContainer}>
             <DateTimePicker
@@ -273,7 +274,41 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
         </View>
       </Modal>
 
-      <Modal visible={showAreaModal} transparent={true} animationType="slide">
+      <Modal visible={showAreaModal} transparent={true} animationType="fade">
+        <View style={jobsStyles.modalContainer}>
+          <View style={jobsStyles.modalContent}>
+            <Text style={jobsStyles.modalTitle}>
+              {type === "creator"
+                ? "Select your area of expertise"
+                : "Select your business category"}
+            </Text>
+            <Picker
+              selectedValue={formData.target_creator}
+              style={jobsStyles.picker}
+              onValueChange={(value) => {
+                type === "creator"
+                  ? handleChange("area", value)
+                  : handleChange("target_audience", value);
+                setShowAreaModal(false);
+              }}
+            >
+              {AREA_OPTIONS.map((option) => (
+                <Picker.Item
+                  key={option.value}
+                  label={option.label}
+                  value={option.value}
+                />
+              ))}
+            </Picker>
+            <CustomButton
+              title="Close"
+              onPress={() => setShowAreaModal(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* <Modal visible={showAreaModal} transparent={true} animationType="fade">
         <View style={authStyles.modalOverlay}>
           <View style={authStyles.modalContainer}>
             <View
@@ -319,7 +354,7 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
             />
           </View>
         </View>
-      </Modal>
+      </Modal> */}
 
       <CustomButton title="Register" onPress={handleSubmit} />
     </View>

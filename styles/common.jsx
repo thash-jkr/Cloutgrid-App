@@ -16,7 +16,7 @@ const commonStyles = StyleSheet.create({
   center: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center", 
   },
   closeIcon: {
     position: "absolute",
