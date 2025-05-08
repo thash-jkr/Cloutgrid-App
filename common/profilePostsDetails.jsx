@@ -25,7 +25,7 @@ import Config from "../config";
 import { Modalize } from "react-native-modalize";
 
 const ProfilePostsDetails = ({ route }) => {
-  const [selectedPost, setSelectedPost] = useState(null)
+  const [selectedPost, setSelectedPost] = useState(null);
 
   const navigation = useNavigation();
   const { postss } = route.params;
@@ -95,7 +95,7 @@ const ProfilePostsDetails = ({ route }) => {
           padding: 10,
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("ProfileMain")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
           <FontAwesomeIcon icon={faArrowLeft} size={20} />
         </TouchableOpacity>
         <Text style={{ marginLeft: 20, fontSize: 20 }}>Posts</Text>
@@ -104,12 +104,7 @@ const ProfilePostsDetails = ({ route }) => {
         {posts.map((post) => (
           <View key={post.id} style={homeStyles.post}>
             <View style={homeStyles.postHeader}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("ProfileMain");
-                }}
-                style={commonStyles.center}
-              >
+              <TouchableOpacity onPress={() => {}} style={commonStyles.center}>
                 <Image
                   style={homeStyles.profilePicture}
                   source={{
@@ -119,17 +114,7 @@ const ProfilePostsDetails = ({ route }) => {
                 <Text style={homeStyles.postAuthor}>{post.author.name}</Text>
               </TouchableOpacity>
               {post.collaboration && (
-                <TouchableOpacity
-                  onPress={() => {
-                    if (post.collaboration.user.username === user.username) {
-                      navigation.navigate("Profile");
-                      return;
-                    }
-                    navigation.navigate("Profiles", {
-                      username: post.collaboration.user.username,
-                    });
-                  }}
-                >
+                <TouchableOpacity onPress={() => {    }}>
                   <Text>
                     {" "}
                     with{" "}

@@ -45,6 +45,7 @@ const ResetPassword = () => {
           <TextInput
             style={authStyles.input}
             placeholder="Email"
+            placeholderTextColor={"#888"}
             onChangeText={setEmail}
             value={email}
           />

@@ -51,6 +51,7 @@ const LoginCreator = () => {
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
+        placeholderTextColor={"#888"}
         keyboardType="email-address"
         autoCapitalize="none"
       />
@@ -59,7 +60,8 @@ const LoginCreator = () => {
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
-        secureTextEntry
+        placeholderTextColor={"#888"}
+        secureTextEntry={true}
       />
       <CustomButton title="Login" onPress={handleSubmit} />
     </View>

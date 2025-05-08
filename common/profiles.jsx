@@ -6,6 +6,7 @@ import {
   StatusBar,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import {
@@ -30,32 +31,33 @@ const Profiles = ({ route }) => {
   const { username } = route.params;
 
   const [posts, setPosts] = useState([]);
+  const [collabs, setCollabs] = useState([]);
   const [profile, setProfile] = useState(null);
-  const [loggedInUser, setLoggedInUser] = useState(null);
+  // const [loggedInUser, setLoggedInUser] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
   const [type, setType] = useState("");
 
-  useEffect(() => {
-    const fetchLoggedInUser = async () => {
-      try {
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(`${Config.BASE_URL}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (response.status == 200) {
-          setLoggedInUser(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchLoggedInUser = async () => {
+  //     try {
+  //       const accessToken = await SecureStore.getItemAsync("access");
+  //       const response = await axios.get(`${Config.BASE_URL}`, {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       });
+  //       if (response.status == 200) {
+  //         setLoggedInUser(response.data);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching user:", error);
+  //     }
+  //   };
 
-    fetchLoggedInUser();
-  }, []);
+  //   fetchLoggedInUser();
+  // }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -92,33 +94,57 @@ const Profiles = ({ route }) => {
     };
 
     fetchProfile();
-  }, [username, loggedInUser, isFollowing]);
+  }, [username, isFollowing]);
+
+  const fetchPosts = async () => {
+    try {
+      if (!profile) {
+        return;
+      }
+      const accessToken = await SecureStore.getItemAsync("access");
+      const response = await axios.get(
+        `${Config.BASE_URL}/posts/${username}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.data) {
+        setPosts(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  const fetchCollabs = async () => {
+    try {
+      if (!profile) {
+        return;
+      }
+      const access = await SecureStore.getItemAsync("access");
+      const response = await axios.get(
+        `${Config.BASE_URL}/posts/collabs/${username}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${access}`,
+          },
+        }
+      );
+      if (response.data) {
+        setCollabs(response.data);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Error fetching collabs");
+    }
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        if (!profile) {
-          return;
-        }
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(
-          `${Config.BASE_URL}/posts/${username}/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        if (response.data) {
-          setPosts(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
-
     fetchPosts();
+    type === "business" && fetchCollabs();
   }, [profile]);
 
   const handleFollow = async () => {
@@ -164,15 +190,6 @@ const Profiles = ({ route }) => {
             </Text>
           </View>
         );
-      case "tiktok":
-        return (
-          <View style={{ alignItems: "center" }}>
-            <FontAwesomeIcon icon={faTriangleExclamation} size={50} />
-            <Text style={profileStyles.h2}>
-              {profile.user.name} hasn't connected their Tiktok yet!
-            </Text>
-          </View>
-        );
       case "youtube":
         return (
           <View style={{ alignItems: "center" }}>
@@ -182,6 +199,8 @@ const Profiles = ({ route }) => {
             </Text>
           </View>
         );
+      case "collabs":
+        return <ProfilePosts posts={collabs} />;
       default:
         return <Text>Instagram Info</Text>;
     }
@@ -279,6 +298,7 @@ const Profiles = ({ route }) => {
           onPress={isFollowing ? handleUnfollow : handleFollow}
         />
       </View>
+
       <View style={profileStyles.profileBottom}>
         <View style={profileStyles.tabsContainer}>
           <TouchableOpacity
@@ -290,33 +310,49 @@ const Profiles = ({ route }) => {
           >
             <Text style={profileStyles.tabText}>Posts</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              profileStyles.tabButton,
-              activeTab === "instagram" && profileStyles.activeTab,
-            ]}
-            onPress={() => setActiveTab("instagram")}
-          >
-            <FontAwesomeIcon icon={faInstagram} size={20} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              profileStyles.tabButton,
-              activeTab === "tiktok" && profileStyles.activeTab,
-            ]}
-            onPress={() => setActiveTab("tiktok")}
-          >
-            <FontAwesomeIcon icon={faTiktok} size={20} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              profileStyles.tabButton,
-              activeTab === "youtube" && profileStyles.activeTab,
-            ]}
-            onPress={() => setActiveTab("youtube")}
-          >
-            <FontAwesomeIcon icon={faYoutube} size={20} />
-          </TouchableOpacity>
+
+          {type === "creator" && (
+            <TouchableOpacity
+              style={[
+                profileStyles.tabButton,
+                activeTab === "instagram" && profileStyles.activeTab,
+              ]}
+              onPress={() => setActiveTab("instagram")}
+            >
+              <FontAwesomeIcon icon={faInstagram} size={20} />
+            </TouchableOpacity>
+          )}
+
+          {type === "creator" && (
+            <TouchableOpacity
+              style={[
+                profileStyles.tabButton,
+                activeTab === "youtube" && profileStyles.activeTab,
+              ]}
+              onPress={() => setActiveTab("youtube")}
+            >
+              <FontAwesomeIcon icon={faYoutube} size={20} />
+            </TouchableOpacity>
+          )}
+
+          {type === "business" && (
+            <TouchableOpacity
+              style={[
+                profileStyles.tabButton,
+                activeTab === "collabs" && profileStyles.activeTab,
+              ]}
+              onPress={() => setActiveTab("collabs")}
+            >
+              <Text
+                style={{
+                  fontFamily: "sen-600",
+                  fontSize: 15,
+                }}
+              >
+                Collabs
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <ScrollView>{renderContent()}</ScrollView>

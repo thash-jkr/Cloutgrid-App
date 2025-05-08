@@ -328,6 +328,7 @@ const Profile = () => {
                 Posts
               </Text>
             </TouchableOpacity>
+
             {type === "creator" && (
               <TouchableOpacity
                 style={[
@@ -339,17 +340,7 @@ const Profile = () => {
                 <FontAwesomeIcon icon={faInstagram} size={20} />
               </TouchableOpacity>
             )}
-            {/* {type === "creator" && (
-            <TouchableOpacity
-              style={[
-                profileStyles.tabButton,
-                activeTab === "tiktok" && profileStyles.activeTab,
-              ]}
-              onPress={() => setActiveTab("tiktok")}
-            >
-              <FontAwesomeIcon icon={faTiktok} size={20} />
-            </TouchableOpacity>
-          )} */}
+
             {type === "creator" && (
               <TouchableOpacity
                 style={[
@@ -361,6 +352,7 @@ const Profile = () => {
                 <FontAwesomeIcon icon={faYoutube} size={20} />
               </TouchableOpacity>
             )}
+
             {type === "business" && (
               <TouchableOpacity
                 style={[
@@ -391,6 +383,7 @@ const Profile = () => {
           </ScrollView>
         </View>
       </ScrollView>
+      
       {modalVisible && (
         <EditProfileModal
           profile={profile}

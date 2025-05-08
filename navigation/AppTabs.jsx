@@ -32,6 +32,10 @@ const HomeStack = () => {
       <Stack.Screen name="Notifications" component={Notifications} />
       <Stack.Screen name="Profiles" component={Profiles} />
       <Stack.Screen name="Comments" component={Comments} />
+      <Stack.Screen
+        name="ProfilePostsDetails"
+        component={ProfilePostsDetails}
+      />
     </Stack.Navigator>
   );
 };
