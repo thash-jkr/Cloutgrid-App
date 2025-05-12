@@ -148,7 +148,7 @@ const MyJobs = () => {
       >
         {selectedJob ? (
           <ScrollView style={jobsStyles.modal}>
-            <View style={{
+            {/* <View style={{
               flexDirection: "row",
               justifyContent: "center",
               alignItems: "center",
@@ -159,7 +159,7 @@ const MyJobs = () => {
             }}>
               <CustomButton title={"Download Data"} disabled={applications.length === 0}/>
               <CustomButton title={"Delete Job"} />
-            </View>
+            </View> */}
             <View style={{
               width: "100%"
             }}>

@@ -95,10 +95,10 @@ const ProfilePostsDetails = ({ route }) => {
           padding: 10,
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Profile", {screen: "ProfileMain"})}>
           <FontAwesomeIcon icon={faArrowLeft} size={20} />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 20, fontSize: 20 }}>Posts</Text>
+        <Text style={{ marginLeft: 20, fontSize: 18, fontWeight: "700" }}>Posts</Text>
       </View>
       <ScrollView>
         {posts.map((post) => (
@@ -124,12 +124,12 @@ const ProfilePostsDetails = ({ route }) => {
                   </Text>
                 </TouchableOpacity>
               )}
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={{ position: "absolute", right: 10 }}
                 onPress={() => openAbout(post)}
               >
                 <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <TouchableWithoutFeedback onPress={() => handleTap(post)}>
               <Image

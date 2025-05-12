@@ -18,6 +18,10 @@ const commonStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center", 
   },
+  centerVertical: {
+    justifyContent: "center",
+    alignItems: "center", 
+  },
   closeIcon: {
     position: "absolute",
     right: 10,

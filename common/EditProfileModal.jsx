@@ -135,7 +135,7 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
 
   return (
     <View>
-      <Modal transparent={true} animationType="slide">
+      <Modal transparent={true} animationType="fade">
         <KeyboardAvoidingView
           style={profileStyles.modalContainer}
           behavior={Platform.OS === "ios" ? "padding" : "height"}

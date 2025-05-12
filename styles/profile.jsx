@@ -10,10 +10,11 @@ const profileStyles = StyleSheet.create({
     flex: 1,
   },
   h1: {
-    fontSize: 30,
+    fontSize: 24,
     marginVertical: 10,
     textAlign: "center",
     // fontFamily: "sen-600",
+    fontWeight: "600"
   },
   h2: {
     fontSize: 20,

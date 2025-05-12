@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  Modal,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
@@ -17,7 +18,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import Hyperlink from "react-native-hyperlink";
-import { Modalize } from "react-native-modalize";
 
 import profileStyles from "../styles/profile";
 import CustomButton from "../common/CustomButton";
@@ -25,7 +25,7 @@ import EditProfileModal from "../common/EditProfileModal";
 import ProfilePosts from "../common/profilePosts";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
-import homeStyles from "../styles/home";
+import commonStyles from "../styles/common";
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -35,9 +35,8 @@ const Profile = () => {
   const [collabs, setCollabs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [type, setType] = useState("");
-  const [selectedPost, setSelectedPost] = useState(null);
-
-  const aboutModalize = useRef(null);
+  const [inModal, setInModal] = useState(false);
+  const [ytModal, setYtModal] = useState(false);
 
   const navigation = useNavigation();
 
@@ -165,27 +164,63 @@ const Profile = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "posts":
-        return (
-          <ProfilePosts
-            posts={posts}
-          />
-        );
+        return <ProfilePosts posts={posts} />;
       case "instagram":
         return (
-          <View>
-            <CustomButton title="Connect Instagram" />
-          </View>
-        );
-      case "tiktok":
-        return (
-          <View>
-            <CustomButton title="Connect Tiktok" />
+          <View style={commonStyles.centerVertical}>
+            <View style={{ padding: 10 }}>
+              <Text style={commonStyles.h1}>📸 Connect Instagram</Text>
+              <Text
+                style={{
+                  fontWeight: "600",
+                  paddingBottom: 5,
+                }}
+              >
+                Showcase your influence with real-time Instagram insights.
+              </Text>
+              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+                By connecting your Instagram account, you can let businesses see
+                your follower count, engagement rate, and reach — all from your
+                profile. This boosts your credibility and increases your chances
+                of landing meaningful collaborations. Your numbers speak for you
+                — let them shine.
+              </Text>
+            </View>
+            <View>
+              <CustomButton
+                title="Connect Instagram"
+                onPress={() => setInModal(true)}
+              />
+            </View>
           </View>
         );
       case "youtube":
         return (
-          <View>
-            <CustomButton title="Connect YouTube" />
+          <View style={commonStyles.centerVertical}>
+            <View style={{ padding: 10 }}>
+              <Text style={commonStyles.h1}>📺 Connect YouTube</Text>
+              <Text
+                style={{
+                  fontWeight: "600",
+                  paddingBottom: 5,
+                }}
+              >
+                Highlight your reach and impact with YouTube analytics.
+              </Text>
+              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+                When you link your YouTube channel, CloutGrid displays key
+                metrics like subscriber count, views, and watch time directly on
+                your profile. This helps brands see the real value of your
+                content and makes your profile stand out in the creator
+                community.
+              </Text>
+            </View>
+            <View>
+              <CustomButton
+                title="Connect Youtube"
+                onPress={() => setYtModal(true)}
+              />
+            </View>
           </View>
         );
       case "collabs":
@@ -199,11 +234,6 @@ const Profile = () => {
       default:
         return <Text>Instagram Info</Text>;
     }
-  };
-
-  const openAbout = (post) => {
-    setSelectedPost(post);
-    aboutModalize.current?.open();
   };
 
   if (!profile) {
@@ -373,17 +403,10 @@ const Profile = () => {
             )}
           </View>
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
-            {renderContent()}
-          </ScrollView>
+          <View>{renderContent()}</View>
         </View>
       </ScrollView>
-      
+
       {modalVisible && (
         <EditProfileModal
           profile={profile}
@@ -393,28 +416,63 @@ const Profile = () => {
         />
       )}
 
-      <Modalize
-        ref={aboutModalize}
-        adjustToContentHeight={true}
-        HeaderComponent={
-          <View style={homeStyles.modalHeader}>
-            <Text style={homeStyles.headerText}>About</Text>
+      <Modal visible={inModal} animationType="fade" transparent={true}>
+        <View style={profileStyles.modalContainer}>
+          <View style={profileStyles.modalContent}>
+            <View style={{ padding: 10 }}>
+              <Text
+                style={{
+                  fontWeight: "600",
+                  paddingBottom: 5,
+                }}
+              >
+                Instagram insights integration is almost ready
+              </Text>
+              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+                We’re finalizing a secure way to display your Instagram
+                performance on your profile. This feature is currently in
+                development to ensure the best experience. Thank you for your
+                patience as we prepare to unlock even more opportunities for you
+              </Text>
+            </View>
+            <View>
+              <CustomButton
+                title="Alright!"
+                onPress={() => setInModal(false)}
+              />
+            </View>
           </View>
-        }
-        onClose={() => setSelectedPost(null)}
-      >
-        <View style={{ padding: 10, paddingBottom: 20 }}>
-          <Text
-            style={{
-              padding: 10,
-              borderBottomColor: "#eee",
-              borderBottomWidth: 1,
-            }}
-          >
-            Delete Post
-          </Text>
         </View>
-      </Modalize>
+      </Modal>
+
+      <Modal visible={ytModal} animationType="fade" transparent={true}>
+        <View style={profileStyles.modalContainer}>
+          <View style={profileStyles.modalContent}>
+            <View style={{ padding: 10 }}>
+              <Text
+                style={{
+                  fontWeight: "600",
+                  paddingBottom: 5,
+                }}
+              >
+                YouTube analytics integration is on its way
+              </Text>
+              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+                We’re working on making your YouTube performance visible on your
+                CloutGrid profile — securely and seamlessly. This feature is
+                being carefully built and tested to support better
+                collaborations. We appreciate your understanding
+              </Text>
+            </View>
+            <View>
+              <CustomButton
+                title="Alright!"
+                onPress={() => setYtModal(false)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

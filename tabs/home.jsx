@@ -7,6 +7,10 @@ import {
   RefreshControl,
   SafeAreaView,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  Modal,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -26,16 +30,21 @@ import homeStyles from "../styles/home";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
 import commonStyles from "../styles/common";
+import profileStyles from "../styles/profile";
+import authStyles from "../styles/auth";
+import CustomButton from "../common/CustomButton";
+import { TextInput } from "react-native-gesture-handler";
 
 const Home = () => {
   const navigation = useNavigation();
-  
+
   const [posts, setPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [comments, setComments] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [newComment, setNewComment] = useState("");
+  const [report, setReport] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [reportModal, setReportModal] = useState(false)
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
@@ -244,9 +253,7 @@ const Home = () => {
                       {post.author.username}
                     </Text>
                     {"  "}
-                    <Text style={{ fontFamily: "" }}>
-                      {post.caption}
-                    </Text>
+                    <Text style={{ fontFamily: "" }}>{post.caption}</Text>
                   </Text>
                 </View>
               </View>
@@ -269,26 +276,59 @@ const Home = () => {
         onClose={() => setSelectedPost(null)}
       >
         <View style={{ padding: 10, paddingBottom: 20 }}>
-          <Text
-            style={{
-              padding: 10,
-              borderBottomColor: "#eee",
-              borderBottomWidth: 1,
-            }}
-          >
-            Report Post
-          </Text>
-          <Text
-            style={{
-              padding: 10,
-              borderBottomColor: "#eee",
-              borderBottomWidth: 1,
-            }}
-          >
-            Follow @{selectedPost ? selectedPost.author.username : ""}
-          </Text>
+          <TouchableOpacity onPress={() => setReportModal(true)}>
+            <Text
+              style={{
+                padding: 10,
+                borderBottomColor: "#eee",
+                borderBottomWidth: 1,
+              }}
+            >
+              Report Post
+            </Text>
+          </TouchableOpacity>
         </View>
       </Modalize>
+
+      <Modal visible={reportModal} transparent={true} animationType="fade">
+        <KeyboardAvoidingView
+          style={profileStyles.modalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={profileStyles.modalContent}>
+            <Text style={profileStyles.modalTitle}>Report Post?</Text>
+            <TextInput
+              style={[authStyles.input, { height: 200 }]}
+              placeholder={
+                "If you have any issue regarding this particular post, please report to us via this form"
+              }
+              placeholderTextColor={"#999"}
+              textAlign="justify"
+              value={report}
+              onChangeText={(value) => setReport(value)}
+              multiline
+            />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={"Close"}
+                onPress={() => setReportModal(false)}
+              />
+              <CustomButton
+                title={"Submit"}
+                disabled={report.length < 1}
+                onPress={() => {
+                  setReport("");
+                  setReportModal(false);
+                  Alert.alert(
+                    "Request Received",
+                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };
