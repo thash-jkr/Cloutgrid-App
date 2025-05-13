@@ -10,7 +10,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import * as Updates from "expo-updates";
 import axios from "axios";
@@ -31,6 +31,8 @@ import authStyles from "../styles/auth";
 import profileStyles from "../styles/profile";
 import CustomButton from "./CustomButton";
 import commonStyles from "../styles/common";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutThunk } from "../authentication/authSlice";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -41,33 +43,13 @@ const Settings = () => {
   const [help, setHelp] = useState("");
   const [feedback, setFeedback] = useState("");
 
+  const dispatch = useDispatch();
+
   const handleLogout = async () => {
-    try {
-      const refresh = await SecureStore.getItemAsync("refresh");
-      const access = await SecureStore.getItemAsync("access");
-      if (!refresh) {
-        console.log("No refresh token found");
-        return;
-      }
-
-      await axios.post(
-        `${Config.BASE_URL}/logout/`,
-        { refresh },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access}`,
-          },
-        }
-      );
-
-      await SecureStore.deleteItemAsync("access");
-      await SecureStore.deleteItemAsync("refresh");
-      axios.defaults.headers.common["Authorization"] = null;
-      await Updates.reloadAsync();
-    } catch (error) {
-      alert("Logout failed. Please try again.");
-    }
+    dispatch(logoutThunk())
+      .unwrap()
+      .then(() => console.log("Logging out"))
+      .catch((error) => Alert.alert("Error", "Logout Failed - " + error))
   };
 
   return (
@@ -245,7 +227,8 @@ const Settings = () => {
               <Text style={{ marginBottom: 16 }}>
                 Application refers to Cloutgrid, the software application
                 provided by CLOUTIVITY PRIVATE LIMITED.{"\n"}
-                Company refers to CLOUTIVITY PRIVATE LIMITED, Kerala, India.{"\n"}
+                Company refers to CLOUTIVITY PRIVATE LIMITED, Kerala, India.
+                {"\n"}
                 Personal Data means information relating to an identified or
                 identifiable individual.{"\n"}
                 Service refers to the Application.{"\n"}

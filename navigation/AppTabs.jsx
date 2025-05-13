@@ -20,6 +20,7 @@ import * as SecureStore from "expo-secure-store";
 import Config from "../config";
 import JobCreate from "../common/jobCreate";
 import PostCreate from "../common/postCreate";
+import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -85,28 +86,7 @@ const ProfileStack = () => {
 };
 
 const AppTabs = () => {
-  const [type, setType] = useState("");
-
-  useEffect(() => {
-    const checkUserType = async () => {
-      try {
-        const token = await SecureStore.getItemAsync("access");
-        if (!token) {
-          return;
-        }
-        const response = await axios.get(`${Config.BASE_URL}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setType(response.data.area ? "creator" : "business");
-      } catch (error) {
-        console.error("Error checking user type:", error);
-      }
-    };
-
-    checkUserType();
-  }, []);
+  const type = useSelector((state) => state.auth.type);
 
   return (
     <Tab.Navigator

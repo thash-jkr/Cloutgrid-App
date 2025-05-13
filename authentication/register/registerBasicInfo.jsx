@@ -54,7 +54,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
         nextStep();
       }
     } catch (error) {
-      console.log(response);
+      Alert.alert("Error", error)
     } finally {
       setIsLoading(false);
     }

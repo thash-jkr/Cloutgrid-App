@@ -3,16 +3,21 @@ import { View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
+import { useFonts } from "expo-font";
+import { Provider, useSelector } from "react-redux";
+import { store } from "./store";
+import axios from "axios";
+
 import AuthStack from "./navigation/AuthStack";
 import AppTabs from "./navigation/AppTabs";
 import "./interceptor/axios";
-import { useFonts } from "expo-font";
+import { setCredentiels } from "./authentication/authSlice";
 
 export default function App() {
   Text.defaultProps = Text.defaultProps || {};
   Text.defaultProps.allowFontScaling = false;
-  
-  const [auth, setAuth] = useState(false);
+
+  const [rehydrated, setRehydrated] = useState(false);
   const [fontsLoaded] = useFonts({
     "sen-400": require("./assets/Fonts/sen/Sen-Regular.ttf"),
     "sen-500": require("./assets/Fonts/sen/Sen-Medium.ttf"),
@@ -22,27 +27,49 @@ export default function App() {
   });
 
   useEffect(() => {
-    const checkAuth = async () => {
+    (async () => {
       try {
-        const token = await SecureStore.getItemAsync("access");
-        setAuth(!!token);
+        const [access, refresh, type, user] = await Promise.all([
+          SecureStore.getItemAsync("access"),
+          SecureStore.getItemAsync("refresh"),
+          SecureStore.getItemAsync("type"),
+          SecureStore.getItemAsync("user"),
+        ]);
+
+        if (access && refresh && type && user) {
+          const userObj = JSON.parse(user);
+          axios.defaults.headers.common.Authorization = `Bearer ${access}`;
+          store.dispatch(
+            setCredentiels({ userObj, token: access, refresh, type })
+          );
+        }
       } catch (error) {
         console.error("Error checking auth:", error);
+      } finally {
+        setRehydrated(true);
       }
-    };
-
-    checkAuth();
+    })();
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !rehydrated) {
     return <View />;
   } else {
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <NavigationContainer>
-          {auth ? <AppTabs /> : <AuthStack />}
-        </NavigationContainer>
-      </GestureHandlerRootView>
+      <Provider store={store}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <InnerApp />
+        </GestureHandlerRootView>
+      </Provider>
     );
   }
 }
+
+const InnerApp = () => {
+  const token = useSelector((state) => state.auth.token);
+
+  return (
+    <NavigationContainer>
+      {token ? <AppTabs /> : <AuthStack />}
+    </NavigationContainer>
+  );
+};

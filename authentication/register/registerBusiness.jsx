@@ -47,7 +47,7 @@ const RegisterBusiness = () => {
         />
       );
     case 2:
-      return <OtpVerification nextStep={nextStep} prevStep={prevStep} />;
+      return <OtpVerification nextStep={nextStep} formData={formData} prevStep={prevStep} />;
     case 3:
       return (
         <AdditionalInfo
