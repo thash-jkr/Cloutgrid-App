@@ -23,6 +23,7 @@ import {
   faComments,
   faArrowRightFromBracket,
   faLock,
+  faWarning,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Config from "../config";
@@ -32,7 +33,7 @@ import profileStyles from "../styles/profile";
 import CustomButton from "./CustomButton";
 import commonStyles from "../styles/common";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutThunk } from "../authentication/authSlice";
+import { logoutLocal, logoutThunk } from "../authentication/authSlice";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -44,12 +45,53 @@ const Settings = () => {
   const [feedback, setFeedback] = useState("");
 
   const dispatch = useDispatch();
+  const { token, type } = useSelector((state) => state.auth);
 
   const handleLogout = async () => {
     dispatch(logoutThunk())
       .unwrap()
       .then(() => console.log("Logging out"))
-      .catch((error) => Alert.alert("Error", "Logout Failed - " + error))
+      .catch((error) => Alert.alert("Error", "Logout Failed - " + error));
+  };
+
+  const handleDelete = async () => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete your account? This action cannot be undone",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const response = await axios.delete(
+                `${Config.BASE_URL}/delete/${type}/`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (response.status === 200) {
+                await SecureStore.deleteItemAsync("access");
+                await SecureStore.deleteItemAsync("refresh");
+                await SecureStore.deleteItemAsync("type");
+                await SecureStore.deleteItemAsync("user");
+                dispatch(logoutLocal());
+              }
+            } catch (error) {
+              dispatch(logoutLocal);
+              console.error("Logout Error", error);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -107,6 +149,12 @@ const Settings = () => {
             Change Password
           </Text>
         </TouchableOpacity> */}
+        <TouchableOpacity style={jobsStyles.job} onPress={handleDelete}>
+          <FontAwesomeIcon icon={faWarning} size={25} />
+          <Text style={{ fontSize: 20, padding: 5, fontFamily: "sen-500" }}>
+            Delete Account
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity style={jobsStyles.job} onPress={handleLogout}>
           <FontAwesomeIcon icon={faArrowRightFromBracket} size={25} />
           <Text style={{ fontSize: 20, padding: 5, fontFamily: "sen-500" }}>

@@ -40,6 +40,17 @@ const OtpVerification = ({ nextStep, formData, prevStep }) => {
     }
   };
 
+  const handleNoOTP = async () => {
+    try {
+      setIsLoading(true)
+      nextStep()
+    } catch (error) {
+      Alert.alert("Error", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <View style={authStyles.container}>
       <Loader visible={isLoading}/>
