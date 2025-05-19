@@ -7,53 +7,24 @@ import {
   Switch,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 
 import homeStyles from "../styles/home";
-import Config from "../config";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotifications, markAsRead } from "../slices/notificationSlice";
 
 const Notifications = () => {
   const [showAll, setShowAll] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const { items, status, error } = useSelector((state) => state.notif);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      const accessToken = await SecureStore.getItemAsync("access");
-      try {
-        const response = await axios.get(
-          `${Config.BASE_URL}/notifications/?all=${showAll}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setNotifications(response.data);
-      } catch (error) {
-        console.error("Error fetching notifications:", error);
-      }
-    };
+    dispatch(fetchNotifications(showAll));
+  }, [dispatch, showAll]);
 
-    fetchNotifications();
-  }, [showAll]);
-
-  const handleClose = async (id) => {
-    const accessToken = await SecureStore.getItemAsync("access");
-    try {
-      await axios.post(
-        `${Config.BASE_URL}/notifications/${id}/mark_as_read/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      setNotifications(notifications.filter((n) => n.id !== id));
-    } catch (error) {
-      console.error("Error closing notification:", error);
-    }
+  const handleClose = (id) => {
+    dispatch(markAsRead(id));
   };
 
   return (
@@ -78,7 +49,7 @@ const Notifications = () => {
           width: "100%",
         }}
       >
-        {notifications.length > 0 ? (
+        {items.length > 0 ? (
           <View
             style={{
               width: "100%",
@@ -86,13 +57,16 @@ const Notifications = () => {
               alignItems: "center",
             }}
           >
-            {notifications.map((notification) => (
+            {items.map((notification) => (
               <TouchableOpacity
                 key={notification.id}
                 style={homeStyles.bar}
+                disabled={showAll}
                 onPress={() => handleClose(notification.id)}
               >
-                <Text style={{fontFamily: "sen-400"}}>{notification.message}</Text>
+                <Text style={{ fontFamily: "sen-400" }}>
+                  {notification.message}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>

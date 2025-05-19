@@ -34,58 +34,28 @@ import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
 import CustomButton from "../common/CustomButton";
 import { TextInput } from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFeed, likePost } from "../slices/feedSlice";
 
 const Home = () => {
-  const navigation = useNavigation();
-
-  const [posts, setPosts] = useState([]);
-  const [user, setUser] = useState(null);
-  const [comments, setComments] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [report, setReport] = useState("");
   const [refreshing, setRefreshing] = useState(false);
-  const [reportModal, setReportModal] = useState(false)
+  const [reportModal, setReportModal] = useState(false);
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
 
-  const fetchPosts = async () => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.get(`${Config.BASE_URL}/posts/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (response.data) {
-        setPosts(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(`${Config.BASE_URL}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (response.status == 200) {
-          setUser(response.data.user);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
+    dispatch(fetchFeed());
+  }, [dispatch]);
 
-    fetchUser();
-    fetchPosts();
-  }, []);
+  const user = useSelector((state) => state.auth.user);
+  const { posts, status, error } = useSelector((state) => state.feed);
+  const count = useSelector((state) => state.notif.count);
 
   const handleTap = (post) => {
     const now = new Date().getTime();
@@ -98,35 +68,8 @@ const Home = () => {
     lastTapRef.current = now;
   };
 
-  const handleLike = async (postId) => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.post(
-        `${Config.BASE_URL}/posts/${postId}/like/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      const updatedPosts = posts.map((post) => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            like_count:
-              response.data.message === "Post liked"
-                ? post.like_count + 1
-                : post.like_count - 1,
-            is_liked: response.data.message === "Post liked",
-          };
-        }
-        return post;
-      });
-      setPosts(updatedPosts);
-    } catch (error) {
-      console.error("Error liking post:", error);
-    }
+  const handleLike = (postId) => {
+    dispatch(likePost(postId));
   };
 
   const openAbout = (post) => {
@@ -136,7 +79,7 @@ const Home = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchPosts();
+    dispatch(fetchFeed());
     setRefreshing(false);
   };
 
@@ -150,10 +93,31 @@ const Home = () => {
           </Text>
         </View>
         <TouchableOpacity
-          style={homeStyles.bell}
+          style={[homeStyles.bell, commonStyles.center]}
           onPress={() => navigation.navigate("Notifications")}
         >
           <FontAwesomeIcon icon={faBell} size={20} />
+          <View
+            style={[
+              commonStyles.center,
+              {
+                backgroundColor: "red",
+                borderRadius: "50%",
+                height: 15,
+                width: 15,
+              },
+            ]}
+          >
+            <Text
+              style={{
+                fontSize: 10,
+                color: "#fff",
+                fontWeight: "700"
+              }}
+            >
+              {count}
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -260,7 +224,7 @@ const Home = () => {
             </View>
           ))
         ) : (
-          <LoadingSpinner />
+          <Text>No Posts Found</Text>
         )}
       </ScrollView>
 

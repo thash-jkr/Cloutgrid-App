@@ -34,6 +34,9 @@ import CustomButton from "./CustomButton";
 import commonStyles from "../styles/common";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutLocal, logoutThunk } from "../authentication/authSlice";
+import { clearFeed } from "../slices/feedSlice";
+import { clearNotifications } from "../slices/notificationSlice";
+import { clearProfile } from "../slices/profileSlice";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -50,7 +53,11 @@ const Settings = () => {
   const handleLogout = async () => {
     dispatch(logoutThunk())
       .unwrap()
-      .then(() => console.log("Logging out"))
+      .then(() => {
+        dispatch(clearFeed());
+        dispatch(clearNotifications());
+        dispatch(clearProfile());
+      })
       .catch((error) => Alert.alert("Error", "Logout Failed - " + error));
   };
 

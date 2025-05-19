@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SecureStore from "expo-secure-store";
 import { useFonts } from "expo-font";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "./store";
 import axios from "axios";
 
@@ -12,6 +12,7 @@ import AuthStack from "./navigation/AuthStack";
 import AppTabs from "./navigation/AppTabs";
 import "./interceptor/axios";
 import { setCredentiels } from "./authentication/authSlice";
+import { fetchNotifications } from "./slices/notificationSlice";
 
 export default function App() {
   Text.defaultProps = Text.defaultProps || {};
@@ -40,7 +41,7 @@ export default function App() {
           const userObj = JSON.parse(user);
           axios.defaults.headers.common.Authorization = `Bearer ${access}`;
           store.dispatch(
-            setCredentiels({ userObj, token: access, refresh, type })
+            setCredentiels({ user: userObj, token: access, refresh, type })
           );
         }
       } catch (error) {
@@ -66,6 +67,11 @@ export default function App() {
 
 const InnerApp = () => {
   const token = useSelector((state) => state.auth.token);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (token) dispatch(fetchNotifications(false));
+  }, [dispatch, token]);
 
   return (
     <NavigationContainer>

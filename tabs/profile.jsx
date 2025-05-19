@@ -26,138 +26,57 @@ import ProfilePosts from "../common/profilePosts";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
 import commonStyles from "../styles/common";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchCollabs,
+  fetchPosts,
+  resetUpdateStatus,
+  updateProfile,
+} from "../slices/profileSlice";
 
 const Profile = () => {
-  const [profile, setProfile] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
-  const [posts, setPosts] = useState([]);
-  const [collabs, setCollabs] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [type, setType] = useState("");
   const [inModal, setInModal] = useState(false);
   const [ytModal, setYtModal] = useState(false);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-  const fetchUser = async () => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.get(`${Config.BASE_URL}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      if (response.data) {
-        setProfile(response.data);
-        response.data.date_of_birth ? setType("creator") : setType("business");
-      }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
-
-  const fetchPosts = async () => {
-    try {
-      if (!profile) {
-        return;
-      }
-      const access = await SecureStore.getItemAsync("access");
-      const response = await axios.get(
-        `${Config.BASE_URL}/posts/${profile.user.username}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access}`,
-          },
-        }
-      );
-      if (response.data) {
-        setPosts(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  const fetchCollabs = async () => {
-    try {
-      if (!profile) {
-        return;
-      }
-      const access = await SecureStore.getItemAsync("access");
-      const response = await axios.get(`${Config.BASE_URL}/posts/collabs/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${access}`,
-        },
-      });
-      if (response.data) {
-        setCollabs(response.data);
-      }
-    } catch (error) {
-      Alert.alert("Error", "Error fetching collabs");
-    }
-  };
+  const { user, type } = useSelector((state) => state.auth);
+  const { posts, postsStatus, postsError } = useSelector(
+    (state) => state.profile
+  );
+  const { collabs, collabsStatus, collabsError } = useSelector(
+    (state) => state.profile
+  );
+  const { updateStatus, updateError } = useSelector((state) => state.profile);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    dispatch(fetchPosts());
+    type === "business" && dispatch(fetchCollabs());
+  }, [user, dispatch]);
 
   useEffect(() => {
-    fetchPosts();
-    type === "business" && fetchCollabs();
-  }, [profile]);
-
-  const handleSave = async (updatedProfile) => {
-    try {
-      const data = new FormData();
-      data.append("user[name]", updatedProfile.user.name);
-      data.append("user[email]", updatedProfile.user.email);
-      data.append("user[username]", updatedProfile.user.username);
-      if (updatedProfile.user.profile_photo) {
-        data.append("user[profile_photo]", updatedProfile.user.profile_photo);
-      }
-
-      if (updatedProfile.user.password) {
-        data.append("user[password]", updatedProfile.user.password);
-      }
-
-      data.append("user[bio]", updatedProfile.user.bio);
-      if (type == "creator") {
-        data.append("date_of_birth", updatedProfile.date_of_birth);
-        data.append("area", updatedProfile.area);
-      } else {
-        data.append("website", updatedProfile.website);
-        data.append("target_audience", updatedProfile.target_audience);
-      }
-
-      const response = await axios.put(
-        `${Config.BASE_URL}/profile/${type}/`,
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        Alert.alert("Profile updated successfully!");
-        setProfile(response.data);
-        setModalVisible(false);
-      }
-    } catch (error) {
-      Alert.alert("Error updating profile:", "Please try again later!");
+    if (updateStatus === "failed") {
+      Alert.alert("Error", "Something went wrong");
+      dispatch(resetUpdateStatus);
+    } else if (updateStatus === "succeeded") {
+      setModalVisible(false);
+      Alert.alert("Success", "Profile updated successfully!");
+      dispatch(resetUpdateStatus);
     }
+  }, [updateStatus]);
+
+  const handleSave = (updatedProfile) => {
+    dispatch(updateProfile(updatedProfile));
   };
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchUser();
-    await fetchPosts();
-    type === "business" && fetchCollabs();
+    dispatch(fetchPosts());
+    type === "business" && dispatch(fetchCollabs);
     setRefreshing(false);
   };
 
@@ -236,10 +155,6 @@ const Profile = () => {
     }
   };
 
-  if (!profile) {
-    return <LoadingSpinner />;
-  }
-
   const AREA_OPTIONS = [
     { value: "", label: "Select Target Audience" },
     { value: "art", label: "Art and Photography" },
@@ -281,7 +196,7 @@ const Profile = () => {
           <View style={profileStyles.profileDetails}>
             <Image
               source={{
-                uri: `${Config.BASE_URL}${profile.user.profile_photo}`,
+                uri: `${Config.BASE_URL}${user.user.profile_photo}`,
               }}
               style={profileStyles.profilePicture}
             />
@@ -292,22 +207,22 @@ const Profile = () => {
               </View>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>
-                  {profile.user.followers_count}
+                  {user.user.followers_count}
                 </Text>
                 <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
               </View>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>
-                  {profile.user.following_count}
+                  {user.user.following_count}
                 </Text>
                 <Text style={{ fontFamily: "sen-400" }}>Following</Text>
               </View>
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontFamily: "sen-500" }}>{profile.user.name}</Text>
-            <Text style={{ fontFamily: "sen-400" }}>{profile.user.bio}</Text>
-            {profile.website && (
+            <Text style={{ fontFamily: "sen-500" }}>{user.user.name}</Text>
+            <Text style={{ fontFamily: "sen-400" }}>{user.user.bio}</Text>
+            {user.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
                 <Text
                   style={{
@@ -316,16 +231,15 @@ const Profile = () => {
                     fontFamily: "sen-400",
                   }}
                 >
-                  <FontAwesomeIcon icon={faLink} />{" "}
-                  <Text>{profile.website}</Text>
+                  <FontAwesomeIcon icon={faLink} /> <Text>{user.website}</Text>
                 </Text>
               </Hyperlink>
             )}
             <View style={profileStyles.profileArea}>
               <Text style={{ fontFamily: "sen-600" }}>
                 {type === "creator"
-                  ? AREA_OPTIONS_OBJECT[profile.area]
-                  : AREA_OPTIONS_OBJECT[profile.target_audience]}
+                  ? AREA_OPTIONS_OBJECT[user.area]
+                  : AREA_OPTIONS_OBJECT[user.target_audience]}
               </Text>
             </View>
           </View>
@@ -409,13 +323,12 @@ const Profile = () => {
 
       {modalVisible && (
         <EditProfileModal
-          profile={profile}
+          profile={user}
           onClose={() => setModalVisible(false)}
           onSave={handleSave}
           type={type}
         />
       )}
-
       <Modal visible={inModal} animationType="fade" transparent={true}>
         <View style={profileStyles.modalContainer}>
           <View style={profileStyles.modalContent}>
@@ -444,7 +357,6 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-
       <Modal visible={ytModal} animationType="fade" transparent={true}>
         <View style={profileStyles.modalContainer}>
           <View style={profileStyles.modalContent}>
