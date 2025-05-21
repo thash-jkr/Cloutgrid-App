@@ -112,7 +112,7 @@ const Home = () => {
               style={{
                 fontSize: 10,
                 color: "#fff",
-                fontWeight: "700"
+                fontWeight: "700",
               }}
             >
               {count}
@@ -120,6 +120,7 @@ const Home = () => {
           </View>
         </TouchableOpacity>
       </View>
+      
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={[homeStyles.postContainer]}
@@ -133,7 +134,7 @@ const Home = () => {
               <View style={homeStyles.postHeader}>
                 <TouchableOpacity
                   onPress={() => {
-                    if (post.author.username === user.username) {
+                    if (post.author.username === user.user.username) {
                       navigation.navigate("Profile");
                       return;
                     }
@@ -240,17 +241,47 @@ const Home = () => {
         onClose={() => setSelectedPost(null)}
       >
         <View style={{ padding: 10, paddingBottom: 20 }}>
-          <TouchableOpacity onPress={() => setReportModal(true)}>
-            <Text
-              style={{
-                padding: 10,
-                borderBottomColor: "#eee",
-                borderBottomWidth: 1,
-              }}
-            >
-              Report Post
-            </Text>
-          </TouchableOpacity>
+          {selectedPost &&
+          selectedPost.author.username === user.user.username ? (
+            <View>
+              <TouchableOpacity onPress={() => setReportModal(true)}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Delete Post
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <TouchableOpacity onPress={() => setReportModal(true)}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Report Post
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {}}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Block User
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </Modalize>
 

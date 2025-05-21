@@ -23,16 +23,19 @@ import commonStyles from "../styles/common";
 import homeStyles from "../styles/home";
 import Config from "../config";
 import { Modalize } from "react-native-modalize";
+import { useSelector } from "react-redux";
 
 const ProfilePostsDetails = ({ route }) => {
+  const { postss } = route.params;
   const [selectedPost, setSelectedPost] = useState(null);
+  const [posts, setPosts] = useState(postss);
 
   const navigation = useNavigation();
-  const { postss } = route.params;
-  const [posts, setPosts] = useState(postss);
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
+
+  const user = useSelector((state) => state.auth.user)
 
   const handleTap = (post) => {
     const now = new Date().getTime();
@@ -95,10 +98,16 @@ const ProfilePostsDetails = ({ route }) => {
           padding: 10,
         }}
       >
-        <TouchableOpacity onPress={() => navigation.navigate("Profile", {screen: "ProfileMain"})}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.goBack()
+          }
+        >
           <FontAwesomeIcon icon={faArrowLeft} size={20} />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 20, fontSize: 18, fontWeight: "700" }}>Posts</Text>
+        <Text style={{ marginLeft: 20, fontSize: 18, fontWeight: "700" }}>
+          Posts
+        </Text>
       </View>
       <ScrollView>
         {posts.map((post) => (
@@ -114,7 +123,7 @@ const ProfilePostsDetails = ({ route }) => {
                 <Text style={homeStyles.postAuthor}>{post.author.name}</Text>
               </TouchableOpacity>
               {post.collaboration && (
-                <TouchableOpacity onPress={() => {    }}>
+                <TouchableOpacity onPress={() => {}}>
                   <Text>
                     {" "}
                     with{" "}
@@ -124,12 +133,12 @@ const ProfilePostsDetails = ({ route }) => {
                   </Text>
                 </TouchableOpacity>
               )}
-              {/* <TouchableOpacity
+              <TouchableOpacity
                 style={{ position: "absolute", right: 10 }}
                 onPress={() => openAbout(post)}
               >
                 <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
-              </TouchableOpacity> */}
+              </TouchableOpacity>
             </View>
             <TouchableWithoutFeedback onPress={() => handleTap(post)}>
               <Image
@@ -189,15 +198,47 @@ const ProfilePostsDetails = ({ route }) => {
         onClose={() => setSelectedPost(null)}
       >
         <View style={{ padding: 10, paddingBottom: 20 }}>
-          <Text
-            style={{
-              padding: 10,
-              borderBottomColor: "#eee",
-              borderBottomWidth: 1,
-            }}
-          >
-            Delete Post
-          </Text>
+          {selectedPost &&
+          selectedPost.author.username === user.user.username ? (
+            <View>
+              <TouchableOpacity onPress={() => setReportModal(true)}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Delete Post
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View>
+              <TouchableOpacity onPress={() => setReportModal(true)}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Report Post
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {}}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Block User
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </Modalize>
     </SafeAreaView>

@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import Config from "../config";
-import { updateProfile } from "../slices/profileSlice";
+import { fetchProfile, updateProfile } from "../slices/profileSlice";
 
 export const loginThunk = createAsyncThunk(
   "auth/loginThunk",
@@ -131,6 +131,9 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
+        state.user = action.payload
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
         state.user = action.payload
       })
 

@@ -2,8 +2,26 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
 
-export const fetchPosts = createAsyncThunk(
+export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { token, type } = getState().auth;
+      const response = await axios.get(`${Config.BASE_URL}/profile/${type}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.detail ?? error.message);
+    }
+  }
+);
+
+export const fetchPosts = createAsyncThunk(
+  "profile/fetchPosts",
   async (_, { getState, rejectWithValue }) => {
     try {
       const { token, user } = getState().auth;
@@ -91,6 +109,8 @@ export const updateProfile = createAsyncThunk(
 
 const initialState = {
   posts: [],
+  profileStatus: "idle",
+  profileError: null,
   postsStatus: "idle",
   postsError: null,
   collabs: [],
@@ -112,6 +132,19 @@ const profileSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder
+      .addCase(fetchProfile.pending, (state) => {
+        state.profileStatus = "loading";
+        state.profileError = null;
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.profileStatus = "succeeded";
+      })
+      .addCase(fetchProfile.rejected, (state, action) => {
+        state.profileStatus = "failed";
+        state.profileError = action.payload;
+      });
+
     builder
       .addCase(fetchPosts.pending, (state) => {
         state.postsStatus = "loading";

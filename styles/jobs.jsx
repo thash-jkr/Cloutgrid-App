@@ -51,7 +51,8 @@ const jobsStyles = StyleSheet.create({
     marginHorizontal: 10
   },
   headerText: {
-    fontSize: 25,
+    fontSize: 20,
+    fontWeight: 700
     // fontFamily: "sen-700",
   },
   modal: {

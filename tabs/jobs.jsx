@@ -17,6 +17,9 @@ import QuestionModal from "../modals/questionModal";
 import CustomButton from "../common/CustomButton";
 import jobsStyles from "../styles/jobs";
 import Config from "../config";
+import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import homeStyles from "../styles/home";
 
 const JobList = () => {
   const [id, setId] = useState(null);
@@ -26,6 +29,7 @@ const JobList = () => {
   const [showQuestion, setShowQuestion] = useState(false);
 
   const modalizeRef = useRef(null);
+  const abouModalize = useRef(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -123,6 +127,12 @@ const JobList = () => {
         HeaderComponent={
           <View style={jobsStyles.modalHeader}>
             <Text style={jobsStyles.headerText}>Details</Text>
+            <TouchableOpacity
+              style={{ position: "absolute", right: 10 }}
+              onPress={() => abouModalize.current?.open()}
+            >
+              <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
+            </TouchableOpacity>
           </View>
         }
         modalTopOffset={Platform.OS === "ios" ? 130 : 50}
@@ -168,6 +178,54 @@ const JobList = () => {
         ) : (
           <Text>Please select a job to view details.</Text>
         )}
+      </Modalize>
+
+      <Modalize
+        ref={abouModalize}
+        adjustToContentHeight={true}
+        HeaderComponent={
+          <View style={homeStyles.modalHeader}>
+            <Text style={homeStyles.headerText}>About</Text>
+          </View>
+        }
+      >
+        <View style={{ padding: 10, paddingBottom: 20 }}>
+          <TouchableOpacity>
+            <Text
+              style={{
+                padding: 10,
+                borderBottomColor: "#eee",
+                borderBottomWidth: 1,
+              }}
+            >
+              Report Collaboration Posting
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <Text
+              style={{
+                padding: 10,
+                borderBottomColor: "#eee",
+                borderBottomWidth: 1,
+              }}
+            >
+              Report Business
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity>
+            <Text
+              style={{
+                padding: 10,
+                borderBottomColor: "#eee",
+                borderBottomWidth: 1,
+              }}
+            >
+              Block Business
+            </Text>
+          </TouchableOpacity>
+        </View>
       </Modalize>
 
       {showQuestion && (

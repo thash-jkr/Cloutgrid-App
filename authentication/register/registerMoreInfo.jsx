@@ -8,6 +8,7 @@ import {
   TextInput,
   Dimensions,
   Platform,
+  ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -21,6 +22,7 @@ import Config from "../../config";
 import Loader from "../../common/loading";
 import commonStyles from "../../styles/common";
 import jobsStyles from "../../styles/jobs";
+import profileStyles from "../../styles/profile";
 
 const { height, width } = Dimensions.get("window");
 
@@ -30,7 +32,9 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
   const [showDateModal, setShowDateModal] = useState(false);
   const [date, setDate] = useState(new Date());
   const [isLoading, setIsLoading] = useState(false);
-  const [filename, setFilename] = useState("no file selected!");
+  const [filename, setFilename] = useState(null);
+  const [privacyModal, setPrivacyModal] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(false);
 
   const navigation = useNavigation();
 
@@ -172,9 +176,9 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
           borderTopWidth: 1,
         }}
       >
-        <CustomButton title={"Select Image"} onPress={handleFileChange} />
+        <CustomButton title={"Profile Photo"} onPress={handleFileChange} />
         <Text style={[commonStyles.text, { marginRight: 10 }]}>
-          {filename.length > 20 ? filename.substring(0, 20) + "..." : filename}
+          {filename ? filename.length > 20 ? filename.substring(0, 20) + "..." : filename : "Select a Profile Photo"}
         </Text>
       </View>
 
@@ -257,6 +261,19 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
         </Text>
       </View>
 
+      <View style={commonStyles.center}>
+        <Text>By clicking continue, you agree to our </Text>
+        <TouchableOpacity
+          onPress={() => {
+            setPrivacyModal(true);
+          }}
+        >
+          <Text style={{ fontWeight: "600", color: "blue" }}>
+            Privacy Policy
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <Modal visible={showDateModal} transparent={true} animationType="fade">
         <View style={authStyles.modalOverlay}>
           <View style={authStyles.modalContainer}>
@@ -303,6 +320,177 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
             <CustomButton
               title="Close"
               onPress={() => setShowAreaModal(false)}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={privacyModal} transparent={true} animationType="fade">
+        <View style={profileStyles.modalContainer}>
+          <View style={profileStyles.modalContent}>
+            <Text style={profileStyles.modalTitle}>Privacy Policy</Text>
+            <ScrollView style={{ padding: 10, maxHeight: 400 }}>
+              <Text style={{ fontStyle: "italic", marginBottom: 16 }}>
+                Last updated: May 09, 2025
+              </Text>
+
+              <Text style={{ marginBottom: 16 }}>
+                This Privacy Policy describes our policies and procedures on the
+                collection, use, and disclosure of your information when you use
+                the Cloutgrid app (“the Service”) and tells you about your
+                privacy rights and how the law protects you. By using the
+                Service, you agree to the collection and use of information in
+                accordance with this Privacy Policy.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Summary of Data Collection
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                Cloutgrid collects the following data types, which are linked to
+                your identity and used solely for the app’s functionality:
+                {"\n"}- Name – used for your profile and display to other users
+                {"\n"}- Email address – used for account login, communication,
+                and account recovery
+                {"\n"}- Photos or videos – used for posting content and
+                customizing your profile
+                {"\n"}- User ID – used to identify your account and provide
+                personalized functionality
+                {"\n\n"}We do not use your data for tracking, targeted
+                advertising, or data brokering.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Interpretation and Definitions
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                Application refers to Cloutgrid, the software application
+                provided by CLOUTIVITY PRIVATE LIMITED.{"\n"}
+                Company refers to CLOUTIVITY PRIVATE LIMITED, Kerala, India.
+                {"\n"}
+                Personal Data means information relating to an identified or
+                identifiable individual.{"\n"}
+                Service refers to the Application.{"\n"}
+                You means the individual accessing or using the Service.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Types of Data Collected
+              </Text>
+              <Text style={{ fontWeight: "bold", marginBottom: 4 }}>
+                Personal Data
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                The following personal data is collected and linked to your
+                identity:
+                {"\n"}- Name
+                {"\n"}- Email address
+                {"\n"}- Photos or videos you upload
+                {"\n"}- User ID or account identifier
+              </Text>
+
+              <Text style={{ fontWeight: "bold", marginBottom: 4 }}>
+                Usage Data
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                Usage data may include information such as device type,
+                operating system, screen size, and app usage metrics. This helps
+                us improve the performance and security of the Service.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Use of Your Personal Data
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                We use the data we collect to provide and maintain the Service,
+                manage your account, enable features like profile creation and
+                content posting, respond to support needs, and improve app
+                performance.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Sharing Your Personal Data
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                We may share your data with trusted service providers, during
+                business transfers, or when legally required. Your data will
+                never be sold for advertising or marketing purposes.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Data Retention
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                Your data is retained only for as long as necessary to provide
+                our services or comply with legal requirements.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Security
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                We follow industry-standard practices to protect your data, but
+                no method of storage or transmission is 100% secure.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Children’s Privacy
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                Our Service is not intended for users under the age of 13. If
+                you believe your child has provided us with data, please contact
+                us immediately.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Your Rights
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                You may view, update, or request deletion of your personal data
+                from your account settings or by contacting us.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Changes to This Privacy Policy
+              </Text>
+              <Text style={{ marginBottom: 16 }}>
+                We may update this policy and will notify you of significant
+                changes via email or in-app alerts.
+              </Text>
+
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", marginBottom: 8 }}
+              >
+                Contact Us
+              </Text>
+              <Text style={{ marginBottom: 32 }}>
+                If you have any questions, please contact us at:
+                {"\n"}Email: info@cloutgrid.com
+              </Text>
+            </ScrollView>
+            <CustomButton
+              title={"Close"}
+              onPress={() => setPrivacyModal(false)}
             />
           </View>
         </View>

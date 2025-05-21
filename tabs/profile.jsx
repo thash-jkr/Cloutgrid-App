@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCollabs,
   fetchPosts,
+  fetchProfile,
   resetUpdateStatus,
   updateProfile,
 } from "../slices/profileSlice";
@@ -76,6 +77,7 @@ const Profile = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     dispatch(fetchPosts());
+    dispatch(fetchProfile());
     type === "business" && dispatch(fetchCollabs);
     setRefreshing(false);
   };
@@ -329,6 +331,7 @@ const Profile = () => {
           type={type}
         />
       )}
+
       <Modal visible={inModal} animationType="fade" transparent={true}>
         <View style={profileStyles.modalContainer}>
           <View style={profileStyles.modalContent}>
@@ -357,6 +360,7 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
+
       <Modal visible={ytModal} animationType="fade" transparent={true}>
         <View style={profileStyles.modalContainer}>
           <View style={profileStyles.modalContent}>
