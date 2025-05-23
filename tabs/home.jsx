@@ -36,6 +36,7 @@ import CustomButton from "../common/CustomButton";
 import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
+import { handleBlock } from "../slices/profilesSlice";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -120,7 +121,7 @@ const Home = () => {
           </View>
         </TouchableOpacity>
       </View>
-      
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={[homeStyles.postContainer]}
@@ -242,7 +243,7 @@ const Home = () => {
       >
         <View style={{ padding: 10, paddingBottom: 20 }}>
           {selectedPost &&
-          selectedPost.author.username === user.user.username ? (
+          selectedPost.author.username === user?.user.username ? (
             <View>
               <TouchableOpacity onPress={() => setReportModal(true)}>
                 <Text
@@ -269,7 +270,21 @@ const Home = () => {
                   Report Post
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {}}>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert("Block User", "Do you want to block this user?", [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Block",
+                      style: "destructive",
+                      onPress: () => {
+                        dispatch(handleBlock(selectedPost?.author.username));
+                        aboutModalize.current?.close();
+                      },
+                    },
+                  ]);
+                }}
+              >
                 <Text
                   style={{
                     padding: 10,

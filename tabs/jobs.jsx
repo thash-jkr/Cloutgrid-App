@@ -8,6 +8,7 @@ import {
   Alert,
   SafeAreaView,
   Platform,
+  RefreshControl,
 } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
@@ -20,34 +21,27 @@ import Config from "../config";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import homeStyles from "../styles/home";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchJobs, handleApplication } from "../slices/jobSlice";
+import Loader from "../common/loading";
+import { handleBlock } from "../slices/profilesSlice";
 
 const JobList = () => {
   const [id, setId] = useState(null);
-  const [jobs, setJobs] = useState([]);
   const [answers, setAnswers] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const modalizeRef = useRef(null);
-  const abouModalize = useRef(null);
+  const aboutModalize = useRef(null);
+  const dispatch = useDispatch();
+
+  const { jobs, loading, error } = useSelector((state) => state.job);
 
   useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(`${Config.BASE_URL}/jobs/`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setJobs(response.data);
-      } catch (error) {
-        console.error("Error fetching jobs:", error);
-      }
-    };
-
-    fetchJobs();
-  }, [id]);
+    dispatch(fetchJobs());
+  }, []);
 
   const handleApply = async () => {
     if (selectedJob?.questions.length > 0) {
@@ -57,26 +51,15 @@ const JobList = () => {
     }
   };
 
-  const submitApplication = async () => {
+  const submitApplication = () => {
     try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      const data = {
-        answers: answers,
-      };
-
-      await axios.post(`${Config.BASE_URL}/jobs/${id}/apply/`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
+      dispatch(handleApplication({ id, answers }));
       setShowQuestion(false);
       setAnswers({});
       Alert.alert("Application Successful", "You have applied for the job.");
       modalizeRef.current?.close();
       setId(null);
     } catch (error) {
-      console.error("Error applying for job:", error);
       Alert.alert("Error", "There was an error applying for the job.");
     }
   };
@@ -96,9 +79,22 @@ const JobList = () => {
 
   return (
     <SafeAreaView style={jobsStyles.container}>
+      {/* <Loader visible={loading}/> */}
       <Text style={jobsStyles.h1}>Apply for Collaborations</Text>
-      <ScrollView style={jobsStyles.jobs}>
-        {jobs &&
+      <ScrollView
+        style={jobsStyles.jobs}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              dispatch(fetchJobs());
+              setRefreshing(false);
+            }}
+          />
+        }
+      >
+        {jobs.length > 0 ? (
           jobs.map((job) => (
             <TouchableOpacity
               key={job.id}
@@ -118,7 +114,14 @@ const JobList = () => {
                 </Text>
               </View>
             </TouchableOpacity>
-          ))}
+          ))
+        ) : (
+          <View>
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              No Jobs Found
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       <Modalize
@@ -129,7 +132,7 @@ const JobList = () => {
             <Text style={jobsStyles.headerText}>Details</Text>
             <TouchableOpacity
               style={{ position: "absolute", right: 10 }}
-              onPress={() => abouModalize.current?.open()}
+              onPress={() => aboutModalize.current?.open()}
             >
               <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
             </TouchableOpacity>
@@ -181,7 +184,7 @@ const JobList = () => {
       </Modalize>
 
       <Modalize
-        ref={abouModalize}
+        ref={aboutModalize}
         adjustToContentHeight={true}
         HeaderComponent={
           <View style={homeStyles.modalHeader}>
@@ -214,7 +217,25 @@ const JobList = () => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert("Block User", "Do you want to block this user?", [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Block",
+                  style: "destructive",
+                  onPress: () => {
+                    dispatch(handleBlock(selectedJob?.posted_by.user.username));
+                    aboutModalize.current?.close();
+                    modalizeRef.current?.close();
+                    setAnswers({})
+                    setSelectedJob(null)
+                    setId(null)
+                  },
+                },
+              ]);
+            }}
+          >
             <Text
               style={{
                 padding: 10,

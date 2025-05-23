@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
+import { handleBlock } from "./profilesSlice";
 
 export const fetchFeed = createAsyncThunk(
   "feed/fetchFeed",
@@ -87,6 +88,12 @@ const feedSlice = createSlice({
       })
       .addCase(likePost.rejected, (state, action) => {
         state.error = action.payload;
+      })
+      .addCase(handleBlock.pending, (state, action) => {
+        const username = action.meta.arg;
+        state.posts = state.posts.filter((post) => {
+          return post.author.username !== username;
+        });
       });
   },
 });

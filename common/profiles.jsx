@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  RefreshControl,
 } from "react-native";
 import axios from "axios";
 import {
@@ -33,149 +34,54 @@ import LoadingSpinner from "./loading";
 import Config from "../config";
 import { useNavigation } from "@react-navigation/native";
 import homeStyles from "../styles/home";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  clearProfiles,
+  fetchOtherCollabs,
+  fetchOtherPosts,
+  fetchOtherProfile,
+  handleBlock,
+  handleFollow,
+  handleUnblock,
+  handleUnfollow,
+} from "../slices/profilesSlice";
 
 const Profiles = ({ route }) => {
   const { username } = route.params;
 
-  const [posts, setPosts] = useState([]);
-  const [collabs, setCollabs] = useState([]);
-  const [profile, setProfile] = useState(null);
-  const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
-  const [type, setType] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
   const aboutModalize = useRef(null);
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const { otherProfile, otherPosts, otherCollabs } = useSelector(
+    (state) => state.profiles
+  );
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(
-          `${Config.BASE_URL}/profiles/${username}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        if (response.data) {
-          setProfile(response.data);
-          response.data.date_of_birth
-            ? setType("creator")
-            : setType("business");
-        }
-        const isFollowingResponse = await axios.get(
-          `${Config.BASE_URL}/profiles/${username}/is_following/`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setIsFollowing(isFollowingResponse.data.is_following);
-      } catch (error) {
-        console.log("Cannot find other user", error);
-      }
-    };
-
-    fetchProfile();
-  }, [username, isFollowing]);
-
-  const fetchPosts = async () => {
-    try {
-      if (!profile) {
-        return;
-      }
-      const accessToken = await SecureStore.getItemAsync("access");
-      const response = await axios.get(
-        `${Config.BASE_URL}/posts/${username}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      if (response.data) {
-        setPosts(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  const fetchCollabs = async () => {
-    try {
-      if (!profile) {
-        return;
-      }
-      const access = await SecureStore.getItemAsync("access");
-      const response = await axios.get(
-        `${Config.BASE_URL}/posts/collabs/${username}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access}`,
-          },
-        }
-      );
-      if (response.data) {
-        setCollabs(response.data);
-      }
-    } catch (error) {
-      Alert.alert("Error", "Error fetching collabs");
-    }
-  };
+    dispatch(fetchOtherProfile(username));
+    dispatch(fetchOtherPosts(username));
+  }, []);
 
   useEffect(() => {
-    fetchPosts();
-    type === "business" && fetchCollabs();
-  }, [profile]);
-
-  const handleFollow = async () => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      await axios.post(`${Config.BASE_URL}/profiles/${username}/follow/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      setIsFollowing(true);
-    } catch (error) {
-      console.log("Error following user", error);
-    }
-  };
-
-  const handleUnfollow = async () => {
-    try {
-      const accessToken = await SecureStore.getItemAsync("access");
-      await axios.post(`${Config.BASE_URL}/profiles/${username}/unfollow/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      setIsFollowing(false);
-    } catch (error) {
-      console.log("Error following user", error);
-    }
-  };
+    otherProfile &&
+      otherProfile.user.user_type === "business" &&
+      dispatch(fetchOtherCollabs(username));
+  }, [otherProfile]);
 
   const renderContent = () => {
     switch (activeTab) {
       case "posts":
-        return <ProfilePosts posts={posts} />;
+        return <ProfilePosts posts={otherPosts} />;
       case "instagram":
         return (
           <View style={{ alignItems: "center" }}>
             <FontAwesomeIcon icon={faTriangleExclamation} size={50} />
             <Text style={profileStyles.h2}>
-              {profile.user.name} hasn't connected their Instagram yet!
+              {otherProfile.user.name} hasn't connected their Instagram yet!
             </Text>
           </View>
         );
@@ -184,19 +90,52 @@ const Profiles = ({ route }) => {
           <View style={{ alignItems: "center" }}>
             <FontAwesomeIcon icon={faTriangleExclamation} size={50} />
             <Text style={profileStyles.h2}>
-              {profile.user.name} hasn't connected their Youtube yet!
+              {otherProfile.user.name} hasn't connected their Youtube yet!
             </Text>
           </View>
         );
       case "collabs":
-        return <ProfilePosts posts={collabs} />;
+        return <ProfilePosts posts={otherCollabs} />;
       default:
         return <Text>Instagram Info</Text>;
     }
   };
 
-  if (!profile) {
-    return <LoadingSpinner />;
+  if (!otherProfile) {
+    return <View />;
+  } else if (otherProfile.is_blocker) {
+    return (
+      <View style={profileStyles.profile}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+            paddingLeft: 20,
+            padding: 10,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(clearProfiles());
+              navigation.goBack();
+            }}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size={20} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
+            <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
+          </TouchableOpacity>
+        </View>
+
+        <View>
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              You cannot view this profile
+            </Text>
+          </View>
+      </View>
+    );
   }
 
   const AREA_OPTIONS = [
@@ -231,7 +170,19 @@ const Profiles = ({ route }) => {
   return (
     <SafeAreaView style={profileStyles.profile}>
       <StatusBar backgroundColor="#fff" />
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              dispatch(fetchOtherProfile(username));
+              dispatch(fetchOtherPosts(username));
+              setRefreshing(false);
+            }}
+          />
+        }
+      >
         <View
           style={{
             flexDirection: "row",
@@ -242,7 +193,12 @@ const Profiles = ({ route }) => {
             padding: 10,
           }}
         >
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(clearProfiles());
+              navigation.goBack();
+            }}
+          >
             <FontAwesomeIcon icon={faArrowLeft} size={20} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
@@ -254,33 +210,39 @@ const Profiles = ({ route }) => {
           <View style={profileStyles.profileDetails}>
             <Image
               source={{
-                uri: `${Config.BASE_URL}${profile.user.profile_photo}`,
+                uri: `${Config.BASE_URL}${otherProfile.user.profile_photo}`,
               }}
               style={profileStyles.profilePicture}
             />
             <View style={profileStyles.profileData}>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
+                <Text style={{ fontFamily: "sen-400" }}>
+                  {otherPosts.length}
+                </Text>
                 <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
               </View>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>
-                  {profile.user.followers_count}
+                  {otherProfile.user.followers_count}
                 </Text>
                 <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
               </View>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>
-                  {profile.user.following_count}
+                  {otherProfile.user.following_count}
                 </Text>
                 <Text style={{ fontFamily: "sen-400" }}>Following</Text>
               </View>
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontFamily: "sen-500" }}>{profile.user.name}</Text>
-            <Text style={{ fontFamily: "sen-400" }}>{profile.user.bio}</Text>
-            {profile.website && (
+            <Text style={{ fontFamily: "sen-500" }}>
+              {otherProfile.user.name}
+            </Text>
+            <Text style={{ fontFamily: "sen-400" }}>
+              {otherProfile.user.bio}
+            </Text>
+            {otherProfile.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
                 <Text
                   style={{
@@ -290,82 +252,102 @@ const Profiles = ({ route }) => {
                   }}
                 >
                   <FontAwesomeIcon icon={faLink} />{" "}
-                  <Text>{profile.website}</Text>
+                  <Text>{otherProfile.website}</Text>
                 </Text>
               </Hyperlink>
             )}
             <View style={profileStyles.profileArea}>
               <Text style={{ fontFamily: "sen-600" }}>
-                {type === "creator"
-                  ? AREA_OPTIONS_OBJECT[profile.area]
-                  : AREA_OPTIONS_OBJECT[profile.target_audience]}
+                {otherProfile && otherProfile.user.user_type === "creator"
+                  ? AREA_OPTIONS_OBJECT[otherProfile.area]
+                  : AREA_OPTIONS_OBJECT[otherProfile.target_audience]}
               </Text>
             </View>
           </View>
           <CustomButton
-            title={isFollowing ? "Unfollow" : "Follow"}
-            onPress={isFollowing ? handleUnfollow : handleFollow}
+            title={
+              otherProfile && otherProfile.is_blocking
+                ? "Unblock"
+                : otherProfile && otherProfile.is_following
+                ? "Unfollow"
+                : "Follow"
+            }
+            onPress={() => {
+              otherProfile && otherProfile.is_blocking
+                ? dispatch(handleUnblock(username))
+                : otherProfile && otherProfile.is_following
+                ? dispatch(handleUnfollow(username))
+                : dispatch(handleFollow(username));
+            }}
           />
         </View>
 
-        <View style={profileStyles.profileBottom}>
-          <View style={profileStyles.tabsContainer}>
-            <TouchableOpacity
-              style={[
-                profileStyles.tabButton,
-                activeTab === "posts" && profileStyles.activeTab,
-              ]}
-              onPress={() => setActiveTab("posts")}
-            >
-              <Text style={profileStyles.tabText}>Posts</Text>
-            </TouchableOpacity>
-
-            {type === "creator" && (
-              <TouchableOpacity
-                style={[
-                  profileStyles.tabButton,
-                  activeTab === "instagram" && profileStyles.activeTab,
-                ]}
-                onPress={() => setActiveTab("instagram")}
-              >
-                <FontAwesomeIcon icon={faInstagram} size={20} />
-              </TouchableOpacity>
-            )}
-
-            {type === "creator" && (
-              <TouchableOpacity
-                style={[
-                  profileStyles.tabButton,
-                  activeTab === "youtube" && profileStyles.activeTab,
-                ]}
-                onPress={() => setActiveTab("youtube")}
-              >
-                <FontAwesomeIcon icon={faYoutube} size={20} />
-              </TouchableOpacity>
-            )}
-
-            {type === "business" && (
-              <TouchableOpacity
-                style={[
-                  profileStyles.tabButton,
-                  activeTab === "collabs" && profileStyles.activeTab,
-                ]}
-                onPress={() => setActiveTab("collabs")}
-              >
-                <Text
-                  style={{
-                    fontFamily: "sen-600",
-                    fontSize: 15,
-                  }}
-                >
-                  Collabs
-                </Text>
-              </TouchableOpacity>
-            )}
+        {otherProfile && otherProfile.is_blocking ? (
+          <View>
+            <Text style={{ textAlign: "center", marginTop: 20 }}>
+              You have blocked this user. Unblock to see their profile
+            </Text>
           </View>
+        ) : (
+          <View style={profileStyles.profileBottom}>
+            <View style={profileStyles.tabsContainer}>
+              <TouchableOpacity
+                style={[
+                  profileStyles.tabButton,
+                  activeTab === "posts" && profileStyles.activeTab,
+                ]}
+                onPress={() => setActiveTab("posts")}
+              >
+                <Text style={profileStyles.tabText}>Posts</Text>
+              </TouchableOpacity>
 
-          <View>{renderContent()}</View>
-        </View>
+              {otherProfile && otherProfile.user.user_type === "creator" && (
+                <TouchableOpacity
+                  style={[
+                    profileStyles.tabButton,
+                    activeTab === "instagram" && profileStyles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab("instagram")}
+                >
+                  <FontAwesomeIcon icon={faInstagram} size={20} />
+                </TouchableOpacity>
+              )}
+
+              {otherProfile && otherProfile.user.user_type === "creator" && (
+                <TouchableOpacity
+                  style={[
+                    profileStyles.tabButton,
+                    activeTab === "youtube" && profileStyles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab("youtube")}
+                >
+                  <FontAwesomeIcon icon={faYoutube} size={20} />
+                </TouchableOpacity>
+              )}
+
+              {otherProfile && otherProfile.user.user_type === "business" && (
+                <TouchableOpacity
+                  style={[
+                    profileStyles.tabButton,
+                    activeTab === "collabs" && profileStyles.activeTab,
+                  ]}
+                  onPress={() => setActiveTab("collabs")}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "sen-600",
+                      fontSize: 15,
+                    }}
+                  >
+                    Collabs
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <View>{renderContent()}</View>
+          </View>
+        )}
       </ScrollView>
 
       <Modalize
@@ -391,7 +373,13 @@ const Profiles = ({ route }) => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setReportModal(true)}>
+          <TouchableOpacity
+            onPress={() => {
+              otherProfile.is_blocking
+                ? dispatch(handleUnblock(username))
+                : dispatch(handleBlock(username));
+            }}
+          >
             <Text
               style={{
                 padding: 10,
@@ -399,7 +387,7 @@ const Profiles = ({ route }) => {
                 borderBottomWidth: 1,
               }}
             >
-              Block User
+              {otherProfile.is_blocking ? "Unblock" : "Block"}
             </Text>
           </TouchableOpacity>
         </View>

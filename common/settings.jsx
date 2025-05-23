@@ -37,6 +37,8 @@ import { logoutLocal, logoutThunk } from "../authentication/authSlice";
 import { clearFeed } from "../slices/feedSlice";
 import { clearNotifications } from "../slices/notificationSlice";
 import { clearProfile } from "../slices/profileSlice";
+import { clearProfiles } from "../slices/profilesSlice";
+import { clearJobs } from "../slices/jobSlice";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -57,6 +59,8 @@ const Settings = () => {
         dispatch(clearFeed());
         dispatch(clearNotifications());
         dispatch(clearProfile());
+        dispatch(clearProfiles());
+        dispatch(clearJobs());
       })
       .catch((error) => Alert.alert("Error", "Logout Failed - " + error));
   };
