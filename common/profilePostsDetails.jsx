@@ -35,7 +35,7 @@ const ProfilePostsDetails = ({ route }) => {
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
 
-  const user = useSelector((state) => state.auth.user)
+  const user = useSelector((state) => state.auth.user);
 
   const handleTap = (post) => {
     const now = new Date().getTime();
@@ -98,16 +98,14 @@ const ProfilePostsDetails = ({ route }) => {
           padding: 10,
         }}
       >
-        <TouchableOpacity
-          onPress={() =>
-            navigation.goBack()
-          }
-        >
-          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 20, fontSize: 18, fontWeight: "700" }}>
-          Posts
-        </Text>
+        <Text style={commonStyles.backText}>Posts</Text>
       </View>
       <ScrollView>
         {posts.map((post) => (
@@ -226,7 +224,7 @@ const ProfilePostsDetails = ({ route }) => {
                   Report Post
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => {}}>
+              <TouchableOpacity onPress={() => setReportModal(true)}>
                 <Text
                   style={{
                     padding: 10,
@@ -234,7 +232,7 @@ const ProfilePostsDetails = ({ route }) => {
                     borderBottomWidth: 1,
                   }}
                 >
-                  Block User
+                  Report User
                 </Text>
               </TouchableOpacity>
             </View>

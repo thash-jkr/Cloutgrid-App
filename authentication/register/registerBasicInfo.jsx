@@ -5,6 +5,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import React, { useState } from "react";
 import axios from "axios";
@@ -14,10 +15,14 @@ import authStyles from "../../styles/auth";
 import CustomButton from "../../common/CustomButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const navigation = useNavigation();
 
   const handleContinue = async () => {
     if (formData.user.password !== confirmPassword) {
@@ -54,7 +59,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
         nextStep();
       }
     } catch (error) {
-      Alert.alert("Error", error)
+      Alert.alert("Error", error);
     } finally {
       setIsLoading(false);
     }
@@ -70,6 +75,26 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <Loader visible={isLoading} />
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 20,
+          padding: 10,
+          position: "absolute",
+          top: 50
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+        </TouchableOpacity>
+      </View>
       <Text style={authStyles.h1}>
         Join as a {type === "creator" ? "Creator" : "Business"}
       </Text>

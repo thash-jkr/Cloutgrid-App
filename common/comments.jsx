@@ -7,6 +7,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -16,13 +17,19 @@ import homeStyles from "../styles/home";
 import commonStyles from "../styles/common";
 import CustomButton from "./CustomButton";
 import Config from "../config";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { useNavigation } from "@react-navigation/native";
 
 const Comments = ({ route }) => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+
   const { post } = route.params;
 
   const { height, width } = Dimensions.get("window");
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -81,7 +88,30 @@ const Comments = ({ route }) => {
         keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 45}
       >
         <View style={{ alignItems: "center", flex: 1 }}>
-          <Text style={commonStyles.h1}>Comments</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              paddingLeft: 20,
+              padding: 10,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+              style={commonStyles.center}
+            >
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size={20}
+                style={{ marginRight: 20 }}
+              />
+              <Text style={commonStyles.backText}>Comments</Text>
+            </TouchableOpacity>
+          </View>
           <ScrollView
             contentContainerStyle={{ paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}

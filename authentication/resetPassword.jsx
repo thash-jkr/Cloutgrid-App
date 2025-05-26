@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Alert } from "react-native";
+import { View, Text, TextInput, Alert, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -6,6 +6,8 @@ import axios from "axios";
 import authStyles from "../styles/auth";
 import CustomButton from "../common/CustomButton";
 import Config from "../config";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -35,6 +37,26 @@ const ResetPassword = () => {
 
   return (
     <View style={authStyles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 20,
+          padding: 10,
+          position: "absolute",
+          top: 50
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+        </TouchableOpacity>
+      </View>
       <Text style={authStyles.h1}>Reset your password</Text>
       <View style={authStyles.loginContainer}>
         <Text style={authStyles.h3}>

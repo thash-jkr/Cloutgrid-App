@@ -45,6 +45,7 @@ import {
   handleUnblock,
   handleUnfollow,
 } from "../slices/profilesSlice";
+import commonStyles from "../styles/common";
 
 const Profiles = ({ route }) => {
   const { username } = route.params;
@@ -130,10 +131,10 @@ const Profiles = ({ route }) => {
         </View>
 
         <View>
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
-              You cannot view this profile
-            </Text>
-          </View>
+          <Text style={{ textAlign: "center", marginTop: 20 }}>
+            You cannot view this profile
+          </Text>
+        </View>
       </View>
     );
   }
@@ -198,8 +199,14 @@ const Profiles = ({ route }) => {
               dispatch(clearProfiles());
               navigation.goBack();
             }}
+            style={commonStyles.center}
           >
-            <FontAwesomeIcon icon={faArrowLeft} size={20} />
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              size={20}
+              style={{ marginRight: 20 }}
+            />
+            <Text style={commonStyles.backText}>Profile</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
             <FontAwesomeIcon icon={faEllipsisVertical} size={20} />

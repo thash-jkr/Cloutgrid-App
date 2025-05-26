@@ -270,6 +270,19 @@ const Home = () => {
                   Report Post
                 </Text>
               </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setReportModal(true)}>
+                <Text
+                  style={{
+                    padding: 10,
+                    borderBottomColor: "#eee",
+                    borderBottomWidth: 1,
+                  }}
+                >
+                  Report User
+                </Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 onPress={() => {
                   Alert.alert("Block User", "Do you want to block this user?", [

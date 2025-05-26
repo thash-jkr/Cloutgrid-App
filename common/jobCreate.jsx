@@ -13,7 +13,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Picker } from "@react-native-picker/picker";
-import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
@@ -92,7 +92,7 @@ const JobCreate = () => {
           questions: "",
           target_creator: "",
         });
-        navigation.navigate("MyJobs")
+        navigation.navigate("MyJobs");
       }
     } catch (error) {
       console.error("Error creating job:", error);
@@ -130,6 +130,26 @@ const JobCreate = () => {
           style={commonStyles.container}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              paddingLeft: 20,
+              padding: 10,
+              position: "absolute",
+              top: 50,
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => {
+                navigation.goBack();
+              }}
+            >
+              <FontAwesomeIcon icon={faArrowLeft} size={20} />
+            </TouchableOpacity>
+          </View>
           <Text style={jobsStyles.h1}>Create a Collaboration</Text>
           <TextInput
             style={authStyles.input}

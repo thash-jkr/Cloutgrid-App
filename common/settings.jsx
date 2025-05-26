@@ -24,6 +24,7 @@ import {
   faArrowRightFromBracket,
   faLock,
   faWarning,
+  faArrowLeft,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Config from "../config";
@@ -39,6 +40,7 @@ import { clearNotifications } from "../slices/notificationSlice";
 import { clearProfile } from "../slices/profileSlice";
 import { clearProfiles } from "../slices/profilesSlice";
 import { clearJobs } from "../slices/jobSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -50,6 +52,8 @@ const Settings = () => {
   const [feedback, setFeedback] = useState("");
 
   const dispatch = useDispatch();
+  const navigation = useNavigation()
+
   const { token, type } = useSelector((state) => state.auth);
 
   const handleLogout = async () => {
@@ -107,7 +111,30 @@ const Settings = () => {
 
   return (
     <SafeAreaView style={profileStyles.settings}>
-      <Text style={profileStyles.h1}>Settings</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 20,
+          padding: 10,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={commonStyles.center}
+        >
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
+          <Text style={commonStyles.backText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
       <View style={profileStyles.settingsButtons}>
         {/* <TouchableOpacity style={jobsStyles.job}>
           <FontAwesomeIcon icon={faUserPlus} size={25} />

@@ -13,6 +13,10 @@ const commonStyles = StyleSheet.create({
   text: {
     // fontFamily: "sen-400",
   },
+  backText: {
+    fontSize: 20,
+    fontWeight: "600"
+  },
   center: {
     flexDirection: "row",
     justifyContent: "center",

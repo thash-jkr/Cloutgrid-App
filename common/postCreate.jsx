@@ -15,7 +15,7 @@ import React, { useState, useRef } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import { Modalize } from "react-native-modalize";
-import { faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faX } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
@@ -134,6 +134,26 @@ const PostCreate = ({ route }) => {
       style={jobsStyles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 20,
+          padding: 10,
+          position: "absolute",
+          top: 50
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+        </TouchableOpacity>
+      </View>
       <Text style={jobsStyles.h1}>Create a Post</Text>
 
       <View

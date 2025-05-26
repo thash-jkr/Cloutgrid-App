@@ -11,11 +11,16 @@ import React, { useEffect, useState } from "react";
 import homeStyles from "../styles/home";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNotifications, markAsRead } from "../slices/notificationSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import commonStyles from "../styles/common";
+import { useNavigation } from "@react-navigation/native";
 
 const Notifications = () => {
   const [showAll, setShowAll] = useState(false);
 
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const { items, status, error } = useSelector((state) => state.notif);
 
@@ -29,7 +34,26 @@ const Notifications = () => {
 
   return (
     <SafeAreaView style={homeStyles.home}>
-      <Text style={homeStyles.h2}>Notifications</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+          paddingLeft: 20,
+          padding: 10,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={commonStyles.center}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} size={20} style={{marginRight: 20}}/>
+          <Text style={commonStyles.backText}>Notifications</Text>
+        </TouchableOpacity>
+      </View>
       <View style={homeStyles.toggle}>
         <Text style={homeStyles.toggleText}>Show All</Text>
         <Switch

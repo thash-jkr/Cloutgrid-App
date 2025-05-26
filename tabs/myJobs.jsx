@@ -147,7 +147,7 @@ const MyJobs = () => {
         modalTopOffset={Platform.OS === "ios" ? 130 : 50}
       >
         {selectedJob ? (
-          <ScrollView style={jobsStyles.modal}>
+          <ScrollView style={jobsStyles.modal} contentContainerStyle={commonStyles.center}>
             {/* <View style={{
               flexDirection: "row",
               justifyContent: "center",
@@ -160,9 +160,7 @@ const MyJobs = () => {
               <CustomButton title={"Download Data"} disabled={applications.length === 0}/>
               <CustomButton title={"Delete Job"} />
             </View> */}
-            <View style={{
-              width: "100%"
-            }}>
+            <View style={jobsStyles.jobs}>
               {applications.length > 0 ? (
                 applications.map((application) => (
                   <TouchableOpacity

@@ -132,7 +132,6 @@ const profileStyles = StyleSheet.create({
     height: height * 0.95,
   },
   settingsButtons: {
-    marginTop: 20,
     width: width * 0.95,
   },
 });
