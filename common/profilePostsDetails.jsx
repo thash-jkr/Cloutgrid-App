@@ -6,6 +6,11 @@ import {
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
+  Platform,
+  KeyboardAvoidingView,
+  Modal,
+  TextInput,
+  Alert,
 } from "react-native";
 import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -23,14 +28,22 @@ import commonStyles from "../styles/common";
 import homeStyles from "../styles/home";
 import Config from "../config";
 import { Modalize } from "react-native-modalize";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import profileStyles from "../styles/profile";
+import authStyles from "../styles/auth";
+import CustomButton from "./CustomButton";
+import { deletePost } from "../slices/profileSlice";
 
 const ProfilePostsDetails = ({ route }) => {
   const { postss } = route.params;
+
   const [selectedPost, setSelectedPost] = useState(null);
   const [posts, setPosts] = useState(postss);
+  const [reportModal, setReportModal] = useState(false);
+  const [report, setReport] = useState("");
 
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
@@ -199,7 +212,25 @@ const ProfilePostsDetails = ({ route }) => {
           {selectedPost &&
           selectedPost.author.username === user.user.username ? (
             <View>
-              <TouchableOpacity onPress={() => setReportModal(true)}>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    "Delete Post",
+                    "Do you want to delete this post? This action cannot be undone!",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => {
+                          dispatch(deletePost(selectedPost?.id));
+                          navigation.goBack();
+                        },
+                      },
+                    ]
+                  );
+                }}
+              >
                 <Text
                   style={{
                     padding: 10,
@@ -239,6 +270,46 @@ const ProfilePostsDetails = ({ route }) => {
           )}
         </View>
       </Modalize>
+
+      <Modal visible={reportModal} transparent={true} animationType="fade">
+        <KeyboardAvoidingView
+          style={profileStyles.modalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={profileStyles.modalContent}>
+            <Text style={profileStyles.modalTitle}>Report Form</Text>
+            <TextInput
+              style={[authStyles.input, { height: 200 }]}
+              placeholder={
+                "If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
+              }
+              placeholderTextColor={"#999"}
+              textAlign="justify"
+              value={report}
+              onChangeText={(value) => setReport(value)}
+              multiline
+            />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={"Close"}
+                onPress={() => setReportModal(false)}
+              />
+              <CustomButton
+                title={"Submit"}
+                disabled={report.length < 1}
+                onPress={() => {
+                  setReport("");
+                  setReportModal(false);
+                  Alert.alert(
+                    "Request Received",
+                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };

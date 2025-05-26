@@ -13,7 +13,7 @@ export const fetchProfile = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.detail ?? error.message);
     }
@@ -61,6 +61,25 @@ export const fetchCollabs = createAsyncThunk(
   }
 );
 
+export const deletePost = createAsyncThunk(
+  "profile/deletePost",
+  async (postId, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      await axios.delete(`${Config.BASE_URL}/posts/${postId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return { id: postId };
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.detail ?? error.message);
+    }
+  }
+);
+
 export const updateProfile = createAsyncThunk(
   "profile/updateProfile",
   async (updates, { getState, rejectWithValue }) => {
@@ -96,6 +115,7 @@ export const updateProfile = createAsyncThunk(
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -109,15 +129,10 @@ export const updateProfile = createAsyncThunk(
 
 const initialState = {
   posts: [],
-  profileStatus: "idle",
-  profileError: null,
-  postsStatus: "idle",
-  postsError: null,
   collabs: [],
-  collabsStatus: "idle",
-  collabsError: null,
-  updateStatus: "idle",
-  updateError: null,
+  profile: null,
+  profileLoading: false,
+  profileError: null,
 };
 
 const profileSlice = createSlice({
@@ -134,56 +149,73 @@ const profileSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProfile.pending, (state) => {
-        state.profileStatus = "loading";
+        state.profileLoading = true;
         state.profileError = null;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.profileStatus = "succeeded";
+        state.profileLoading = false;
+        state.profile = action.payload;
       })
       .addCase(fetchProfile.rejected, (state, action) => {
-        state.profileStatus = "failed";
+        state.profileLoading = false;
         state.profileError = action.payload;
       });
 
     builder
       .addCase(fetchPosts.pending, (state) => {
-        state.postsStatus = "loading";
-        state.postsError = null;
+        state.profileLoading = true;
+        state.profileError = null;
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
-        state.postsStatus = "succeeded";
+        state.profileLoading = false;
         state.posts = action.payload;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
-        state.postsStatus = "failed";
-        state.postsError = action.payload;
+        state.profileLoading = false;
+        state.profileError = action.payload;
       });
 
     builder
       .addCase(fetchCollabs.pending, (state) => {
-        state.collabsStatus = "loading";
-        state.collabsError = null;
+        state.profileLoading = true;
+        state.profileError = null;
       })
       .addCase(fetchCollabs.fulfilled, (state, action) => {
-        state.collabsStatus = "succeeded";
+        state.profileLoading = false;
         state.collabs = action.payload;
       })
       .addCase(fetchCollabs.rejected, (state, action) => {
-        state.collabsStatus = "failed";
-        state.collabsError = action.payload;
+        state.profileLoading = false;
+        state.profileError = action.payload;
+      });
+
+    builder
+      .addCase(deletePost.pending, (state) => {
+        state.profileLoading = true;
+        state.profileError = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.profileLoading = false;
+        state.posts = state.posts.filter(
+          (post) => post.id !== action.payload.id
+        );
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        state.profileLoading = false;
+        state.profileError = action.payload;
       });
 
     builder
       .addCase(updateProfile.pending, (state) => {
-        state.updateStatus = "loading";
-        state.updateError = null;
+        state.profileLoading = true;
+        state.profileError = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.updateStatus = "succeeded";
+        state.profileLoading = false;
       })
       .addCase(updateProfile.rejected, (state, action) => {
-        state.updateStatus = "failed";
-        state.updateError = action.payload;
+        state.profileLoading = false;
+        state.profileError = action.payload;
       });
   },
 });

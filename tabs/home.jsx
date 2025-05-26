@@ -27,8 +27,6 @@ import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
 
 import homeStyles from "../styles/home";
-import Config from "../config";
-import LoadingSpinner from "../common/loading";
 import commonStyles from "../styles/common";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
@@ -37,6 +35,7 @@ import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";
+import { deletePost } from "../slices/profileSlice";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);
@@ -245,7 +244,25 @@ const Home = () => {
           {selectedPost &&
           selectedPost.author.username === user?.user.username ? (
             <View>
-              <TouchableOpacity onPress={() => setReportModal(true)}>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert(
+                    "Delete Post",
+                    "Do you want to delete this post? This action cannot be undone!",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => {
+                          dispatch(deletePost(selectedPost?.id));
+                          aboutModalize.current?.close();
+                        },
+                      },
+                    ]
+                  );
+                }}
+              >
                 <Text
                   style={{
                     padding: 10,
@@ -319,11 +336,11 @@ const Home = () => {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View style={profileStyles.modalContent}>
-            <Text style={profileStyles.modalTitle}>Report Post?</Text>
+            <Text style={profileStyles.modalTitle}>Report Form</Text>
             <TextInput
               style={[authStyles.input, { height: 200 }]}
               placeholder={
-                "If you have any issue regarding this particular post, please report to us via this form"
+                "If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
               }
               placeholderTextColor={"#999"}
               textAlign="justify"

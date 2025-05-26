@@ -8,8 +8,11 @@ import {
   ScrollView,
   Alert,
   RefreshControl,
+  Platform,
+  KeyboardAvoidingView,
+  Modal,
+  TextInput
 } from "react-native";
-import axios from "axios";
 import {
   faInstagram,
   faYoutube,
@@ -46,12 +49,15 @@ import {
   handleUnfollow,
 } from "../slices/profilesSlice";
 import commonStyles from "../styles/common";
+import authStyles from "../styles/auth";
 
 const Profiles = ({ route }) => {
   const { username } = route.params;
 
   const [activeTab, setActiveTab] = useState("posts");
   const [refreshing, setRefreshing] = useState(false);
+  const [reportModal, setReportModal] = useState(false);
+  const [report, setReport] = useState("");
 
   const aboutModalize = useRef(null);
 
@@ -384,7 +390,17 @@ const Profiles = ({ route }) => {
             onPress={() => {
               otherProfile.is_blocking
                 ? dispatch(handleUnblock(username))
-                : dispatch(handleBlock(username));
+                : Alert.alert("Block User", "Do you want to block this user?", [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Block",
+                      style: "destructive",
+                      onPress: () => {
+                        dispatch(handleBlock(username));
+                        aboutModalize.current?.close();
+                      },
+                    },
+                  ]);
             }}
           >
             <Text
@@ -399,6 +415,46 @@ const Profiles = ({ route }) => {
           </TouchableOpacity>
         </View>
       </Modalize>
+
+      <Modal visible={reportModal} transparent={true} animationType="fade">
+        <KeyboardAvoidingView
+          style={profileStyles.modalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={profileStyles.modalContent}>
+            <Text style={profileStyles.modalTitle}>Report Form</Text>
+            <TextInput
+              style={[authStyles.input, { height: 200 }]}
+              placeholder={
+                "If you believe this profile, or user activity violates our community guidelines, please report it using this form"
+              }
+              placeholderTextColor={"#999"}
+              textAlign="justify"
+              value={report}
+              onChangeText={(value) => setReport(value)}
+              multiline
+            />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={"Close"}
+                onPress={() => setReportModal(false)}
+              />
+              <CustomButton
+                title={"Submit"}
+                disabled={report.length < 1}
+                onPress={() => {
+                  setReport("");
+                  setReportModal(false);
+                  Alert.alert(
+                    "Request Received",
+                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };

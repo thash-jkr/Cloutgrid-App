@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
 import { handleBlock } from "./profilesSlice";
+import { deletePost } from "./profileSlice";
 
 export const fetchFeed = createAsyncThunk(
   "feed/fetchFeed",
@@ -94,7 +95,12 @@ const feedSlice = createSlice({
         state.posts = state.posts.filter((post) => {
           return post.author.username !== username;
         });
-      });
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.posts = state.posts.filter(
+          (post) => post.id !== action.payload.id
+        );
+      })
   },
 });
 
