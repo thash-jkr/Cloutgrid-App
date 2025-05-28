@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
 import { handleBlock } from "./profilesSlice";
+import { Alert } from "react-native";
 
 export const fetchJobs = createAsyncThunk(
   "job/fetchJobs",
@@ -38,8 +39,11 @@ export const handleApplication = createAsyncThunk(
         }
       );
 
+      Alert.alert("Application Successful", "You have applied for the job.");
+
       return id;
     } catch (error) {
+      Alert.alert("Error", error.response?.data?.message)
       return rejectWithValue(error.response?.data?.detail ?? error.message);
     }
   }

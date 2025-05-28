@@ -31,7 +31,7 @@ const ResetPassword = () => {
 
       navigation.navigate("Register");
     } catch (error) {
-      Alert.alert("An error occurred, please try again");
+      Alert.alert("Error", error.response?.data?.message || "An error occurred");
     }
   };
 
@@ -43,8 +43,7 @@ const ResetPassword = () => {
           alignItems: "center",
           justifyContent: "space-between",
           width: "100%",
-          paddingLeft: 20,
-          padding: 10,
+          paddingVertical: 10,
           position: "absolute",
           top: 50
         }}

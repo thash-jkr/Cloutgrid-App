@@ -11,6 +11,7 @@ import {
   Platform,
   Alert,
   Modal,
+  TextInput
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import * as SecureStore from "expo-secure-store";
@@ -31,7 +32,6 @@ import commonStyles from "../styles/common";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
 import CustomButton from "../common/CustomButton";
-import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";

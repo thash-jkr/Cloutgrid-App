@@ -125,7 +125,11 @@ const PostCreate = ({ route }) => {
       Alert.alert("Post created successfully!");
       navigation.navigate("Home");
     } catch (error) {
-      console.error("Error creating post:", error);
+      Alert.alert(
+        "Error",
+        error.response?.data?.message ||
+          "An error occurred while creating the post."
+      );
     }
   };
 
@@ -143,7 +147,7 @@ const PostCreate = ({ route }) => {
           paddingLeft: 20,
           padding: 10,
           position: "absolute",
-          top: 50
+          top: 50,
         }}
       >
         <TouchableOpacity

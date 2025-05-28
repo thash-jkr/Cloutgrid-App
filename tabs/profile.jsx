@@ -72,6 +72,7 @@ const Profile = () => {
 
   const handleSave = (updatedProfile) => {
     dispatch(updateProfile(updatedProfile));
+    setModalVisible(false);
   };
 
   const onRefresh = async () => {

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
+import { Alert } from "react-native";
 
 export const fetchProfile = createAsyncThunk(
   "profile/fetchProfile",
@@ -122,7 +123,8 @@ export const updateProfile = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      Alert.alert("Error", error.response?.data?.message ?? error.message);
+      return rejectWithValue(error.response?.data?.message ?? error.message);
     }
   }
 );

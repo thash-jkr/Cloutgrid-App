@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Platform,
+  Alert,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -21,6 +22,7 @@ import Config from "../config";
 import AnswerModal from "../modals/answerModal";
 import commonStyles from "../styles/common";
 import CustomButton from "../common/CustomButton";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 const MyJobs = () => {
   const [id, setId] = useState(null);
@@ -83,6 +85,26 @@ const MyJobs = () => {
     fetchApplicants();
   }, [id]);
 
+  const handleJobDelete = async (jobId) => {
+    try {
+      const accessToken = await SecureStore.getItemAsync("access");
+      await axios.delete(`${Config.BASE_URL}/jobs/${jobId}/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      modalizeRef.current?.close();
+      setJobs(jobs.filter((job) => job.id !== jobId));
+      if (selectedJob && selectedJob.id === jobId) {
+        setSelectedJob(null);
+        setApplications([]);
+        setId(null);
+      }
+    } catch (error) {
+      console.error("Error deleting job:", error);
+    }
+  };
+
   const handleSelectJob = (job) => {
     setSelectedJob(job);
     setId(job.id);
@@ -97,7 +119,7 @@ const MyJobs = () => {
 
   return (
     <SafeAreaView style={jobsStyles.container}>
-      <Text style={jobsStyles.h1}>Your Jobs</Text>
+      <Text style={jobsStyles.h1}>Your Collaborations</Text>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}
@@ -127,7 +149,9 @@ const MyJobs = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={jobsStyles.h2}>No jobs posted yet.</Text>
+          <View style={commonStyles.center}>
+            <Text>No collaboration posted yet</Text>
+          </View>
         )}
       </ScrollView>
 
@@ -147,19 +171,41 @@ const MyJobs = () => {
         modalTopOffset={Platform.OS === "ios" ? 130 : 50}
       >
         {selectedJob ? (
-          <ScrollView style={jobsStyles.modal} contentContainerStyle={commonStyles.center}>
-            {/* <View style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 10,
-              paddingBottom: 10,
-              borderBottomColor: "#ddd",
-              borderBottomWidth: 1
-            }}>
-              <CustomButton title={"Download Data"} disabled={applications.length === 0}/>
-              <CustomButton title={"Delete Job"} />
-            </View> */}
+          <ScrollView
+            style={jobsStyles.modal}
+            contentContainerStyle={commonStyles.centerVertical}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 10,
+                paddingBottom: 10,
+                borderBottomColor: "#ddd",
+                borderBottomWidth: 1,
+                width: "100%",
+              }}
+            >
+              {/* <CustomButton title={"Download Data"} disabled={applications.length === 0}/> */}
+              <CustomButton
+                title={"Delete Job"}
+                onPress={() =>
+                  Alert.alert(
+                    "Delete Collaboration",
+                    "Do you want to delete this collaboration? This cannot be undone!",
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => handleJobDelete(selectedJob?.id),
+                      },
+                    ]
+                  )
+                }
+              />
+            </View>
             <View style={jobsStyles.jobs}>
               {applications.length > 0 ? (
                 applications.map((application) => (
@@ -192,7 +238,9 @@ const MyJobs = () => {
                   </TouchableOpacity>
                 ))
               ) : (
-                <Text>No applicants yet.</Text>
+                <View style={commonStyles.center}>
+                  <Text>No applicants yet.</Text>
+                </View>
               )}
             </View>
           </ScrollView>

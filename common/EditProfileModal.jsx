@@ -31,7 +31,6 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
             profile_photo: null,
             bio: profile.user.bio,
           },
-          date_of_birth: profile.date_of_birth,
           area: profile.area,
         })
       : useState({
@@ -49,7 +48,6 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
 
   const handleChange = (name, value) => {
     if (
-      name === "date_of_birth" ||
       name === "area" ||
       name === "website" ||
       name === "target_audience"

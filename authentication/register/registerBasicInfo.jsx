@@ -59,7 +59,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
         nextStep();
       }
     } catch (error) {
-      Alert.alert("Error", error);
+      Alert.alert("Error", error.response?.data?.message || error.response?.data?.email[0]);
     } finally {
       setIsLoading(false);
     }
@@ -81,10 +81,9 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
           alignItems: "center",
           justifyContent: "space-between",
           width: "100%",
-          paddingLeft: 20,
-          padding: 10,
+          paddingVertical: 10,
           position: "absolute",
-          top: 50
+          top: 50,
         }}
       >
         <TouchableOpacity

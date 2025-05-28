@@ -9,6 +9,9 @@ import {
   SafeAreaView,
   Platform,
   RefreshControl,
+  Modal,
+  KeyboardAvoidingView,
+  TextInput,
 } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
@@ -25,6 +28,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchJobs, handleApplication } from "../slices/jobSlice";
 import Loader from "../common/loading";
 import { handleBlock } from "../slices/profilesSlice";
+import profileStyles from "../styles/profile";
+import authStyles from "../styles/auth";
+import commonStyles from "../styles/common";
 
 const JobList = () => {
   const [id, setId] = useState(null);
@@ -32,6 +38,8 @@ const JobList = () => {
   const [selectedJob, setSelectedJob] = useState(null);
   const [showQuestion, setShowQuestion] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [reportModal, setReportModal] = useState(false);
+  const [report, setReport] = useState("");
 
   const modalizeRef = useRef(null);
   const aboutModalize = useRef(null);
@@ -52,16 +60,11 @@ const JobList = () => {
   };
 
   const submitApplication = () => {
-    try {
-      dispatch(handleApplication({ id, answers }));
-      setShowQuestion(false);
-      setAnswers({});
-      Alert.alert("Application Successful", "You have applied for the job.");
-      modalizeRef.current?.close();
-      setId(null);
-    } catch (error) {
-      Alert.alert("Error", "There was an error applying for the job.");
-    }
+    dispatch(handleApplication({ id, answers }));
+    setShowQuestion(false);
+    setAnswers({});
+    modalizeRef.current?.close();
+    setId(null);
   };
 
   const handleSelectJob = (job) => {
@@ -193,7 +196,7 @@ const JobList = () => {
         }
       >
         <View style={{ padding: 10, paddingBottom: 20 }}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setReportModal(true)}>
             <Text
               style={{
                 padding: 10,
@@ -205,7 +208,7 @@ const JobList = () => {
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => setReportModal(true)}>
             <Text
               style={{
                 padding: 10,
@@ -228,9 +231,9 @@ const JobList = () => {
                     dispatch(handleBlock(selectedJob?.posted_by.user.username));
                     aboutModalize.current?.close();
                     modalizeRef.current?.close();
-                    setAnswers({})
-                    setSelectedJob(null)
-                    setId(null)
+                    setAnswers({});
+                    setSelectedJob(null);
+                    setId(null);
                   },
                 },
               ]);
@@ -248,6 +251,46 @@ const JobList = () => {
           </TouchableOpacity>
         </View>
       </Modalize>
+
+      <Modal visible={reportModal} transparent={true} animationType="fade">
+        <KeyboardAvoidingView
+          style={profileStyles.modalContainer}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={profileStyles.modalContent}>
+            <Text style={profileStyles.modalTitle}>Report Form</Text>
+            <TextInput
+              style={[authStyles.input, { height: 200 }]}
+              placeholder={
+                "If you believe this collaboration post or business user has violated our community guidelines, please report it using this form"
+              }
+              placeholderTextColor={"#999"}
+              textAlign="justify"
+              value={report}
+              onChangeText={(value) => setReport(value)}
+              multiline
+            />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={"Close"}
+                onPress={() => setReportModal(false)}
+              />
+              <CustomButton
+                title={"Submit"}
+                disabled={report.length < 1}
+                onPress={() => {
+                  setReport("");
+                  setReportModal(false);
+                  Alert.alert(
+                    "Request Received",
+                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
+                  );
+                }}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
       {showQuestion && (
         <QuestionModal

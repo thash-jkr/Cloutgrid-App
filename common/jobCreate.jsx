@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   KeyboardAvoidingView,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import React, { useState } from "react";
@@ -28,7 +29,6 @@ const JobCreate = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    medium: "",
     due_date: "",
     requirements: "",
     questions: [],
@@ -46,7 +46,13 @@ const JobCreate = () => {
 
   const { width } = Dimensions.get("window");
 
-  const nextStep = () => setCurrentStep(currentStep + 1);
+  const nextStep = () => {
+    if (!formData.title || !formData.description || !formData.requirements) {
+      Alert.alert("Error", "Complete all fields to continue");
+      return;
+    }
+    setCurrentStep(currentStep + 1);
+  };
   const prevStep = () => setCurrentStep(currentStep - 1);
 
   const handleDateChange = (event, selectedDate) => {
@@ -65,6 +71,10 @@ const JobCreate = () => {
   };
 
   const handleSubmit = async () => {
+    if (!formData.due_date || !formData.target_creator) {
+      Alert.alert("Error", "You have to add a due date and target audience");
+      return;
+    }
     const data = new FormData();
     for (const key in formData) {
       if (key === "questions") {
@@ -92,10 +102,12 @@ const JobCreate = () => {
           questions: "",
           target_creator: "",
         });
+        setCurrentStep(1);
         navigation.navigate("MyJobs");
       }
     } catch (error) {
-      console.error("Error creating job:", error);
+      Alert.alert("Error", error.response.data.message)
+      // console.log(error.response.data)
     }
   };
 
@@ -154,22 +166,27 @@ const JobCreate = () => {
           <TextInput
             style={authStyles.input}
             placeholder="Title"
+            placeholderTextColor={"#999"}
             value={formData.title}
             onChangeText={(value) => handleChange("title", value)}
           />
 
           <TextInput
-            style={authStyles.input}
+            style={[authStyles.input, { height: 75 }]}
             placeholder="Description"
+            placeholderTextColor={"#999"}
             value={formData.description}
             onChangeText={(value) => handleChange("description", value)}
+            multiline
           />
 
           <TextInput
-            style={authStyles.input}
+            style={[authStyles.input, { height: 75 }]}
             placeholder="Requirements (seperated by coma ',')"
+            placeholderTextColor={"#999"}
             value={formData.requirements}
             onChangeText={(value) => handleChange("requirements", value)}
+            multiline
           />
           <CustomButton title={"Continue"} onPress={nextStep} />
         </KeyboardAvoidingView>
@@ -308,13 +325,14 @@ const JobCreate = () => {
                   <TextInput
                     style={[
                       authStyles.input,
-                      { width: "85%", marginBottom: 0 },
+                      { width: "80%", marginBottom: 0, height: 100 },
                     ]}
                     placeholder="Add questions here"
                     value={question}
                     onChangeText={(value) => setQuestion(value)}
+                    multiline
                   />
-                  <TouchableOpacity
+                  {/* <TouchableOpacity
                     onPress={() => {
                       formData.questions.push(question);
                       setQuestion("");
@@ -322,7 +340,15 @@ const JobCreate = () => {
                     disabled={question.length === 0}
                   >
                     <FontAwesomeIcon icon={faCirclePlus} size={40} />
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
+                  <CustomButton
+                    title={"Add"}
+                    onPress={() => {
+                      formData.questions.push(question);
+                      setQuestion("");
+                    }}
+                    disabled={question.length === 0}
+                  />
                 </View>
                 <ScrollView
                   style={{ width: "95%", maxHeight: 200 }}
@@ -395,144 +421,6 @@ const JobCreate = () => {
     default:
       return null;
   }
-
-  // return (
-  //   <View style={jobsStyles.container}>
-  //     <Text style={jobsStyles.h1}>Create a Collaboration</Text>
-  //     <TextInput
-  //       style={authStyles.input}
-  //       placeholder="Title"
-  //       value={formData.title}
-  //       onChangeText={(value) => handleChange("title", value)}
-  //     />
-
-  //     <TextInput
-  //       style={authStyles.input}
-  //       placeholder="Description"
-  //       value={formData.description}
-  //       onChangeText={(value) => handleChange("description", value)}
-  //     />
-
-  //     <TextInput
-  //       style={authStyles.input}
-  //       placeholder="Requirements"
-  //       value={formData.requirements}
-  //       onChangeText={(value) => handleChange("requirements", value)}
-  //     />
-
-  //     <View style={authStyles.buttonInput}>
-  //       <CustomButton
-  //         title={"Questions"}
-  //         onPress={() => setShowQuestionModal(true)}
-  //       />
-  //       <Text style={{ marginRight: 10, fontFamily: "sen-400" }}>
-  //         {formData.questions.length} questions
-  //       </Text>
-  //     </View>
-
-  //     <View style={authStyles.buttonInput}>
-  //       <CustomButton
-  //         title={"Target Audience"}
-  //         onPress={() => setShowAreaModal(true)}
-  //       />
-  //       <Text style={{ marginRight: 10 }}>{formData.target_creator}</Text>
-  //     </View>
-
-  //     <Modal
-  //       visible={showQuestionModal}
-  //       transparent={true}
-  //       animationType="fade"
-  //     >
-  //       <View style={jobsStyles.modalContainer}>
-  //         <View style={jobsStyles.modalContent}>
-  //           <Text style={jobsStyles.modalTitle}>Add Questions (optional)</Text>
-  //           <View
-  //             style={{
-  //               flexDirection: "row",
-  //               justifyContent: "space-around",
-  //               alignItems: "center",
-  //               width: "100%",
-  //               marginBottom: 10,
-  //             }}
-  //           >
-  //             <TextInput
-  //               style={[authStyles.input, { width: "85%", marginBottom: 0 }]}
-  //               placeholder="Add questions here"
-  //               value={question}
-  //               onChangeText={(value) => setQuestion(value)}
-  //             />
-  //             <TouchableOpacity
-  //               onPress={() => {
-  //                 formData.questions.push(question);
-  //                 setQuestion("");
-  //               }}
-  //               disabled={question.length === 0}
-  //             >
-  //               <FontAwesomeIcon icon={faCirclePlus} size={40} />
-  //             </TouchableOpacity>
-  //           </View>
-  //           <ScrollView
-  //             style={{ width: "95%", maxHeight: 200 }}
-  //             showsVerticalScrollIndicator={false}
-  //           >
-  //             {formData.questions.length > 0 &&
-  //               formData.questions.map((q, key) => (
-  //                 <Text key={key} style={{ fontFamily: "sen-400", margin: 5 }}>
-  //                   {`\u2022 ${q}`}
-  //                 </Text>
-  //               ))}
-  //           </ScrollView>
-  //           <View style={commonStyles.center}>
-  //             <CustomButton
-  //               title={"Close"}
-  //               onPress={() => setShowQuestionModal(false)}
-  //             />
-  //             <CustomButton
-  //               title={"Reset"}
-  //               onPress={() => {
-  //                 setFormData((prevState) => ({
-  //                   ...prevState,
-  //                   questions: [],
-  //                 }));
-  //                 setQuestion("");
-  //               }}
-  //             />
-  //           </View>
-  //         </View>
-  //       </View>
-  //     </Modal>
-
-  //     <Modal visible={showAreaModal} transparent={true} animationType="fade">
-  //       <View style={jobsStyles.modalContainer}>
-  //         <View style={jobsStyles.modalContent}>
-  //           <Text style={jobsStyles.modalTitle}>
-  //             Select your target audience
-  //           </Text>
-  //           <Picker
-  //             selectedValue={formData.target_creator}
-  //             style={jobsStyles.picker}
-  //             onValueChange={(value) => {
-  //               handleChange("target_creator", value);
-  //             }}
-  //           >
-  //             {AREA_CHOICES.map((option) => (
-  //               <Picker.Item
-  //                 key={option.value}
-  //                 label={option.label}
-  //                 value={option.value}
-  //               />
-  //             ))}
-  //           </Picker>
-  //           <CustomButton
-  //             title="Close"
-  //             onPress={() => setShowAreaModal(false)}
-  //           />
-  //         </View>
-  //       </View>
-  //     </Modal>
-  //     <CustomButton title="Create Job" onPress={handleSubmit} />
-  //   </View>
-  // );
 };
 
 export default JobCreate;

@@ -15,7 +15,6 @@ const RegisterCreator = () => {
       password: "",
       bio: "",
     },
-    date_of_birth: "",
     area: "",
   });
 
@@ -23,7 +22,7 @@ const RegisterCreator = () => {
   const prevStep = () => setCurrentStep(currentStep - 1);
 
   const handleChange = (name, value) => {
-    if (name === "date_of_birth" || name === "area") {
+    if (name === "area") {
       setFormData((prevState) => ({
         ...prevState,
         [name]: value,
