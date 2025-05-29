@@ -45,15 +45,8 @@ export const logoutThunk = createAsyncThunk(
   "auth/logoutThunk",
   async (_, { getState, rejectWithValue }) => {
     try {
-      let { refresh, token } = getState().auth;
-
-      if (!refresh) {
-        refresh = await SecureStore.getItemAsync("refresh");
-      }
-
-      if (!token) {
-        token = await SecureStore.getItemAsync("access");
-      }
+      const token = await SecureStore.getItemAsync("access");
+      const refresh = await SecureStore.getItemAsync("refresh");
 
       if (!refresh) throw new Error("No refresh token found");
 
@@ -104,14 +97,14 @@ const authSlice = createSlice({
     },
 
     setCredentiels(state, action) {
-      const {user, token, refresh, type} = action.payload
+      const { user, token, refresh, type } = action.payload;
       state.user = user;
       state.token = token;
       state.refresh = refresh;
       state.type = type;
       state.status = "succeeded";
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -131,11 +124,11 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.user = action.payload
+        state.user = action.payload;
       })
       .addCase(fetchProfile.fulfilled, (state, action) => {
-        state.user = action.payload
-      })
+        state.user = action.payload;
+      });
 
     builder
       .addCase(logoutThunk.pending, (state) => {

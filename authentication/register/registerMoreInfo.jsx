@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,8 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { useNavigation } from "@react-navigation/native";
 
 import authStyles from "../../styles/auth";
@@ -25,42 +27,57 @@ import profileStyles from "../../styles/profile";
 
 const { height, width } = Dimensions.get("window");
 
+const MAX_SIZE_MB = 5;
+
 const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
   const [showAreaModal, setShowAreaModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [filename, setFilename] = useState(null);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [eulaModal, setEulaModal] = useState(false);
+  const [localUri, setLocalUri] = useState("");
 
   const navigation = useNavigation();
+  const manipulator = useImageManipulator(localUri);
 
-  const handleFileChange = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 4],
-      quality: 0.7,
-    });
+  useEffect(() => {
+    const compressIfNeeded = async () => {
+      if (!localUri) {
+        return;
+      }
 
-    if (!result.canceled) {
-      const localUri = result.assets[0]["uri"];
-      const fileName = localUri.split("/").pop();
-      setFilename(fileName);
+      const fileInfo = await FileSystem.getInfoAsync(localUri, { size: true });
+      const imageSizeMB = fileInfo.size / (1024 * 1024);
+
+      let finalUri = localUri;
+
+      if (imageSizeMB > MAX_SIZE_MB) {
+        const compressionRatio = MAX_SIZE_MB / imageSizeMB;
+        const quality = Math.max(0.1, Math.min(1, compressionRatio));
+
+        const manipulated = await manipulator.renderAsync();
+        const result = await manipulated.saveAsync({
+          compress: quality,
+          format: SaveFormat.JPEG,
+        });
+
+        finalUri = result.localUri || result.uri;
+      }
+
+      const fileName = finalUri.split("/").pop();
       const match = /\.(\w+)$/.exec(fileName);
       const fileType = match ? `image/${match[1]}` : `image`;
 
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function () {
-          reject(new Error("Failed to load image"));
-        };
+        xhr.onload = () => resolve(xhr.response);
+        xhr.onerror = () => reject(new Error("Failed to load image"));
         xhr.responseType = "blob";
-        xhr.open("GET", localUri, true);
+        xhr.open("GET", finalUri, true);
         xhr.send(null);
       });
+
+      setFilename(fileName);
 
       setFormData((prevState) => ({
         ...prevState,
@@ -74,6 +91,21 @@ const AdditionalInfo = ({ formData, setFormData, handleChange, type }) => {
           },
         },
       }));
+    };
+
+    compressIfNeeded();
+  }, [localUri]);
+
+  const handleFileChange = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setLocalUri(result.assets[0].uri);
     }
   };
 

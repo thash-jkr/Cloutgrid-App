@@ -7,15 +7,19 @@ import {
   Platform,
   Dimensions,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
 import CustomButton from "./CustomButton";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
 import commonStyles from "../styles/common";
 import { Picker } from "@react-native-picker/picker";
 
 const { height, width } = Dimensions.get("window");
+
+const MAX_SIZE_MB = 5;
 
 const EditProfileModal = ({ profile, onClose, onSave, type }) => {
   const [showAreaModal, setShowAreaModal] = useState(false);
@@ -45,13 +49,68 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
           website: profile.website,
           target_audience: profile.target_audience,
         });
+  const [localUri, setLocalUri] = useState("");
+
+  const manipulator = useImageManipulator(localUri);
+
+  useEffect(() => {
+    const compressIfNeeded = async () => {
+      if (!localUri) {
+        return;
+      }
+
+      const fileInfo = await FileSystem.getInfoAsync(localUri, { size: true });
+      const imageSizeMB = fileInfo.size / (1024 * 1024);
+
+      let finalUri = localUri;
+
+      if (imageSizeMB > MAX_SIZE_MB) {
+        const compressionRatio = MAX_SIZE_MB / imageSizeMB;
+        const quality = Math.max(0.1, Math.min(1, compressionRatio));
+
+        const manipulated = await manipulator.renderAsync();
+        const result = await manipulated.saveAsync({
+          compress: quality,
+          format: SaveFormat.JPEG,
+        });
+
+        finalUri = result.localUri || result.uri;
+      }
+
+      const fileName = finalUri.split("/").pop();
+      const match = /\.(\w+)$/.exec(fileName);
+      const fileType = match ? `image/${match[1]}` : `image`;
+
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = () => resolve(xhr.response);
+        xhr.onerror = () => reject(new Error("Failed to load image"));
+        xhr.responseType = "blob";
+        xhr.open("GET", finalUri, true);
+        xhr.send(null);
+      });
+
+      setFilename(fileName);
+
+      setFormData((prevState) => ({
+        ...prevState,
+        user: {
+          ...prevState.user,
+          profile_photo: {
+            uri: localUri,
+            name: fileName,
+            type: fileType,
+            file: blob,
+          },
+        },
+      }));
+    };
+
+    compressIfNeeded();
+  }, [localUri]);
 
   const handleChange = (name, value) => {
-    if (
-      name === "area" ||
-      name === "website" ||
-      name === "target_audience"
-    ) {
+    if (name === "area" || name === "website" || name === "target_audience") {
       setFormData((prevState) => ({
         ...prevState,
         [name]: value,
@@ -68,42 +127,12 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: true,
-      aspect: [4, 4],
-      quality: 0.7,
+      aspect: [4, 3],
+      quality: 1,
     });
 
     if (!result.canceled) {
-      const localUri = result.assets[0]["uri"];
-      const fileName = localUri.split("/").pop();
-      setFilename(fileName);
-      const match = /\.(\w+)$/.exec(fileName);
-      const fileType = match ? `image/${match[1]}` : `image`;
-
-      const blob = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function () {
-          reject(new Error("Failed to load image"));
-        };
-        xhr.responseType = "blob";
-        xhr.open("GET", localUri, true);
-        xhr.send(null);
-      });
-
-      setFormData((prevState) => ({
-        ...prevState,
-        user: {
-          ...prevState.user,
-          profile_photo: {
-            uri: localUri,
-            name: fileName,
-            type: fileType,
-            file: blob,
-          },
-        },
-      }));
+      setLocalUri(result.assets[0].uri);
     }
   };
 
@@ -173,7 +202,7 @@ const EditProfileModal = ({ profile, onClose, onSave, type }) => {
               }}
             >
               <CustomButton
-                title={"Profile Picture"}
+                title={"Change Picture"}
                 onPress={handleFileChange}
               />
               <Text style={[commonStyles.text, { marginRight: 15 }]}>

@@ -11,9 +11,11 @@ import {
   Platform,
 } from "react-native";
 import axios from "axios";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
+import * as FileSystem from 'expo-file-system';
+import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { Modalize } from "react-native-modalize";
 import { faArrowLeft, faX } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -24,6 +26,8 @@ import commonStyles from "../styles/common";
 import jobsStyles from "../styles/jobs";
 import Config from "../config";
 
+const MAX_SIZE_MB = 5;
+
 const PostCreate = ({ route }) => {
   const [query, setQuery] = useState(null);
   const [image, setImage] = useState(null);
@@ -31,11 +35,13 @@ const PostCreate = ({ route }) => {
   const [results, setResults] = useState([]);
   const [caption, setCaption] = useState("");
   const [filename, setFilename] = useState("no file selected!");
+  const [localUri, setLocalUri] = useState("");
 
   const { type } = route.params;
 
   const navigation = useNavigation();
   const modalizeRef = useRef(null);
+  const manipulator = useImageManipulator(localUri);
 
   const handleSearch = async (q) => {
     setQuery(q);
@@ -56,40 +62,66 @@ const PostCreate = ({ route }) => {
     }
   };
 
-  const handleImageChange = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.7,
-    });
+  useEffect(() => {
+    const compressIfNeeded = async () => {
+      if (!localUri) {
+        return
+      };
 
-    if (!result.canceled) {
-      const localUri = result.assets[0]["uri"];
-      const fileName = localUri.split("/").pop();
-      setFilename(fileName);
+      const fileInfo = await FileSystem.getInfoAsync(localUri, { size: true });
+      const imageSizeMB = fileInfo.size / (1024 * 1024);
+
+      let finalUri = localUri;
+
+      if (imageSizeMB > MAX_SIZE_MB) {
+        const compressionRatio = MAX_SIZE_MB / imageSizeMB;
+        const quality = Math.max(0.1, Math.min(1, compressionRatio));
+
+        const manipulated = await manipulator.renderAsync();
+        const result = await manipulated.saveAsync({
+          compress: quality,
+          format: SaveFormat.JPEG,
+        });
+
+        finalUri = result.localUri || result.uri;
+      }
+
+      const fileName = finalUri.split("/").pop();
       const match = /\.(\w+)$/.exec(fileName);
       const fileType = match ? `image/${match[1]}` : `image`;
 
       const blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
-        xhr.onload = function () {
-          resolve(xhr.response);
-        };
-        xhr.onerror = function () {
-          reject(new Error("Failed to load image"));
-        };
+        xhr.onload = () => resolve(xhr.response);
+        xhr.onerror = () => reject(new Error("Failed to load image"));
         xhr.responseType = "blob";
-        xhr.open("GET", localUri, true);
+        xhr.open("GET", finalUri, true);
         xhr.send(null);
       });
 
+      setFilename(fileName)
+
       setImage({
-        uri: localUri,
+        uri: finalUri,
         name: fileName,
         type: fileType,
         file: blob,
       });
+    };
+
+    compressIfNeeded();
+  }, [localUri]);
+
+  const handleImageChange = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setLocalUri(result.assets[0].uri)
     }
   };
 

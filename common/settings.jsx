@@ -68,7 +68,7 @@ const Settings = () => {
         dispatch(clearProfiles());
         dispatch(clearJobs());
       })
-      .catch((error) => Alert.alert("Error", "Logout Failed - " + error));
+      .catch((error) => Alert.alert("Error", "Logout Failed - Try again later"));
   };
 
   const handleDelete = async () => {
