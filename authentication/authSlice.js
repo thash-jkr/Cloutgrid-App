@@ -24,10 +24,18 @@ export const loginThunk = createAsyncThunk(
 
       const { access, refresh, user } = response.data;
 
-      await SecureStore.setItemAsync("access", access);
-      await SecureStore.setItemAsync("refresh", refresh);
-      await SecureStore.setItemAsync("type", type);
-      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      await SecureStore.setItemAsync("access", access, {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+      });
+      await SecureStore.setItemAsync("refresh", refresh, {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+      });
+      await SecureStore.setItemAsync("type", type, {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+      });
+      await SecureStore.setItemAsync("user", JSON.stringify(user), {
+        keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY,
+      });
 
       return {
         token: access,

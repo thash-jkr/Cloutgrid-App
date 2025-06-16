@@ -46,12 +46,8 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   const { user, type } = useSelector((state) => state.auth);
-  const { posts, postsStatus, postsError } = useSelector(
-    (state) => state.profile
-  );
-  const { collabs, collabsStatus, collabsError } = useSelector(
-    (state) => state.profile
-  );
+  const { posts } = useSelector((state) => state.profile);
+  const { collabs } = useSelector((state) => state.profile);
   const { updateStatus, updateError } = useSelector((state) => state.profile);
 
   useEffect(() => {
