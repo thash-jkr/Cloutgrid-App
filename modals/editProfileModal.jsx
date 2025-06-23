@@ -10,7 +10,7 @@ import {
 import React, { useState, useEffect } from "react";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
-import CustomButton from "./CustomButton";
+import CustomButton from "../common/customButton";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { useImageManipulator, SaveFormat } from "expo-image-manipulator";

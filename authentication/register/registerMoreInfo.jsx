@@ -18,7 +18,7 @@ import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { useNavigation } from "@react-navigation/native";
 
 import authStyles from "../../styles/auth";
-import CustomButton from "../../common/CustomButton";
+import CustomButton from "../../common/customButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
 import commonStyles from "../../styles/common";

@@ -5,11 +5,11 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
 import axios from "axios";
 import searchStyles from "../styles/search";
 import { useNavigation } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import * as SecureStore from "expo-secure-store";
 
 import Config from "../config";

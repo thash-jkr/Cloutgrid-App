@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 
 import authStyles from "../styles/auth";
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import Config from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";

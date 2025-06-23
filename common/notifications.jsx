@@ -1,12 +1,6 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-} from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Switch } from "react-native";
 import React, { useEffect, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import homeStyles from "../styles/home";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +18,8 @@ const Notifications = () => {
 
   const { items, status, error } = useSelector((state) => state.notif);
 
+  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     dispatch(fetchNotifications(showAll));
   }, [dispatch, showAll]);
@@ -33,7 +29,7 @@ const Notifications = () => {
   };
 
   return (
-    <SafeAreaView style={homeStyles.home}>
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <View
         style={{
           flexDirection: "row",
@@ -50,7 +46,11 @@ const Notifications = () => {
           }}
           style={commonStyles.center}
         >
-          <FontAwesomeIcon icon={faArrowLeft} size={20} style={{marginRight: 20}}/>
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
           <Text style={commonStyles.backText}>Notifications</Text>
         </TouchableOpacity>
       </View>
@@ -98,7 +98,7 @@ const Notifications = () => {
           <Text>No notifications</Text>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

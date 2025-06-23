@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   TextInput,
   ScrollView,
   Dimensions,
@@ -15,10 +14,11 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { Modalize } from "react-native-modalize";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import homeStyles from "../styles/home";
 import commonStyles from "../styles/common";
-import CustomButton from "./CustomButton";
+import CustomButton from "./customButton";
 import Config from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -44,6 +44,8 @@ const Comments = ({ route }) => {
 
   const user = useSelector((state) => state.auth.user);
   const navigation = useNavigation();
+
+  const insets = useSafeAreaInsets();
 
   const { height, width } = Dimensions.get("window");
 
@@ -112,8 +114,11 @@ const Comments = ({ route }) => {
   };
 
   return (
-    <SafeAreaView
-      style={[commonStyles.container, { justifyContent: "space-between" }]}
+    <View
+      style={[
+        commonStyles.container,
+        { justifyContent: "space-between", paddingTop: insets.top },
+      ]}
     >
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -317,7 +322,7 @@ const Comments = ({ route }) => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

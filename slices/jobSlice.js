@@ -43,7 +43,67 @@ export const handleApplication = createAsyncThunk(
 
       return id;
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message)
+      Alert.alert("Error", error.response?.data?.message);
+      return rejectWithValue(error.response?.data?.detail ?? error.message);
+    }
+  }
+);
+
+export const fetchBusinessJobs = createAsyncThunk(
+  "job/fetchBusinessJobs",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      const response = await axios.get(`${Config.BASE_URL}/jobs/my-jobs/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.detail ?? error.message);
+    }
+  }
+);
+
+export const fetchApplications = createAsyncThunk(
+  "job/fetchApplications",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      const response = await axios.get(
+        `${Config.BASE_URL}/jobs/my-jobs/${id}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.detail ?? error.message);
+    }
+  }
+);
+
+export const handleDeleteJob = createAsyncThunk(
+  "job/handleDeleteJob",
+  async (id, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      await axios.delete(`${Config.BASE_URL}/jobs/${id}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return id;
+    } catch (error) {
       return rejectWithValue(error.response?.data?.detail ?? error.message);
     }
   }
@@ -51,8 +111,10 @@ export const handleApplication = createAsyncThunk(
 
 const initialState = {
   jobs: [],
-  loading: false,
-  error: null,
+  businessJobs: [],
+  applications: [],
+  jobLoading: false,
+  jobError: null,
 };
 
 const jobSlice = createSlice({
@@ -61,24 +123,27 @@ const jobSlice = createSlice({
   reducers: {
     clearJobs: (state) => {
       state.jobs = [];
-      state.loading = false;
-      state.error = null;
+      state.businessJobs = [];
+      state.applications = [];
+      state.jobLoading = false;
+      state.jobError = null;
     },
   },
 
   extraReducers: (builder) => {
     builder
+      // Fetch Jobs
       .addCase(fetchJobs.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.jobLoading = true;
+        state.jobError = null;
       })
       .addCase(fetchJobs.fulfilled, (state, action) => {
-        state.loading = false;
+        state.jobLoading = false;
         state.jobs = action.payload;
       })
       .addCase(fetchJobs.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.jobLoading = false;
+        state.jobError = action.payload;
       })
       .addCase(handleBlock.pending, (state, action) => {
         const username = action.meta.arg;
@@ -87,15 +152,63 @@ const jobSlice = createSlice({
         });
       })
 
+      // Handle Collaboration Application
+      .addCase(handleApplication.pending, (state) => {
+        state.jobLoading = true;
+        state.jobError = null;
+      })
       .addCase(handleApplication.fulfilled, (state, action) => {
         const id = action.payload;
         const job = state.jobs.find((j) => j.id === id);
         if (job) job.is_applied = true;
-        state.loading = false;
+        state.jobLoading = false;
       })
       .addCase(handleApplication.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        state.jobLoading = false;
+        state.jobError = action.payload;
+      })
+
+      // Fetch Business Jobs
+      .addCase(fetchBusinessJobs.pending, (state) => {
+        state.jobLoading = true;
+        state.jobError = null;
+      })
+      .addCase(fetchBusinessJobs.fulfilled, (state, action) => {
+        state.jobLoading = false;
+        state.businessJobs = action.payload;
+      })
+      .addCase(fetchBusinessJobs.rejected, (state, action) => {
+        state.jobLoading = false;
+        state.jobError = action.payload;
+      })
+
+      // Fetrch Applications
+      .addCase(fetchApplications.pending, (state) => {
+        state.jobLoading = true;
+        state.jobError = null;
+      })
+      .addCase(fetchApplications.fulfilled, (state, action) => {
+        state.jobLoading = false;
+        state.applications = action.payload;
+      })
+      .addCase(fetchApplications.rejected, (state, action) => {
+        state.jobLoading = false;
+        state.jobError = action.payload;
+      })
+
+      // Handle Delete Job
+      .addCase(handleDeleteJob.pending, (state) => {
+        state.jobLoading = true;
+        state.jobError = null;
+      })
+      .addCase(handleDeleteJob.fulfilled, (state, action) => {
+        const id = action.payload;
+        state.businessJobs = state.businessJobs.filter((job) => job.id !== id);
+        state.jobLoading = false;
+      })
+      .addCase(handleDeleteJob.rejected, (state, action) => {
+        state.jobLoading = false;
+        state.jobError = action.payload;
       });
   },
 });

@@ -24,8 +24,7 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#fff"
       },
-      "package": "com.cloutgrid.Cloutgrid",
-      "edgeToEdgeEnabled": true
+      "package": "com.cloutgrid.Cloutgrid"
     },
     "web": {
       "favicon": "./assets/favicon.png"

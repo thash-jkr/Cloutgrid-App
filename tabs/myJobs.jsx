@@ -21,8 +21,8 @@ import jobsStyles from "../styles/jobs";
 import Config from "../config";
 import AnswerModal from "../modals/answerModal";
 import commonStyles from "../styles/common";
-import CustomButton from "../common/CustomButton";
-import { text } from "@fortawesome/fontawesome-svg-core";
+import CustomButton from "../common/customButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MyJobs = () => {
   const [id, setId] = useState(null);
@@ -38,6 +38,8 @@ const MyJobs = () => {
   const navigation = useNavigation();
 
   const modalizeRef = useRef(null);
+
+  const insets = useSafeAreaInsets();
 
   const fetchJobs = async () => {
     try {
@@ -118,8 +120,8 @@ const MyJobs = () => {
   };
 
   return (
-    <SafeAreaView style={jobsStyles.container}>
-      <Text style={jobsStyles.h1}>Your Collaborations</Text>
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
+      <Text style={commonStyles.h1}>Your Collaborations</Text>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}
@@ -132,7 +134,11 @@ const MyJobs = () => {
             <TouchableOpacity
               key={job.id}
               style={jobsStyles.job}
-              onPress={() => handleSelectJob(job)}
+              onPress={() =>
+                navigation.navigate("Applications", {
+                  id: job.id,
+                })
+              }
             >
               <Image
                 source={{
@@ -256,7 +262,7 @@ const MyJobs = () => {
           profile={applicant}
         />
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 

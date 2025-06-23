@@ -12,7 +12,7 @@ import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 
 import authStyles from "../../styles/auth";
-import CustomButton from "../../common/CustomButton";
+import CustomButton from "../../common/customButton";
 import Config from "../../config";
 import Loader from "../../common/loading";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";

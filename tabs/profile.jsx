@@ -8,20 +8,19 @@ import {
   ScrollView,
   RefreshControl,
   Modal,
+  Dimensions,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { faLink, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import Hyperlink from "react-native-hyperlink";
 
 import profileStyles from "../styles/profile";
-import CustomButton from "../common/CustomButton";
-import EditProfileModal from "../common/EditProfileModal";
+import CustomButton from "../common/customButton";
+import EditProfileModal from "../modals/editProfileModal";
 import ProfilePosts from "../common/profilePosts";
 import Config from "../config";
 import LoadingSpinner from "../common/loading";
@@ -41,6 +40,7 @@ const Profile = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [inModal, setInModal] = useState(false);
   const [ytModal, setYtModal] = useState(false);
+  const [imageModal, setImageModal] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -49,6 +49,10 @@ const Profile = () => {
   const { posts } = useSelector((state) => state.profile);
   const { collabs } = useSelector((state) => state.profile);
   const { updateStatus, updateError } = useSelector((state) => state.profile);
+
+  const { width } = Dimensions.get("screen");
+
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     dispatch(fetchPosts());
@@ -184,7 +188,7 @@ const Profile = () => {
   }, {});
 
   return (
-    <SafeAreaView style={profileStyles.profile}>
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" />
       <ScrollView
         refreshControl={
@@ -193,12 +197,17 @@ const Profile = () => {
       >
         <View style={profileStyles.profileTop}>
           <View style={profileStyles.profileDetails}>
-            <Image
-              source={{
-                uri: `${Config.BASE_URL}${user.user.profile_photo}`,
-              }}
-              style={profileStyles.profilePicture}
-            />
+            <TouchableOpacity
+              onPress={() => setImageModal(true)}
+              style={{ position: "relative" }}
+            >
+              <Image
+                source={{
+                  uri: `${Config.BASE_URL}${user.user.profile_photo}`,
+                }}
+                style={profileStyles.profilePicture}
+              />
+            </TouchableOpacity>
             <View style={profileStyles.profileData}>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
@@ -219,15 +228,14 @@ const Profile = () => {
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontFamily: "sen-500" }}>{user.user.name}</Text>
-            <Text style={{ fontFamily: "sen-400" }}>{user.user.bio}</Text>
+            <Text style={{ fontWeight: "600", fontSize: 13 }}>{user.user.name} | @{user.user.username}</Text>
+            <Text style={{ fontSize: 12 }}>{user.user.bio}</Text>
             {user.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
                 <Text
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    fontFamily: "sen-400",
                   }}
                 >
                   <FontAwesomeIcon icon={faLink} /> <Text>{user.website}</Text>
@@ -235,7 +243,7 @@ const Profile = () => {
               </Hyperlink>
             )}
             <View style={profileStyles.profileArea}>
-              <Text style={{ fontFamily: "sen-600" }}>
+              <Text style={{ fontWeight: 600, fontSize: 12 }}>
                 {type === "creator"
                   ? AREA_OPTIONS_OBJECT[user.area]
                   : AREA_OPTIONS_OBJECT[user.target_audience]}
@@ -245,7 +253,7 @@ const Profile = () => {
           <View style={profileStyles.button}>
             <CustomButton
               title="Edit Profile"
-              onPress={() => setModalVisible(true)}
+              onPress={() => navigation.navigate("EditProfile")}
             />
             <CustomButton
               title="Settings"
@@ -264,8 +272,8 @@ const Profile = () => {
             >
               <Text
                 style={{
-                  fontFamily: "sen-600",
-                  fontSize: 15,
+                  fontWeight: "600",
+                  fontSize: 14,
                 }}
               >
                 Posts
@@ -319,15 +327,6 @@ const Profile = () => {
           <View>{renderContent()}</View>
         </View>
       </ScrollView>
-
-      {modalVisible && (
-        <EditProfileModal
-          profile={user}
-          onClose={() => setModalVisible(false)}
-          onSave={handleSave}
-          type={type}
-        />
-      )}
 
       <Modal visible={inModal} animationType="fade" transparent={true}>
         <View style={profileStyles.modalContainer}>
@@ -386,7 +385,30 @@ const Profile = () => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+
+      <Modal visible={imageModal} animationType="fade" transparent={true}>
+        <View style={profileStyles.modalContainer}>
+          <View>
+            <Image
+              source={{
+                uri: `${Config.BASE_URL}${user.user.profile_photo}`,
+              }}
+              style={{
+                width: width * 0.8,
+                height: width * 0.8,
+                borderRadius: "50%"
+              }}
+            />
+            <View style={commonStyles.centerVertical}>
+              <CustomButton
+                title="Close"
+                onPress={() => setImageModal(false)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </View>
   );
 };
 

@@ -5,7 +5,6 @@ const { height, width } = Dimensions.get("window");
 const homeStyles = StyleSheet.create({
   home: {
     alignItems: "center",
-    // backgroundColor: "#ECEEEA",
     backgroundColor: "#fff",
     flex: 1,
     justifyContent: "center",
@@ -17,6 +16,9 @@ const homeStyles = StyleSheet.create({
     width: width,
     paddingHorizontal: 20,
     // backgroundColor: "#f0f0f0",
+    borderBottomColor: "#ddd",
+    borderBottomWidth: 1,
+    paddingBottom: 5
   },
   bell: {
     color: "green",
@@ -92,10 +94,13 @@ const homeStyles = StyleSheet.create({
     // fontFamily: "sen-500",
   },
   postContainer: {
-    marginTop: 10,
+    // marginTop: 10,
   },
   post: {
     width: width,
+    paddingBottom: 10,
+    borderBottomColor: "#eee",
+    borderBottomWidth: 1
   },
   postHeader: {
     flexDirection: "row",
@@ -130,8 +135,6 @@ const homeStyles = StyleSheet.create({
   postFooterText: {
     padding: 10,
     // fontFamily: "sen-400",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
   postFooterTextBold: {
     // fontFamily: "sen-600",

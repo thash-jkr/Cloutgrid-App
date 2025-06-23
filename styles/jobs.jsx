@@ -40,7 +40,8 @@ const jobsStyles = StyleSheet.create({
   },
   h2: {
     fontSize: 18,
-    // fontFamily: "sen-600",
+    fontWeight: 600,
+    maxWidth: width - 200,
   },
   modalHeader: {
     padding: 15,
@@ -66,18 +67,20 @@ const jobsStyles = StyleSheet.create({
   },
   jobDetailText: {
     marginBottom: 10,
-    fontSize: 15,
+    fontSize: 12,
+    fontWeight: 500
     // fontFamily: "sen-500",
   },
   jobData: {
-    marginTop: 30,
-    fontSize: 20,
+    marginVertical: 10,
+    fontSize: 18,
+    fontWeight: 600
     // fontFamily: "sen-600",
   },
   button: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginVertical: 40,
   },
   input: {
     width: width * 0.9,
@@ -117,7 +120,7 @@ const jobsStyles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    position: "relative"
+    justifyContent: "center",
   },
   modalTitle: {
     fontSize: 18,

@@ -14,13 +14,13 @@ import Settings from "../common/settings";
 import Comments from "../common/comments";
 import ProfilePostsDetails from "../common/profilePostsDetails";
 import MyJobs from "../tabs/myJobs";
-import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 
-import Config from "../config";
 import JobCreate from "../common/jobCreate";
 import PostCreate from "../common/postCreate";
 import { useSelector } from "react-redux";
+import JobDetails from "../common/jobDetails";
+import EditProfile from "../common/editProfile";
+import JobApplications from "../common/jobApplications";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -62,11 +62,22 @@ const CreateStack = ({ type }) => {
   );
 };
 
-const JobStack = () => {
+const CreatorJobStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="JobsMain" component={Jobs} />
+      <Stack.Screen name="JobDetails" component={JobDetails} />
+      <Stack.Screen name="Profiles" component={Profiles} />
+    </Stack.Navigator>
+  );
+};
+
+const BusinessJobStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MyJobsMain" component={MyJobs} />
       <Stack.Screen name="Profiles" component={Profiles} />
+      <Stack.Screen name="Applications" component={JobApplications} />
     </Stack.Navigator>
   );
 };
@@ -81,6 +92,7 @@ const ProfileStack = () => {
         component={ProfilePostsDetails}
       />
       <Stack.Screen name="Comments" component={Comments} />
+      <Stack.Screen name="EditProfile" component={EditProfile} />
     </Stack.Navigator>
   );
 };
@@ -123,8 +135,12 @@ const AppTabs = () => {
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Search" component={SearchStack} />
       <Tab.Screen name="Create" children={() => <CreateStack type={type} />} />
-      {type === "creator" && <Tab.Screen name="Jobs" component={Jobs} />}
-      {type === "business" && <Tab.Screen name="MyJobs" component={JobStack} />}
+      {type === "creator" && (
+        <Tab.Screen name="Jobs" component={CreatorJobStack} />
+      )}
+      {type === "business" && (
+        <Tab.Screen name="MyJobs" component={BusinessJobStack} />
+      )}
       <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );

@@ -5,15 +5,13 @@ import {
   ScrollView,
   TextInput,
   Text,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import jobsStyles from "../styles/jobs";
+import commonStyles from "../styles/common";
 
 const QuestionModal = ({
   job,
@@ -39,29 +37,25 @@ const QuestionModal = ({
   };
 
   return (
-    <Modal visible={showQuestion} transparent={true} animationType="slide">
-      <View style={jobsStyles.modalContainer}>
-        <KeyboardAvoidingView
-          style={jobsStyles.modalContent}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={1}
-        >
-          <TouchableOpacity
-            style={{ position: "absolute", right: 10, top: 10 }}
-            onPress={onClose}
-          >
-            <FontAwesomeIcon icon={faXmark} size={20} />
-          </TouchableOpacity>
+    <Modal visible={showQuestion} transparent={true} animationType="fade">
+      <KeyboardAvoidingView
+        style={jobsStyles.modalContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={jobsStyles.modalContent}>
           <ScrollView>
             <Text style={jobsStyles.modalTitle}>{question.content}</Text>
           </ScrollView>
           <TextInput
-            style={jobsStyles.input}
+            style={[commonStyles.input, { height: 100 }]}
             placeholder="Give your answer here...!"
             value={answers[question.id]}
             onChangeText={(value) => handleAnswer(value)}
+            textAlignVertical="top"
+            multiline
           />
-          <View style={{ flexDirection: "row" }}>
+          <View style={[commonStyles.center, { width: "100%" }]}>
+            <CustomButton title="Close" onPress={onClose} />
             <CustomButton
               title="Previous"
               disabled={current === 0}
@@ -84,8 +78,8 @@ const QuestionModal = ({
               onPress={onSubmit}
             />
           </View>
-        </KeyboardAvoidingView>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

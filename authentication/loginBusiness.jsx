@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Alert } from "react-native";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import authStyles from "../styles/auth";
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 

@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   Modal,
   TextInput,
@@ -27,12 +26,13 @@ import {
   faArrowLeft,
   faHandshakeSimple,
 } from "@fortawesome/free-solid-svg-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Config from "../config";
 import jobsStyles from "../styles/jobs";
 import authStyles from "../styles/auth";
 import profileStyles from "../styles/profile";
-import CustomButton from "./CustomButton";
+import CustomButton from "./customButton";
 import commonStyles from "../styles/common";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutLocal, logoutThunk } from "../authentication/authSlice";
@@ -58,6 +58,8 @@ const Settings = () => {
 
   const { token, type } = useSelector((state) => state.auth);
 
+  const insets = useSafeAreaInsets();
+
   const handleLogout = async () => {
     dispatch(logoutThunk())
       .unwrap()
@@ -68,7 +70,9 @@ const Settings = () => {
         dispatch(clearProfiles());
         dispatch(clearJobs());
       })
-      .catch((error) => Alert.alert("Error", "Logout Failed - Try again later"));
+      .catch((error) =>
+        Alert.alert("Error", "Logout Failed - Try again later")
+      );
   };
 
   const handleDelete = async () => {
@@ -112,7 +116,7 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView style={profileStyles.settings}>
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <View
         style={{
           flexDirection: "row",
@@ -681,7 +685,7 @@ const Settings = () => {
           </View>
         </View>
       </Modal> */}
-    </SafeAreaView>
+    </View>
   );
 };
 

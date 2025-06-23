@@ -5,43 +5,98 @@ import {
   Alert,
   TextInput,
   ScrollView,
-  SafeAreaView,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
+  Keyboard,
+  Modal,
+  Animated,
+  Easing,
+  FlatList,
 } from "react-native";
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from "expo-file-system";
 import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { Modalize } from "react-native-modalize";
-import { faArrowLeft, faX } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faCircleQuestion,
+  faCross,
+  faX,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import commonStyles from "../styles/common";
 import jobsStyles from "../styles/jobs";
 import Config from "../config";
+import profileStyles from "../styles/profile";
+import { useSelector } from "react-redux";
+import AboutModal from "../modals/aboutModal";
 
 const MAX_SIZE_MB = 5;
 
 const PostCreate = ({ route }) => {
-  const [query, setQuery] = useState(null);
+  const { imageUri } = route.params;
+
+  const { width } = Dimensions.get("screen");
+
+  const { type } = useSelector((state) => state.auth);
+
+  const modalizeRef = useRef(null);
+
+  const [query, setQuery] = useState("");
   const [image, setImage] = useState(null);
   const [collab, setCollab] = useState(null);
   const [results, setResults] = useState([]);
   const [caption, setCaption] = useState("");
-  const [filename, setFilename] = useState("no file selected!");
-  const [localUri, setLocalUri] = useState("");
+  const [localUri, setLocalUri] = useState(imageUri);
+  const [imageModal, setImageModal] = useState(false);
+  const [imageSize] = useState(new Animated.Value(width * 0.6));
+  const [aboutTitle, setAboutTitle] = useState("");
+  const [aboutBody, setAboutBody] = useState("");
 
-  const { type } = route.params;
+  const insets = useSafeAreaInsets();
 
   const navigation = useNavigation();
-  const modalizeRef = useRef(null);
   const manipulator = useImageManipulator(localUri);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        Animated.timing(imageSize, {
+          toValue: width * 0.1,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.out(Easing.ease),
+        }).start();
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        Animated.timing(imageSize, {
+          toValue: width * 0.6,
+          duration: 250,
+          useNativeDriver: false,
+          easing: Easing.out(Easing.ease),
+        }).start();
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleSearch = async (q) => {
     setQuery(q);
@@ -65,8 +120,8 @@ const PostCreate = ({ route }) => {
   useEffect(() => {
     const compressIfNeeded = async () => {
       if (!localUri) {
-        return
-      };
+        return;
+      }
 
       const fileInfo = await FileSystem.getInfoAsync(localUri, { size: true });
       const imageSizeMB = fileInfo.size / (1024 * 1024);
@@ -99,8 +154,6 @@ const PostCreate = ({ route }) => {
         xhr.send(null);
       });
 
-      setFilename(fileName)
-
       setImage({
         uri: finalUri,
         name: fileName,
@@ -121,7 +174,8 @@ const PostCreate = ({ route }) => {
     });
 
     if (!result.canceled) {
-      setLocalUri(result.assets[0].uri)
+      setImageModal(false);
+      setLocalUri(result.assets[0].uri);
     }
   };
 
@@ -152,10 +206,10 @@ const PostCreate = ({ route }) => {
       });
       setCaption("");
       setImage(null);
-      setFilename("no file selected!");
-      setCollab(null);
+      setCollab("");
+      setLocalUri("");
       Alert.alert("Post created successfully!");
-      navigation.navigate("Home");
+      navigation.goBack();
     } catch (error) {
       Alert.alert(
         "Error",
@@ -167,7 +221,7 @@ const PostCreate = ({ route }) => {
 
   return (
     <KeyboardAvoidingView
-      style={jobsStyles.container}
+      style={[commonStyles.container, { paddingTop: insets.top }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <View
@@ -178,162 +232,200 @@ const PostCreate = ({ route }) => {
           width: "100%",
           paddingLeft: 20,
           padding: 10,
-          position: "absolute",
-          top: 50,
         }}
       >
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
           }}
+          style={commonStyles.center}
         >
-          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
+          <Text style={commonStyles.backText}>Create Post</Text>
         </TouchableOpacity>
       </View>
-      <Text style={jobsStyles.h1}>Create a Post</Text>
 
-      <View
-        style={{
-          marginVertical: 10,
-          paddingVertical: 20,
-          borderBottomColor: "#ddd",
-          borderBottomWidth: 1,
-          borderTopColor: "#ddd",
-          borderTopWidth: 1,
-        }}
-      >
-        <View
+      <TouchableOpacity onPress={() => setImageModal(true)}>
+        <Animated.Image
+          source={{ uri: localUri }}
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "90%",
-            marginBottom: 15,
+            width: imageSize,
+            height: imageSize,
+            borderWidth: 1,
+            borderColor: "#ddd",
+            marginVertical: 20,
           }}
-        >
-          <CustomButton title={"Select Image"} onPress={handleImageChange} />
-          <Text style={[commonStyles.text, { color: "#777" }]}>
-            {filename.length > 20
-              ? filename.substring(0, 20) + "..."
-              : filename}
-          </Text>
+        />
+      </TouchableOpacity>
+
+      <View style={commonStyles.centerVertical}>
+        <View style={{ position: "relative" }}>
+          <Text style={commonStyles.h4}>Caption:</Text>
+          <TextInput
+            placeholder="Write a caption"
+            value={caption}
+            onChangeText={(text) => setCaption(text)}
+            style={commonStyles.inputLarge}
+            textAlignVertical="top"
+            multiline
+          />
+          <View style={{ position: "absolute", bottom: 25, right: 7 }}>
+            <TouchableOpacity
+              onPress={() => {
+                setAboutTitle("Adding caption to your post");
+                setAboutBody(
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                );
+                modalizeRef.current?.open();
+              }}
+            >
+              <FontAwesomeIcon icon={faCircleQuestion} size={17} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <TextInput
-          placeholder="Write a caption..."
-          value={caption}
-          onChangeText={(text) => setCaption(text)}
-          style={jobsStyles.input}
-        />
-
         {type === "creator" && (
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "90%",
-            }}
-          >
-            <CustomButton
-              title={"Select collab"}
-              onPress={() => modalizeRef.current?.open()}
+          <View style={{ position: "relative" }}>
+            <View
+              style={{
+                display: query.length > 0 ? "flex" : "none",
+                height: 150,
+                position: "absolute",
+                top: -150,
+                width: "90%",
+                backgroundColor: "#fff",
+                justifyContent: "flex-start",
+                alignItems: "center",
+                borderRadius: 10,
+                shadowColor: "#000",
+                shadowOffset: { width: 2, height: 2 },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+                elevation: 5,
+              }}
+            >
+              <ScrollView>
+                {results.length > 0 ? (
+                  results.map((item) => (
+                    <TouchableOpacity
+                      key={item.user.username}
+                      style={{
+                        width: width * 0.85,
+                        padding: 10,
+                        backgroundColor: "#CAF0F8",
+                        margin: 5,
+                        borderRadius: 10,
+                        // shadowColor: "#000",
+                        // shadowOffset: { width: 2, height: 2 },
+                        // shadowOpacity: 0.5,
+                        // shadowRadius: 2,
+                        // elevation: 5,
+                      }}
+                      onPress={() => {
+                        setCollab(item.user.username);
+                        setQuery("");
+                      }}
+                    >
+                      <Text style={{ fontWeight: "500" }}>
+                        {item.user.username}
+                      </Text>
+                    </TouchableOpacity>
+                  ))
+                ) : (
+                  <Text>No results</Text>
+                )}
+              </ScrollView>
+            </View>
+
+            <Text style={commonStyles.h4}>Collaboration (optional):</Text>
+            <TextInput
+              placeholder={collab ? "" : "Start typing to search..."}
+              value={query}
+              onChangeText={handleSearch}
+              style={commonStyles.input}
+              editable={!collab}
             />
-            {collab ? (
+
+            <View style={{ position: "absolute", bottom: 25, right: 7 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setAboutTitle("Adding collaboration to your post");
+                  setAboutBody(
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                  );
+                  modalizeRef.current?.open();
+                }}
+              >
+                <FontAwesomeIcon icon={faCircleQuestion} size={17} />
+              </TouchableOpacity>
+            </View>
+
+            {collab && (
               <View
                 style={{
+                  backgroundColor: "#CAF0F8",
+                  position: "absolute",
+                  padding: 7,
+                  borderRadius: 15,
+                  top: 31,
+                  left: 10,
+                  paddingHorizontal: 10,
                   flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center",
                 }}
               >
-                <Text>{collab}</Text>
-                <TouchableOpacity
-                  style={{ marginLeft: 5 }}
-                  onPress={() => setCollab(null)}
-                >
-                  <FontAwesomeIcon icon={faX} size={10} />
+                <Text style={{ fontWeight: 600, marginRight: 5 }}>
+                  {collab}
+                </Text>
+                <TouchableOpacity onPress={() => setCollab(null)}>
+                  <FontAwesomeIcon icon={faXmark} size={14} />
                 </TouchableOpacity>
               </View>
-            ) : (
-              <Text
-                style={[
-                  commonStyles.text,
-                  { maxWidth: 150, textAlign: "right", color: "#777" },
-                ]}
-              >
-                no collabs selected!
-              </Text>
             )}
           </View>
         )}
       </View>
 
-      <CustomButton title="Create Post" onPress={handlePostSubmit} />
+      <CustomButton
+        title="Create Post"
+        onPress={handlePostSubmit}
+        disabled={!localUri}
+      />
 
-      <Modalize
-        ref={modalizeRef}
-        snapPoint={600}
-        HeaderComponent={
-          <View style={jobsStyles.modalHeader}>
-            <Text style={{ fontWeight: "600", textAlign: "justify" }}>
-              (optional) Tag a business you’ve collaborated with for this post
-              to give them credit and increase visibility.
-            </Text>
-          </View>
-        }
-        onClose={() => {
-          setQuery("");
-          setResults([]);
-        }}
-        modalTopOffset={Platform.OS === "ios" ? 130 : 50}
-      >
-        <KeyboardAvoidingView
-          style={jobsStyles.modal}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <TextInput
-            placeholder="Search for businesses..."
-            style={jobsStyles.input}
-            value={query}
-            onChangeText={handleSearch}
-          />
-          <ScrollView>
-            {results.length > 0 ? (
-              results.map((item) => (
-                <TouchableOpacity
-                  key={item.user.username}
-                  style={jobsStyles.job}
-                  onPress={() => {
-                    setCollab(item.user.username);
-                    modalizeRef.current?.close();
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: `${Config.BASE_URL}${item.user.profile_photo}`,
-                    }}
-                    style={jobsStyles.jobImage}
-                  />
-                  <Text>{item.user.name}</Text>
-                </TouchableOpacity>
-              ))
-            ) : (
-              <Text>No results</Text>
-            )}
-          </ScrollView>
-          <View style={jobsStyles.button}>
-            <CustomButton
-              title={"Close"}
-              onPress={() => {
-                setQuery("");
-                setResults([]);
-                modalizeRef.current?.close();
+      <Modal visible={imageModal} animationType="fade" transparent={true}>
+        <View style={profileStyles.modalContainer}>
+          <View>
+            <Image
+              source={{ uri: localUri }}
+              style={{
+                width: width * 0.9,
+                height: width * 0.9,
               }}
             />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={localUri ? "Change Image" : "Upload Image"}
+                onPress={handleImageChange}
+              />
+              <CustomButton
+                title="Close"
+                onPress={() => setImageModal(false)}
+              />
+            </View>
           </View>
-        </KeyboardAvoidingView>
-      </Modalize>
+        </View>
+      </Modal>
+
+      <AboutModal
+        modalizeRef={modalizeRef}
+        title={aboutTitle}
+        body={aboutBody}
+      />
     </KeyboardAvoidingView>
   );
 };

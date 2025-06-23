@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import axios from "axios";
 
 import authStyles from "../styles/auth";
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import Config from "../config";
 import Loader from "../common/loading";
 import { useDispatch, useSelector } from "react-redux";

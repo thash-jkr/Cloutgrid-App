@@ -5,17 +5,14 @@ import {
   StatusBar,
   ScrollView,
   RefreshControl,
-  SafeAreaView,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
   Alert,
   Modal,
-  TextInput
+  TextInput,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
-import * as SecureStore from "expo-secure-store";
-import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -26,12 +23,15 @@ import {
 import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
+import {
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import homeStyles from "../styles/home";
 import commonStyles from "../styles/common";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";
@@ -48,6 +48,8 @@ const Home = () => {
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     dispatch(fetchFeed());
@@ -84,8 +86,9 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style={homeStyles.home}>
+    <View style={[homeStyles.home, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
+      
       <View style={[homeStyles.header]}>
         <View>
           <Text style={homeStyles.h2}>
@@ -213,13 +216,12 @@ const Home = () => {
                   </TouchableOpacity>
                 </View>
                 <View style={homeStyles.postFooterText}>
-                  <Text>
+                  <View>
                     <Text style={homeStyles.postFooterTextBold}>
                       {post.author.username}
                     </Text>
-                    {"  "}
-                    <Text style={{ fontFamily: "" }}>{post.caption}</Text>
-                  </Text>
+                    <Text style={{ textAlign: "justify", fontWeight: 500 }}>{post.caption}</Text>
+                  </View>
                 </View>
               </View>
             </View>
@@ -369,7 +371,7 @@ const Home = () => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

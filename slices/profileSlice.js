@@ -123,7 +123,6 @@ export const updateProfile = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message ?? error.message);
       return rejectWithValue(error.response?.data?.message ?? error.message);
     }
   }
@@ -214,6 +213,7 @@ const profileSlice = createSlice({
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.profileLoading = false;
+        state.profileError = null;
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.profileLoading = false;

@@ -1,13 +1,14 @@
 import {
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   Animated,
+  StatusBar,
 } from "react-native";
 import React, { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import authStyles from "../../styles/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -69,6 +70,7 @@ const SignUp = () => {
 
   return (
     <SafeAreaView style={authStyles.container}>
+      <StatusBar backgroundColor={"#fff"} barStyle={"dark-content"} />
       <Text style={authStyles.h1}>
         Join{" "}
         <Text style={{ color: "#03045E", fontFamily: "sen-600" }}>CLOUT</Text>

@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   Image,
@@ -23,6 +22,7 @@ import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import commonStyles from "../styles/common";
 import homeStyles from "../styles/home";
@@ -31,7 +31,7 @@ import { Modalize } from "react-native-modalize";
 import { useDispatch, useSelector } from "react-redux";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
-import CustomButton from "./CustomButton";
+import CustomButton from "./customButton";
 import { deletePost } from "../slices/profileSlice";
 
 const ProfilePostsDetails = ({ route }) => {
@@ -49,6 +49,8 @@ const ProfilePostsDetails = ({ route }) => {
   const lastTapRef = useRef(null);
 
   const user = useSelector((state) => state.auth.user);
+
+  const insets = useSafeAreaInsets();
 
   const handleTap = (post) => {
     const now = new Date().getTime();
@@ -98,9 +100,7 @@ const ProfilePostsDetails = ({ route }) => {
   };
 
   return (
-    <SafeAreaView
-      style={[commonStyles.container, { justifyContent: "flex-start" }]}
-    >
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <View
         style={{
           flexDirection: "row",
@@ -184,13 +184,14 @@ const ProfilePostsDetails = ({ route }) => {
                 </TouchableOpacity>
               </View>
               <View style={homeStyles.postFooterText}>
-                <Text>
-                  <Text style={homeStyles.postFooterTextBold}>
+                <View>
+                  {/* <Text style={homeStyles.postFooterTextBold}>
                     {post.author.username}
+                  </Text> */}
+                  <Text style={{ textAlign: "justify", fontWeight: 500 }}>
+                    {post.caption}
                   </Text>
-                  {"  "}
-                  <Text style={{ fontFamily: "sen-400" }}>{post.caption}</Text>
-                </Text>
+                </View>
               </View>
             </View>
           </View>
@@ -310,7 +311,7 @@ const ProfilePostsDetails = ({ route }) => {
           </View>
         </KeyboardAvoidingView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 

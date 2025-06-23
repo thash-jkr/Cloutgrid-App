@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
   StatusBar,
   TouchableOpacity,
@@ -11,15 +10,10 @@ import {
   Platform,
   KeyboardAvoidingView,
   Modal,
-  TextInput
+  TextInput,
 } from "react-native";
-import {
-  faInstagram,
-  faYoutube,
-  faTiktok,
-} from "@fortawesome/free-brands-svg-icons";
+import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import Hyperlink from "react-native-hyperlink";
-import * as SecureStore from "expo-secure-store";
 import React, { useEffect, useRef, useState } from "react";
 import {
   faArrowLeft,
@@ -29,8 +23,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Modalize } from "react-native-modalize";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import profileStyles from "../styles/profile";
 import ProfilePosts from "./profilePosts";
 import LoadingSpinner from "./loading";

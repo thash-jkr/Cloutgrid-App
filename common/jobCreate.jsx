@@ -11,19 +11,26 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { Picker } from "@react-native-picker/picker";
-import { faArrowLeft, faCirclePlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faCircleQuestion,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import CustomButton from "../common/CustomButton";
+import CustomButton from "../common/customButton";
 import commonStyles from "../styles/common";
 import jobsStyles from "../styles/jobs";
 import authStyles from "../styles/auth";
 import Config from "../config";
 import { useNavigation } from "@react-navigation/native";
+import AboutModal from "../modals/aboutModal";
+import profileStyles from "../styles/profile";
 
 const JobCreate = () => {
   const [formData, setFormData] = useState({
@@ -41,8 +48,14 @@ const JobCreate = () => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [aboutTitle, setAboutTitle] = useState("");
+  const [aboutBody, setAboutBody] = useState("");
+
+  const insets = useSafeAreaInsets();
 
   const navigation = useNavigation();
+
+  const modalizeRef = useRef(null);
 
   const { width } = Dimensions.get("window");
 
@@ -106,7 +119,7 @@ const JobCreate = () => {
         navigation.navigate("MyJobs");
       }
     } catch (error) {
-      Alert.alert("Error", error.response.data.message)
+      Alert.alert("Error", error.response.data.message);
       // console.log(error.response.data)
     }
   };
@@ -139,7 +152,7 @@ const JobCreate = () => {
     case 1:
       return (
         <KeyboardAvoidingView
-          style={commonStyles.container}
+          style={[commonStyles.container, { paddingTop: insets.top }]}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View
@@ -150,107 +163,245 @@ const JobCreate = () => {
               width: "100%",
               paddingLeft: 20,
               padding: 10,
-              position: "absolute",
-              top: 50,
             }}
           >
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
+              style={commonStyles.center}
             >
-              <FontAwesomeIcon icon={faArrowLeft} size={20} />
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size={20}
+                style={{ marginRight: 20 }}
+              />
+              <Text style={commonStyles.backText}>Create Collaboration</Text>
             </TouchableOpacity>
           </View>
-          <Text style={jobsStyles.h1}>Create a Collaboration</Text>
-          <TextInput
-            style={authStyles.input}
-            placeholder="Title"
-            placeholderTextColor={"#999"}
-            value={formData.title}
-            onChangeText={(value) => handleChange("title", value)}
-          />
 
-          <TextInput
-            style={[authStyles.input, { height: 75 }]}
-            placeholder="Description"
-            placeholderTextColor={"#999"}
-            value={formData.description}
-            onChangeText={(value) => handleChange("description", value)}
-            multiline
-          />
+          <View style={commonStyles.centerVertical}>
+            <View style={[commonStyles.centerLeft, { position: "relative" }]}>
+              <View style={commonStyles.center}>
+                <Text style={commonStyles.h4}>Add Questions: </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setAboutTitle("Collaboration Title");
+                    setAboutBody(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    );
+                    modalizeRef.current?.open();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                placeholder="Enter the title of your collaboration posting"
+                value={formData.title}
+                onChangeText={(value) => handleChange("title", value)}
+                style={commonStyles.input}
+                placeholderTextColor={"#999"}
+              />
+            </View>
 
-          <TextInput
-            style={[authStyles.input, { height: 75 }]}
-            placeholder="Requirements (seperated by coma ',')"
-            placeholderTextColor={"#999"}
-            value={formData.requirements}
-            onChangeText={(value) => handleChange("requirements", value)}
-            multiline
-          />
+            <View style={commonStyles.centerLeft}>
+              <View style={commonStyles.center}>
+                <Text style={commonStyles.h4}>Description: </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setAboutTitle("Collaboration Description");
+                    setAboutBody(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    );
+                    modalizeRef.current?.open();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                placeholder="Enter the collaboration description"
+                value={formData.description}
+                onChangeText={(value) => handleChange("description", value)}
+                style={commonStyles.inputLarge}
+                placeholderTextColor={"#999"}
+                textAlignVertical="top"
+                multiline
+              />
+            </View>
+
+            <View style={commonStyles.centerLeft}>
+              <View style={commonStyles.center}>
+                <Text style={commonStyles.h4}>Requirements: </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setAboutTitle("Collaboration Requirements");
+                    setAboutBody(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    );
+                    modalizeRef.current?.open();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                placeholder="Requirements (seperated by coma ',')"
+                value={formData.requirements}
+                onChangeText={(value) => handleChange("requirements", value)}
+                style={commonStyles.inputLarge}
+                placeholderTextColor={"#999"}
+                textAlignVertical="top"
+                multiline
+              />
+            </View>
+          </View>
+
           <CustomButton title={"Continue"} onPress={nextStep} />
+
+          <AboutModal
+            modalizeRef={modalizeRef}
+            title={aboutTitle}
+            body={aboutBody}
+          />
         </KeyboardAvoidingView>
       );
     case 2:
       return (
         <KeyboardAvoidingView
-          style={commonStyles.container}
+          style={[commonStyles.container, { paddingTop: insets.top }]}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <Text style={jobsStyles.h1}>Additional Information</Text>
           <View
             style={{
               flexDirection: "row",
-              justifyContent: "space-between",
               alignItems: "center",
-              width: width * 0.95,
-              marginBottom: 15,
-              borderBottomColor: "#ddd",
-              borderBottomWidth: 1,
-              borderTopColor: "#ddd",
-              borderTopWidth: 1,
+              justifyContent: "space-between",
+              width: "100%",
+              paddingLeft: 20,
+              padding: 10,
             }}
           >
-            <CustomButton
-              title={"Questions"}
-              onPress={() => setShowQuestionModal(true)}
-            />
-            <Text style={{ marginRight: 10, fontFamily: "sen-400" }}>
-              {formData.questions.length} questions
-            </Text>
-          </View>
-
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: width * 0.95,
-              marginBottom: 15,
-              borderBottomColor: "#ddd",
-              borderBottomWidth: 1,
-            }}
-          >
-            <CustomButton
-              title={"Due Date"}
-              onPress={() =>
-                Platform.OS === "ios"
-                  ? setShowDateModal(true)
-                  : setShowDatePicker(true)
-              }
-            />
-            <Text style={{ marginRight: 10, color: "#777" }}>
-              {formData.due_date ? formData.due_date : "Select a due date"}
-            </Text>
-
-            {showDatePicker && (
-              <DateTimePicker
-                value={date}
-                mode="date"
-                display={"spinner"}
-                onChange={handleDateChange}
+            <TouchableOpacity
+              onPress={() => {
+                prevStep();
+              }}
+              style={commonStyles.center}
+            >
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                size={20}
+                style={{ marginRight: 20 }}
               />
-            )}
+              <Text style={commonStyles.backText}>Additional Information</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={commonStyles.centerVertical}>
+            <View style={[commonStyles.centerLeft, { position: "relative" }]}>
+              <View style={commonStyles.center}>
+                <Text style={commonStyles.h4}>Add Questions: </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setAboutTitle("Asking questions to creators!");
+                    setAboutBody(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    );
+                    modalizeRef.current?.open();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                placeholder="Please add your specific questions for the creators"
+                value={question}
+                onChangeText={(value) => setQuestion(value)}
+                style={commonStyles.inputLarge}
+                placeholderTextColor={"#999"}
+                textAlignVertical="top"
+                multiline
+              />
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  bottom: 30,
+                }}
+                disabled={question.length === 0}
+                onPress={() => {
+                  formData.questions.push(question);
+                  setQuestion("");
+                }}
+              >
+                <Text style={{ color: "blue", fontWeight: 700 }}>
+                  Add Question
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: width * 0.95,
+                marginBottom: 10,
+              }}
+            >
+              <CustomButton
+                title={"View Questions"}
+                onPress={() => setShowQuestionModal(true)}
+              />
+              <Text style={{ marginRight: 10, fontFamily: "sen-400" }}>
+                {formData.questions.length} question(s)
+              </Text>
+            </View>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                width: width * 0.95,
+                marginBottom: 10,
+              }}
+            >
+              <View style={commonStyles.center}>
+                <CustomButton
+                  title={"Due Date"}
+                  onPress={() =>
+                    Platform.OS === "ios"
+                      ? setShowDateModal(true)
+                      : setShowDatePicker(true)
+                  }
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    setAboutTitle("Post Due Date");
+                    setAboutBody(
+                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    );
+                    modalizeRef.current?.open();
+                  }}
+                >
+                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
+                </TouchableOpacity>
+              </View>
+              <Text style={{ marginRight: 10, color: "#777" }}>
+                {formData.due_date ? formData.due_date : "Select a due date"}
+              </Text>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display={"spinner"}
+                  onChange={handleDateChange}
+                />
+              )}
+            </View>
           </View>
 
           <View
@@ -264,16 +415,30 @@ const JobCreate = () => {
               borderBottomWidth: 1,
             }}
           >
-            <CustomButton
-              title={"Target Audience"}
-              onPress={() => setShowAreaModal(true)}
-            />
+            <View style={commonStyles.center}>
+              <CustomButton
+                title={"Target Audience"}
+                onPress={() => setShowAreaModal(true)}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  setAboutTitle("Targeting Creators");
+                  setAboutBody(
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                  );
+                  modalizeRef.current?.open();
+                }}
+              >
+                <FontAwesomeIcon icon={faInfoCircle} size={17} />
+              </TouchableOpacity>
+            </View>
             <Text style={{ marginRight: 10, color: "#777" }}>
               {formData.target_creator
                 ? formData.target_creator
                 : "none selected"}
             </Text>
           </View>
+
           <View style={{ flexDirection: "row" }}>
             <CustomButton title="Go Back" onPress={prevStep} />
             <CustomButton title="Submit" onPress={handleSubmit} />
@@ -305,64 +470,27 @@ const JobCreate = () => {
             transparent={true}
             animationType="fade"
           >
-            <KeyboardAvoidingView
-              style={jobsStyles.modalContainer}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-            >
-              <View style={jobsStyles.modalContent}>
-                <Text style={jobsStyles.modalTitle}>
-                  Add Questions (optional)
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    width: "100%",
-                    marginBottom: 10,
-                  }}
-                >
-                  <TextInput
-                    style={[
-                      authStyles.input,
-                      { width: "80%", marginBottom: 0, height: 100 },
-                    ]}
-                    placeholder="Add questions here"
-                    value={question}
-                    onChangeText={(value) => setQuestion(value)}
-                    multiline
-                  />
-                  {/* <TouchableOpacity
-                    onPress={() => {
-                      formData.questions.push(question);
-                      setQuestion("");
-                    }}
-                    disabled={question.length === 0}
-                  >
-                    <FontAwesomeIcon icon={faCirclePlus} size={40} />
-                  </TouchableOpacity> */}
-                  <CustomButton
-                    title={"Add"}
-                    onPress={() => {
-                      formData.questions.push(question);
-                      setQuestion("");
-                    }}
-                    disabled={question.length === 0}
-                  />
-                </View>
+            <View style={profileStyles.modalContainer}>
+              <View style={profileStyles.modalContent}>
+                <Text style={profileStyles.modalTitle}>Questions</Text>
+
                 <ScrollView
-                  style={{ width: "95%", maxHeight: 200 }}
+                  style={{ width: "95%", maxHeight: 400 }}
                   showsVerticalScrollIndicator={false}
                 >
-                  {formData.questions.length > 0 &&
+                  {formData.questions.length > 0 ? (
                     formData.questions.map((q, key) => (
-                      <Text
-                        key={key}
-                        style={{ fontFamily: "sen-400", margin: 5 }}
-                      >
+                      <Text key={key} style={{ margin: 5 }}>
                         {`\u2022 ${q}`}
                       </Text>
-                    ))}
+                    ))
+                  ) : (
+                    <View style={[commonStyles.center]}>
+                      <Text style={commonStyles.h4}>
+                        You haven't added any questions yet!
+                      </Text>
+                    </View>
+                  )}
                 </ScrollView>
                 <View style={commonStyles.center}>
                   <CustomButton
@@ -381,7 +509,7 @@ const JobCreate = () => {
                   />
                 </View>
               </View>
-            </KeyboardAvoidingView>
+            </View>
           </Modal>
 
           <Modal
@@ -416,6 +544,12 @@ const JobCreate = () => {
               </View>
             </View>
           </Modal>
+
+          <AboutModal
+            modalizeRef={modalizeRef}
+            title={aboutTitle}
+            body={aboutBody}
+          />
         </KeyboardAvoidingView>
       );
     default:
