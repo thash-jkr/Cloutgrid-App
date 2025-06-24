@@ -4,6 +4,7 @@
     "slug": "cloutgrid",
     "version": "1.0.0",
     "orientation": "portrait",
+    "backgroundColor": "#ffffff",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -24,7 +25,12 @@
         "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#fff"
       },
-      "package": "com.cloutgrid.Cloutgrid"
+      "package": "com.cloutgrid.Cloutgrid",
+      "edgeToEdgeEnabled": true
+    },
+    "androidNavigationBar": {
+      "barStyle": "dark-content",
+      "backgroundColor": "#ffffff"
     },
     "web": {
       "favicon": "./assets/favicon.png"
