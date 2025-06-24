@@ -10,6 +10,13 @@ const commonStyles = StyleSheet.create({
     alignItems: "center",
     width: width,
   },
+  containerCenter: {
+    flex: 1,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    width: width,
+  },
   text: {
     // fontFamily: "sen-400",
   },
@@ -25,6 +32,7 @@ const commonStyles = StyleSheet.create({
   centerVertical: {
     justifyContent: "center",
     alignItems: "center",
+    marginVertical: 5
   },
   centerLeft: {
     justifyContent: "center",
@@ -110,6 +118,7 @@ const commonStyles = StyleSheet.create({
   },
   modalBody: {
     padding: 10,
+    paddingBottom: 50
   },
   modalBodyText: {
     textAlign: "justify",
@@ -134,6 +143,20 @@ const commonStyles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    width: width * 0.95,
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

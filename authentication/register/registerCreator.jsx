@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import BasicInfo from "./registerBasicInfo";
-import OtpVerification from "./registerOTP";
 import AdditionalInfo from "./registerMoreInfo";
 
 const RegisterCreator = () => {
@@ -47,18 +46,11 @@ const RegisterCreator = () => {
       );
     case 2:
       return (
-        <OtpVerification
-          nextStep={nextStep}
-          formData={formData}
-          prevStep={prevStep}
-        />
-      );
-    case 3:
-      return (
         <AdditionalInfo
           formData={formData}
           setFormData={setFormData}
           handleChange={handleChange}
+          prevStep={prevStep}
           type="creator"
         />
       );

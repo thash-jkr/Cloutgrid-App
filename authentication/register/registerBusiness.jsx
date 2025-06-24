@@ -40,20 +40,19 @@ const RegisterBusiness = () => {
     case 1:
       return (
         <BasicInfo
+          nextStep={nextStep}
           formData={formData}
           handleChange={handleChange}
-          nextStep={nextStep}
           type="business"
         />
       );
     case 2:
-      return <OtpVerification nextStep={nextStep} formData={formData} prevStep={prevStep} />;
-    case 3:
       return (
         <AdditionalInfo
           formData={formData}
           setFormData={setFormData}
           handleChange={handleChange}
+          prevStep={prevStep}
           type="business"
         />
       );

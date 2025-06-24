@@ -1,8 +1,6 @@
 import { View, Text, Modal, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import jobsStyles from "../styles/jobs";
 import commonStyles from "../styles/common";

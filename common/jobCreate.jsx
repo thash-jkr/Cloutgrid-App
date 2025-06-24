@@ -181,9 +181,9 @@ const JobCreate = () => {
           </View>
 
           <View style={commonStyles.centerVertical}>
-            <View style={[commonStyles.centerLeft, { position: "relative" }]}>
+            <View style={commonStyles.centerLeft}>
               <View style={commonStyles.center}>
-                <Text style={commonStyles.h4}>Add Questions: </Text>
+                <Text style={commonStyles.h4}>Title: </Text>
                 <TouchableOpacity
                   onPress={() => {
                     setAboutTitle("Collaboration Title");
