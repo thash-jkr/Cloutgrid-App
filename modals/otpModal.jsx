@@ -11,8 +11,7 @@ import CustomButton from "../common/customButton";
 import commonStyles from "../styles/common";
 import authStyles from "../styles/auth";
 
-const OTPModal = ({ showOTPModal, onClose, onSubmit }) => {
-  const [OTP, setOTP] = useState(null)
+const OTPModal = ({ showOTPModal, onClose, onSubmit, OTP, setOTP, isLoading }) => {
 
   return (
     <Modal visible={showOTPModal} transparent={true} animationType="fade">
@@ -36,7 +35,7 @@ const OTPModal = ({ showOTPModal, onClose, onSubmit }) => {
           />
           <View style={commonStyles.center}>
             <CustomButton title={"Close"} onPress={onClose} />
-            <CustomButton title={"Submit"} onPress={onSubmit} disabled={!OTP}/>
+            <CustomButton title={isLoading ? "Loading..." : "Submit"} onPress={onSubmit} disabled={!OTP || isLoading}/>
           </View>
         </View>
       </KeyboardAvoidingView>

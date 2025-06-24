@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import Hyperlink from "react-native-hyperlink";
@@ -53,6 +54,9 @@ const Profiles = ({ route }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [reportModal, setReportModal] = useState(false);
   const [report, setReport] = useState("");
+  const [imageModal, setImageModal] = useState(false);
+
+  const { width } = Dimensions.get("screen");
 
   const aboutModalize = useRef(null);
 
@@ -81,8 +85,8 @@ const Profiles = ({ route }) => {
       case "instagram":
         return (
           <View style={{ alignItems: "center" }}>
-            <FontAwesomeIcon icon={faTriangleExclamation} size={50} />
-            <Text style={profileStyles.h2}>
+            <FontAwesomeIcon icon={faTriangleExclamation} size={36} />
+            <Text style={[commonStyles.h4, { textAlign: "center" }]}>
               {otherProfile.user.name} hasn't connected their Instagram yet!
             </Text>
           </View>
@@ -90,8 +94,8 @@ const Profiles = ({ route }) => {
       case "youtube":
         return (
           <View style={{ alignItems: "center" }}>
-            <FontAwesomeIcon icon={faTriangleExclamation} size={50} />
-            <Text style={profileStyles.h2}>
+            <FontAwesomeIcon icon={faTriangleExclamation} size={36} />
+            <Text style={[commonStyles.h4, { textAlign: "center" }]}>
               {otherProfile.user.name} hasn't connected their Youtube yet!
             </Text>
           </View>
@@ -172,6 +176,27 @@ const Profiles = ({ route }) => {
   return (
     <SafeAreaView style={profileStyles.profile}>
       <StatusBar backgroundColor="#fff" />
+
+      <View style={commonStyles.pageHeader}>
+        <TouchableOpacity
+          onPress={() => {
+            dispatch(clearProfiles());
+            navigation.goBack();
+          }}
+          style={commonStyles.center}
+        >
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
+          <Text style={commonStyles.backText}>Profile</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
+          <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -185,43 +210,17 @@ const Profiles = ({ route }) => {
           />
         }
       >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-            paddingLeft: 20,
-            padding: 10,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(clearProfiles());
-              navigation.goBack();
-            }}
-            style={commonStyles.center}
-          >
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              size={20}
-              style={{ marginRight: 20 }}
-            />
-            <Text style={commonStyles.backText}>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
-            <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
-          </TouchableOpacity>
-        </View>
-
         <View style={profileStyles.profileTop}>
           <View style={profileStyles.profileDetails}>
-            <Image
-              source={{
-                uri: `${Config.BASE_URL}${otherProfile.user.profile_photo}`,
-              }}
-              style={profileStyles.profilePicture}
-            />
+            <TouchableOpacity onPress={() => setImageModal(true)}>
+              <Image
+                source={{
+                  uri: `${Config.BASE_URL}${otherProfile.user.profile_photo}`,
+                }}
+                style={profileStyles.profilePicture}
+              />
+            </TouchableOpacity>
+
             <View style={profileStyles.profileData}>
               <View style={profileStyles.profileCount}>
                 <Text style={{ fontFamily: "sen-400" }}>
@@ -410,6 +409,29 @@ const Profiles = ({ route }) => {
           </TouchableOpacity>
         </View>
       </Modalize>
+
+      <Modal visible={imageModal} animationType="fade" transparent={true}>
+        <View style={profileStyles.modalContainer}>
+          <View>
+            <Image
+              source={{
+                uri: `${Config.BASE_URL}${otherProfile?.user.profile_photo}`,
+              }}
+              style={{
+                width: width * 0.8,
+                height: width * 0.8,
+                borderRadius: width * 0.4,
+              }}
+            />
+            <View style={commonStyles.centerVertical}>
+              <CustomButton
+                title="Close"
+                onPress={() => setImageModal(false)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={reportModal} transparent={true} animationType="fade">
         <KeyboardAvoidingView

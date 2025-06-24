@@ -1,26 +1,24 @@
 import {
-  View,
   Text,
-  TextInput,
+  View,
   Alert,
-  KeyboardAvoidingView,
   Platform,
+  TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
 } from "react-native";
-import React, { useRef, useState } from "react";
 import axios from "axios";
+import React, { useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-
-import authStyles from "../../styles/auth";
-import CustomButton from "../../common/customButton";
-import Config from "../../config";
-import Loader from "../../common/loading";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import commonStyles from "../../styles/common";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import CustomButton from "../../common/customButton";
 import AboutModal from "../../modals/aboutModal";
+import commonStyles from "../../styles/common";
 import OTPModal from "../../modals/otpModal";
+import Config from "../../config";
 
 const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +27,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
     body: "",
   });
   const [showOTPModal, setShowOTPModal] = useState(false);
+  const [OTP, setOTP] = useState(null);
 
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -72,7 +71,6 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
 
   const handleOTP = async () => {
     try {
-      setShowOTPModal(false)
       setIsLoading(true);
       const data = new FormData();
       data.append("username", formData.user.username);
@@ -91,10 +89,14 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       Alert.alert("Message", response.data.message);
 
       if (response.status == 200) {
+        setShowOTPModal(false);
         nextStep();
       }
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message || "An error occurred");
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "An error occurred"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +104,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
 
   const handleNoOTP = async () => {
     try {
-      setShowOTPModal(false)
+      setShowOTPModal(false);
       setIsLoading(true);
       nextStep();
     } catch (error) {
@@ -140,7 +142,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
           <View style={commonStyles.center}>
             <Text style={commonStyles.h4}>Name: </Text>
           </View>
-          
+
           <TextInput
             placeholder="Enter your name"
             value={formData.user.name}
@@ -156,8 +158,8 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             <TouchableOpacity
               onPress={() => {
                 setAboutContent({
-                  title: "Collaboration Title",
-                  body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                  title: "Email Address",
+                  body: "This email will be used to verify your account and help you log in securely. Make sure to enter an email you actively use",
                 });
                 aboutModalize.current?.open();
               }}
@@ -180,8 +182,8 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             <TouchableOpacity
               onPress={() => {
                 setAboutContent({
-                  title: "Collaboration Title",
-                  body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                  title: "Username",
+                  body: "Your username is your unique identifier on Cloutgrid. It will appear in your profile URL and can be used by others to search and mention you. \nChoose wisely — you can’t change it later.",
                 });
                 aboutModalize.current?.open();
               }}
@@ -198,7 +200,11 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
           />
         </View>
 
-        <CustomButton title={isLoading ? "Loading..." : "Continue"} onPress={handleContinue} disabled={isLoading}/>
+        <CustomButton
+          title={isLoading ? "Loading..." : "Continue"}
+          onPress={handleContinue}
+          disabled={isLoading}
+        />
       </View>
 
       <AboutModal
@@ -211,7 +217,10 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
         <OTPModal
           showOTPModal={showOTPModal}
           onClose={() => setShowOTPModal(false)}
-          onSubmit={handleNoOTP}
+          onSubmit={handleOTP}
+          OTP={OTP}
+          setOTP={setOTP}
+          isLoading={isLoading}
         />
       )}
     </KeyboardAvoidingView>

@@ -13,7 +13,6 @@ import {
   Modal,
   Animated,
   Easing,
-  FlatList,
 } from "react-native";
 import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
@@ -21,12 +20,9 @@ import * as ImagePicker from "expo-image-picker";
 import * as SecureStore from "expo-secure-store";
 import * as FileSystem from "expo-file-system";
 import { useImageManipulator, SaveFormat } from "expo-image-manipulator";
-import { Modalize } from "react-native-modalize";
 import {
   faArrowLeft,
-  faCircleQuestion,
-  faCross,
-  faX,
+  faInfoCircle,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -35,7 +31,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import CustomButton from "../common/customButton";
 import commonStyles from "../styles/common";
-import jobsStyles from "../styles/jobs";
 import Config from "../config";
 import profileStyles from "../styles/profile";
 import { useSelector } from "react-redux";
@@ -180,8 +175,8 @@ const PostCreate = ({ route }) => {
   };
 
   const handlePostSubmit = async () => {
-    if (!caption || !image) {
-      Alert.alert("Error", "Please provide both an image and a caption.");
+    if (!caption) {
+      Alert.alert("Error", "Please provide a caption.");
       return;
     }
 
@@ -263,8 +258,21 @@ const PostCreate = ({ route }) => {
       </TouchableOpacity>
 
       <View style={commonStyles.centerVertical}>
-        <View style={{ position: "relative" }}>
-          <Text style={commonStyles.h4}>Caption:</Text>
+        <View style={commonStyles.centerLeft}>
+          <View style={commonStyles.center}>
+            <Text style={commonStyles.h4}>Caption: </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setAboutTitle("Adding caption in posts");
+                setAboutBody(
+                  "Write a short caption to accompany your post. This helps viewers understand the context of your post and adds a personal touch. \nKeep it engaging and authentic."
+                );
+                modalizeRef.current?.open();
+              }}
+            >
+              <FontAwesomeIcon icon={faInfoCircle} size={17} />
+            </TouchableOpacity>
+          </View>
           <TextInput
             placeholder="Write a caption"
             value={caption}
@@ -273,23 +281,10 @@ const PostCreate = ({ route }) => {
             textAlignVertical="top"
             multiline
           />
-          <View style={{ position: "absolute", bottom: 25, right: 7 }}>
-            <TouchableOpacity
-              onPress={() => {
-                setAboutTitle("Adding caption to your post");
-                setAboutBody(
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                );
-                modalizeRef.current?.open();
-              }}
-            >
-              <FontAwesomeIcon icon={faCircleQuestion} size={17} />
-            </TouchableOpacity>
-          </View>
         </View>
 
         {type === "creator" && (
-          <View style={{ position: "relative" }}>
+          <View style={[commonStyles.centerLeft, { position: "relative" }]}>
             <View
               style={{
                 display: query.length > 0 ? "flex" : "none",
@@ -341,7 +336,21 @@ const PostCreate = ({ route }) => {
               </ScrollView>
             </View>
 
-            <Text style={commonStyles.h4}>Collaboration (optional):</Text>
+            <View style={commonStyles.center}>
+              <Text style={commonStyles.h4}>Collaboration (optional): </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setAboutTitle("Add Collaboration (optional)");
+                  setAboutBody(
+                    "Tag a business you collaborated with for this post. This helps you showcase real partnerships on your profile and lets businesses see your past work in action. Simply start typing to search and select a business user. \n\nYou can leave this empty if the post isn't tied to a specific collaboration."
+                  );
+                  modalizeRef.current?.open();
+                }}
+              >
+                <FontAwesomeIcon icon={faInfoCircle} size={17} />
+              </TouchableOpacity>
+            </View>
+
             <TextInput
               placeholder={collab ? "" : "Start typing to search..."}
               value={query}
@@ -349,20 +358,6 @@ const PostCreate = ({ route }) => {
               style={commonStyles.input}
               editable={!collab}
             />
-
-            <View style={{ position: "absolute", bottom: 25, right: 7 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  setAboutTitle("Adding collaboration to your post");
-                  setAboutBody(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                  );
-                  modalizeRef.current?.open();
-                }}
-              >
-                <FontAwesomeIcon icon={faCircleQuestion} size={17} />
-              </TouchableOpacity>
-            </View>
 
             {collab && (
               <View

@@ -1,17 +1,18 @@
 import {
   View,
   Text,
-  TouchableOpacity,
+  Platform,
   Animated,
   Dimensions,
+  TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import React, { useState, useRef } from "react";
-import authStyles from "../styles/auth";
-import LoginCreator from "./loginCreator";
-import LoginBusiness from "./loginBusiness";
 import { useNavigation } from "@react-navigation/native";
+
+import LoginBusiness from "./loginBusiness";
+import LoginCreator from "./loginCreator";
+import authStyles from "../styles/auth";
 
 const { width } = Dimensions.get("window");
 

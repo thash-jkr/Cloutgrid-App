@@ -127,14 +127,7 @@ const Comments = ({ route }) => {
       >
         <View style={{ alignItems: "center", flex: 1 }}>
           <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              width: "100%",
-              paddingLeft: 20,
-              padding: 10,
-            }}
+            style={commonStyles.pageHeader}
           >
             <TouchableOpacity
               onPress={() => {

@@ -130,6 +130,7 @@ const homeStyles = StyleSheet.create({
   postFooterIcons: {
     flexDirection: "row",
     justifyContent: "space-around",
+    alignItems: "center",
     padding: 10,
   },
   postFooterText: {

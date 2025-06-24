@@ -1,17 +1,16 @@
 import {
-  View,
   Text,
-  TouchableOpacity,
   Animated,
   StatusBar,
+  TouchableOpacity,
 } from "react-native";
 import React, { useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 
 import authStyles from "../../styles/auth";
-import { useNavigation } from "@react-navigation/native";
 import homeStyles from "../../styles/home";
 
 const SignUp = () => {

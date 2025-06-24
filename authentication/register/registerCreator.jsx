@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
-import BasicInfo from "./registerBasicInfo";
 import AdditionalInfo from "./registerMoreInfo";
+import BasicInfo from "./registerBasicInfo";
 
 const RegisterCreator = () => {
   const [currentStep, setCurrentStep] = useState(1);

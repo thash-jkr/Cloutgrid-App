@@ -1,30 +1,31 @@
-import React, { useState, useEffect } from "react";
 import {
-  View,
   Text,
-  TouchableOpacity,
-  Modal,
+  View,
   Alert,
+  Modal,
   TextInput,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
+import React, { useState, useRef } from "react";
+import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
-
-import CustomButton from "../../common/customButton";
-import Config from "../../config";
-import Loader from "../../common/loading";
-import commonStyles from "../../styles/common";
-import jobsStyles from "../../styles/jobs";
-import profileStyles from "../../styles/profile";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import PrivacyModal from "../../modals/privacyModal";
-import EulaModal from "../../modals/eulaModal";
 
-const { height, width } = Dimensions.get("window");
+import CustomButton from "../../common/customButton";
+import PrivacyModal from "../../modals/privacyModal";
+import profileStyles from "../../styles/profile";
+import AboutModal from "../../modals/aboutModal";
+import commonStyles from "../../styles/common";
+import EulaModal from "../../modals/eulaModal";
+import jobsStyles from "../../styles/jobs";
+import Loader from "../../common/loading";
+import Config from "../../config";
+
+const { width } = Dimensions.get("window");
 
 const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
   const [categoryModal, setCategoryModal] = useState(false);
@@ -32,21 +33,30 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
   const [privacyModal, setPrivacyModal] = useState(false);
   const [eulaModal, setEulaModal] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [aboutContent, setAboutContent] = useState({
+    title: "",
+    body: "",
+  });
 
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
+  const aboutModalize = useRef(null);
 
   const handleSubmit = async () => {
     try {
       if (formData.user.password !== confirmPassword) {
         Alert.alert("Error", "Passwords must match!");
+        return;
       } else if (!formData.user.password) {
-        Alert.alert("Error", "Please enter a password!");
+        Alert.alert("Error", "Please choose a password!");
+        return;
       } else if (
         (type === "creator" && !formData.area) ||
         (type === "business" && !formData.target_audience)
       ) {
         Alert.alert("Error", "Please select your category");
+        return;
       }
 
       setIsLoading(true);
@@ -142,7 +152,7 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
               onPress={() => {
                 setAboutContent({
                   title: "Password",
-                  body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                  body: "Choose a strong password to keep your account secure. Use at least 8 characters with a mix of letters, numbers, or symbols.",
                 });
                 aboutModalize.current?.open();
               }}
@@ -163,17 +173,6 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
         <View style={commonStyles.centerLeft}>
           <View style={commonStyles.center}>
             <Text style={commonStyles.h4}>Confirm Password: </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setAboutContent({
-                  title: "Password",
-                  body: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-                });
-                aboutModalize.current?.open();
-              }}
-            >
-              <FontAwesomeIcon icon={faInfoCircle} size={17} />
-            </TouchableOpacity>
           </View>
           <TextInput
             placeholder="Enter the password again"
@@ -201,11 +200,14 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
             />
             <TouchableOpacity
               onPress={() => {
-                setAboutTitle("Post Due Date");
-                setAboutBody(
-                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                );
-                modalizeRef.current?.open();
+                setAboutContent({
+                  title: "Your area of expertise",
+                  body:
+                    type === "creator"
+                      ? "Select the area that best represents your content or expertise. This helps businesses discover you based on relevant campaigns and collaborations."
+                      : "Pick the category that best describes your business or brand. This helps you reach the right creators and audience when posting job collaborations.",
+                });
+                aboutModalize.current?.open();
               }}
             >
               <FontAwesomeIcon icon={faInfoCircle} size={17} />
@@ -267,7 +269,6 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
                 type === "creator"
                   ? handleChange("area", value)
                   : handleChange("target_audience", value);
-                setCategoryModal(false);
               }}
             >
               {AREA_OPTIONS.map((option) => (
@@ -286,6 +287,8 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
         </View>
       </Modal>
 
+      <CustomButton title="Register" onPress={handleSubmit} />
+
       {privacyModal && (
         <PrivacyModal
           privacyModal={privacyModal}
@@ -297,7 +300,11 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
         <EulaModal eulaModal={eulaModal} onClose={() => setEulaModal(false)} />
       )}
 
-      <CustomButton title="Register" onPress={handleSubmit} />
+      <AboutModal
+        modalizeRef={aboutModalize}
+        title={aboutContent.title}
+        body={aboutContent.body}
+      />
     </View>
   );
 };

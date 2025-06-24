@@ -197,10 +197,7 @@ const Profile = () => {
       >
         <View style={profileStyles.profileTop}>
           <View style={profileStyles.profileDetails}>
-            <TouchableOpacity
-              onPress={() => setImageModal(true)}
-              style={{ position: "relative" }}
-            >
+            <TouchableOpacity onPress={() => setImageModal(true)}>
               <Image
                 source={{
                   uri: `${Config.BASE_URL}${user.user.profile_photo}`,
@@ -228,7 +225,9 @@ const Profile = () => {
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontWeight: "600", fontSize: 13 }}>{user.user.name} | @{user.user.username}</Text>
+            <Text style={{ fontWeight: "600", fontSize: 13 }}>
+              {user.user.name} | @{user.user.username}
+            </Text>
             <Text style={{ fontSize: 12 }}>{user.user.bio}</Text>
             {user.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
@@ -396,7 +395,7 @@ const Profile = () => {
               style={{
                 width: width * 0.8,
                 height: width * 0.8,
-                borderRadius: "50%"
+                borderRadius: width * 0.4,
               }}
             />
             <View style={commonStyles.centerVertical}>

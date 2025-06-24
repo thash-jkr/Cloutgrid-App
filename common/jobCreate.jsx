@@ -184,17 +184,6 @@ const JobCreate = () => {
             <View style={commonStyles.centerLeft}>
               <View style={commonStyles.center}>
                 <Text style={commonStyles.h4}>Title: </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setAboutTitle("Collaboration Title");
-                    setAboutBody(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-                    );
-                    modalizeRef.current?.open();
-                  }}
-                >
-                  <FontAwesomeIcon icon={faInfoCircle} size={17} />
-                </TouchableOpacity>
               </View>
               <TextInput
                 placeholder="Enter the title of your collaboration posting"
@@ -212,7 +201,7 @@ const JobCreate = () => {
                   onPress={() => {
                     setAboutTitle("Collaboration Description");
                     setAboutBody(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                      "Describe the purpose of this collaboration opportunity. Share what you're promoting, your expectations, and any other important context for creators."
                     );
                     modalizeRef.current?.open();
                   }}
@@ -238,7 +227,7 @@ const JobCreate = () => {
                   onPress={() => {
                     setAboutTitle("Collaboration Requirements");
                     setAboutBody(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                      "List what you're looking for in a creator — such as follower count, content style, niche, or platform presence. Separate multiple requirements with commas. \n\neg: “Minimum 10k followers, Instagram Reels experience, Based in South India”"
                     );
                     modalizeRef.current?.open();
                   }}
@@ -301,12 +290,12 @@ const JobCreate = () => {
           <View style={commonStyles.centerVertical}>
             <View style={[commonStyles.centerLeft, { position: "relative" }]}>
               <View style={commonStyles.center}>
-                <Text style={commonStyles.h4}>Add Questions: </Text>
+                <Text style={commonStyles.h4}>Add Questions (optional): </Text>
                 <TouchableOpacity
                   onPress={() => {
                     setAboutTitle("Asking questions to creators!");
                     setAboutBody(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                      "Add questions you want applicants to answer when they apply. These help you evaluate fit and gather more detailed responses. Use open-ended text questions for more insight. \n\nAdd a question in the given text box, then click ”Add Question” button to add the question. Likewise, you can add multiple questions"
                     );
                     modalizeRef.current?.open();
                   }}
@@ -315,7 +304,7 @@ const JobCreate = () => {
                 </TouchableOpacity>
               </View>
               <TextInput
-                placeholder="Please add your specific questions for the creators"
+                placeholder="Please add your specific question for the creators"
                 value={question}
                 onChangeText={(value) => setQuestion(value)}
                 style={commonStyles.inputLarge}
@@ -381,7 +370,7 @@ const JobCreate = () => {
                   onPress={() => {
                     setAboutTitle("Post Due Date");
                     setAboutBody(
-                      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                      "Set a deadline for creators to apply. After this date, the opportunity will no longer be available for new applications."
                     );
                     modalizeRef.current?.open();
                   }}
@@ -424,7 +413,7 @@ const JobCreate = () => {
                 onPress={() => {
                   setAboutTitle("Targeting Creators");
                   setAboutBody(
-                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+                    "Choose the business category or niche this collaboration falls under. This helps creators in the right domain find your post more easily."
                   );
                   modalizeRef.current?.open();
                 }}

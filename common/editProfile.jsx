@@ -152,7 +152,6 @@ const EditProfile = () => {
     });
 
     if (!result.canceled) {
-      setImageModal(false);
       setLocalUri(result.assets[0].uri);
     }
   };
@@ -192,7 +191,7 @@ const EditProfile = () => {
       style={[commonStyles.container, { paddingTop: insets.top }]}
     >
       <Loader visible={profileLoading} />
-      
+
       <View
         style={{
           flexDirection: "row",
@@ -339,17 +338,11 @@ const EditProfile = () => {
               style={{
                 width: width * 0.8,
                 height: width * 0.8,
-                borderRadius: "50%",
+                borderRadius: width * 0.4,
               }}
             />
-            <View style={commonStyles.centerVertical}>
-              <View style={commonStyles.center}>
-                <CustomButton
-                  title="Remove Photo"
-                  onPress={() => setImageModal(false)}
-                />
-                <CustomButton title="Change Photo" onPress={handleFileChange} />
-              </View>
+            <View style={commonStyles.center}>
+              <CustomButton title="Change Photo" onPress={handleFileChange} />
               <CustomButton
                 title="Close"
                 onPress={() => setImageModal(false)}

@@ -18,7 +18,11 @@ import {
   faEllipsisVertical,
   faHeart as faHeartSolid,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
+import {
+  faHeart,
+  faComment,
+  faSquare,
+} from "@fortawesome/free-regular-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
@@ -33,6 +37,7 @@ import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
 import CustomButton from "./customButton";
 import { deletePost } from "../slices/profileSlice";
+import Triangle from "./triangle";
 
 const ProfilePostsDetails = ({ route }) => {
   const { postss } = route.params;
@@ -101,25 +106,22 @@ const ProfilePostsDetails = ({ route }) => {
 
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          width: "100%",
-          paddingLeft: 20,
-          padding: 10,
-        }}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+      <View style={commonStyles.pageHeader}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={commonStyles.center}
+        >
           <FontAwesomeIcon
             icon={faArrowLeft}
             size={20}
             style={{ marginRight: 20 }}
           />
+          <Text style={commonStyles.backText}>Posts</Text>
         </TouchableOpacity>
-        <Text style={commonStyles.backText}>Posts</Text>
       </View>
+
       <ScrollView>
         {posts.map((post) => (
           <View key={post.id} style={homeStyles.post}>
@@ -161,17 +163,13 @@ const ProfilePostsDetails = ({ route }) => {
               <View style={homeStyles.postFooterIcons}>
                 <TouchableOpacity onPress={() => handleLike(post.id)}>
                   {post.is_liked ? (
-                    <FontAwesomeIcon
-                      icon={faHeartSolid}
-                      size={25}
-                      style={{ color: "#0096C7" }}
-                    />
+                    <Triangle color="#0077B6" size={25} filled={true} />
                   ) : (
-                    <FontAwesomeIcon icon={faHeart} size={25} />
+                    <Triangle color="#0077B6" size={25} filled={false} />
                   )}
                 </TouchableOpacity>
-                <Text style={{ fontFamily: "sen-400" }}>
-                  <Text>{post.like_count} Likes </Text>
+                <Text style={[commonStyles.center, { fontWeight: 500 }]}>
+                  <Text>{post.like_count} Hits </Text>
                   <Text>|</Text>
                   <Text> {post.comment_count} Comments</Text>
                 </Text>
@@ -180,15 +178,16 @@ const ProfilePostsDetails = ({ route }) => {
                     navigation.navigate("Comments", { post: post })
                   }
                 >
-                  <FontAwesomeIcon icon={faComment} size={25} />
+                  <FontAwesomeIcon icon={faSquare} size={25} />
                 </TouchableOpacity>
               </View>
+              
               <View style={homeStyles.postFooterText}>
                 <View>
-                  {/* <Text style={homeStyles.postFooterTextBold}>
+                  <Text style={homeStyles.postFooterTextBold}>
                     {post.author.username}
-                  </Text> */}
-                  <Text style={{ textAlign: "justify", fontWeight: 500 }}>
+                  </Text>
+                  <Text style={{ textAlign: "left", fontWeight: 400 }}>
                     {post.caption}
                   </Text>
                 </View>

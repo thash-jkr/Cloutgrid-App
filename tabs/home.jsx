@@ -20,12 +20,14 @@ import {
   faHeart as faHeartSolid,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
+import {
+  faHeart,
+  faComment,
+  faSquare,
+} from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
-import {
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import homeStyles from "../styles/home";
 import commonStyles from "../styles/common";
@@ -36,12 +38,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";
 import { deletePost } from "../slices/profileSlice";
+import Triangle from "../common/triangle";
+import Loader from "../common/loading";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [report, setReport] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [reportModal, setReportModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
@@ -52,11 +57,13 @@ const Home = () => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
+    setIsLoading(true);
     dispatch(fetchFeed());
+    setIsLoading(false);
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth.user);
-  const { posts, status, error } = useSelector((state) => state.feed);
+  const { posts } = useSelector((state) => state.feed);
   const count = useSelector((state) => state.notif.count);
 
   const handleTap = (post) => {
@@ -88,7 +95,7 @@ const Home = () => {
   return (
     <View style={[homeStyles.home, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
-      
+      <Loader visible={isLoading} />
       <View style={[homeStyles.header]}>
         <View>
           <Text style={homeStyles.h2}>
@@ -193,17 +200,13 @@ const Home = () => {
                 <View style={homeStyles.postFooterIcons}>
                   <TouchableOpacity onPress={() => handleLike(post.id)}>
                     {post.is_liked ? (
-                      <FontAwesomeIcon
-                        icon={faHeartSolid}
-                        size={25}
-                        style={{ color: "#0096C7" }}
-                      />
+                      <Triangle color="#0077B6" size={25} filled={true} />
                     ) : (
-                      <FontAwesomeIcon icon={faHeart} size={25} />
+                      <Triangle color="#0077B6" size={25} filled={false} />
                     )}
                   </TouchableOpacity>
-                  <Text style={{ fontFamily: "" }}>
-                    <Text>{post.like_count} Likes </Text>
+                  <Text style={[commonStyles.center, { fontWeight: 500 }]}>
+                    <Text>{post.like_count} Hits </Text>
                     <Text>|</Text>
                     <Text> {post.comment_count} Comments</Text>
                   </Text>
@@ -212,7 +215,7 @@ const Home = () => {
                       navigation.navigate("Comments", { post: post })
                     }
                   >
-                    <FontAwesomeIcon icon={faComment} size={25} />
+                    <FontAwesomeIcon icon={faSquare} size={25} />
                   </TouchableOpacity>
                 </View>
                 <View style={homeStyles.postFooterText}>
@@ -220,7 +223,9 @@ const Home = () => {
                     <Text style={homeStyles.postFooterTextBold}>
                       {post.author.username}
                     </Text>
-                    <Text style={{ textAlign: "justify", fontWeight: 500 }}>{post.caption}</Text>
+                    <Text style={{ textAlign: "left", fontWeight: 400 }}>
+                      {post.caption}
+                    </Text>
                   </View>
                 </View>
               </View>

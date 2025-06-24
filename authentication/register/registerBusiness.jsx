@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 
-import BasicInfo from "./registerBasicInfo";
-import OtpVerification from "./registerOTP";
 import AdditionalInfo from "./registerMoreInfo";
+import BasicInfo from "./registerBasicInfo";
 
 const RegisterBusiness = () => {
   const [currentStep, setCurrentStep] = useState(1);

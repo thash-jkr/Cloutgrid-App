@@ -10,6 +10,7 @@ import React from "react";
 
 import Config from "../config";
 import { useNavigation } from "@react-navigation/native";
+import commonStyles from "../styles/common";
 
 const ProfilePosts = ({ posts }) => {
   const { height, width } = Dimensions.get("window");
@@ -56,7 +57,7 @@ const ProfilePosts = ({ posts }) => {
           <React.Fragment key={index}>{renderRow(rowPosts)}</React.Fragment>
         ))
       ) : (
-        <Text>No posts found.</Text>
+        <Text style={commonStyles.h4}>No posts found!</Text>
       )}
     </ScrollView>
   );
