@@ -24,11 +24,13 @@ import EulaModal from "../../modals/eulaModal";
 import jobsStyles from "../../styles/jobs";
 import Loader from "../../common/loading";
 import Config from "../../config";
+import PickerModal from "../../modals/pickerModal";
 
 const { width } = Dimensions.get("window");
 
 const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
   const [categoryModal, setCategoryModal] = useState(false);
+  const [pickerModal, setPickerModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [privacyModal, setPrivacyModal] = useState(false);
   const [eulaModal, setEulaModal] = useState(false);
@@ -165,7 +167,7 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
             value={formData.user.password}
             onChangeText={(value) => handleChange("password", value)}
             style={commonStyles.input}
-            placeholderTextColor={"#999"}
+            placeholderTextColor={"#888"}
             secureTextEntry={true}
           />
         </View>
@@ -179,7 +181,7 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
             value={confirmPassword}
             onChangeText={(value) => setConfirmPassword(value)}
             style={commonStyles.input}
-            placeholderTextColor={"#999"}
+            placeholderTextColor={"#888"}
             secureTextEntry={true}
           />
         </View>
@@ -196,7 +198,7 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
           <View style={commonStyles.center}>
             <CustomButton
               title={"Category"}
-              onPress={() => setCategoryModal(true)}
+              onPress={() => setPickerModal(true)}
             />
             <TouchableOpacity
               onPress={() => {
@@ -252,42 +254,19 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
         </View>
       </View>
 
-      <Modal visible={categoryModal} transparent={true} animationType="fade">
-        <View style={jobsStyles.modalContainer}>
-          <View style={jobsStyles.modalContent}>
-            <Text style={jobsStyles.modalTitle}>
-              {type === "creator"
-                ? "Select your area of expertise"
-                : "Select your business category"}
-            </Text>
-            <Picker
-              selectedValue={
-                type === "creator" ? formData.area : formData.target_creator
-              }
-              style={jobsStyles.picker}
-              onValueChange={(value) => {
-                type === "creator"
-                  ? handleChange("area", value)
-                  : handleChange("target_audience", value);
-              }}
-            >
-              {AREA_OPTIONS.map((option) => (
-                <Picker.Item
-                  key={option.value}
-                  label={option.label}
-                  value={option.value}
-                />
-              ))}
-            </Picker>
-            <CustomButton
-              title="Close"
-              onPress={() => setCategoryModal(false)}
-            />
-          </View>
-        </View>
-      </Modal>
-
       <CustomButton title="Register" onPress={handleSubmit} />
+
+      {pickerModal && (
+        <PickerModal
+          pickerModal={pickerModal}
+          onClose={() => setPickerModal(false)}
+          category={
+            type === "creator" ? formData.area : formData.target_audience
+          }
+          handleChange={handleChange}
+          type={type}
+        />
+      )}
 
       {privacyModal && (
         <PrivacyModal

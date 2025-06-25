@@ -10,6 +10,7 @@ import Config from "../config";
 import Loader from "../common/loading";
 import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "./authSlice";
+import commonStyles from "../styles/common";
 
 const LoginCreator = () => {
   const [email, setEmail] = useState("");
@@ -32,7 +33,7 @@ const LoginCreator = () => {
       );
     } else if (status === "failed") {
       setIsLoading(false)
-      Alert.alert("Login Failed", error)
+      Alert.alert("Login Failed", "Please check your details!")
     }
   }, [status, navigation]);
 
@@ -47,7 +48,7 @@ const LoginCreator = () => {
       <Loader visible={isLoading} />
       <Text style={authStyles.h1}>Creator Login</Text>
       <TextInput
-        style={[authStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "95%" }]}
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
@@ -56,12 +57,13 @@ const LoginCreator = () => {
         autoCapitalize="none"
       />
       <TextInput
-        style={[authStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "95%" }]}
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
         placeholderTextColor={"#888"}
         secureTextEntry={true}
+        
       />
       <CustomButton
         title={isLoading ? "Loading" : "Login"}

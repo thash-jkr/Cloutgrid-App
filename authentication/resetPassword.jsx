@@ -8,10 +8,14 @@ import CustomButton from "../common/customButton";
 import Config from "../config";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import commonStyles from "../styles/common";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const navigation = useNavigation();
+
+  const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
     try {
@@ -31,40 +35,39 @@ const ResetPassword = () => {
 
       navigation.navigate("Register");
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message || "An error occurred");
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "An error occurred"
+      );
     }
   };
 
   return (
-    <View style={authStyles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          paddingVertical: 10,
-          position: "absolute",
-          top: 50
-        }}
-      >
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
+      <View style={commonStyles.pageHeader}>
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
           }}
+          style={commonStyles.center}
         >
-          <FontAwesomeIcon icon={faArrowLeft} size={20} />
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            size={20}
+            style={{ marginRight: 20 }}
+          />
+          <Text style={commonStyles.backText}>Forgot Password</Text>
         </TouchableOpacity>
       </View>
-      <Text style={authStyles.h1}>Reset your password</Text>
+
       <View style={authStyles.loginContainer}>
-        <Text style={authStyles.h3}>
+        <Text style={[commonStyles.h4, {"marginBottom": 20}]}>
           Enter your email address and we will send you a link to reset your
           password
         </Text>
         <View>
           <TextInput
-            style={authStyles.input}
+            style={commonStyles.input}
             placeholder="Email"
             placeholderTextColor={"#888"}
             onChangeText={setEmail}

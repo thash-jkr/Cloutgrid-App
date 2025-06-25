@@ -6,47 +6,32 @@ import {
   ScrollView,
   RefreshControl,
   TouchableWithoutFeedback,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
-  Modal,
-  TextInput,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import {
-  faBell,
-  faHeart as faHeartSolid,
-  faEllipsisVertical,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  faHeart,
-  faComment,
-  faSquare,
-} from "@fortawesome/free-regular-svg-icons";
+import { faBell, faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
+import { faSquare } from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import homeStyles from "../styles/home";
 import commonStyles from "../styles/common";
-import profileStyles from "../styles/profile";
-import authStyles from "../styles/auth";
-import CustomButton from "../common/customButton";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";
 import { deletePost } from "../slices/profileSlice";
 import Triangle from "../common/triangle";
-import Loader from "../common/loading";
+import ReportModal from "../modals/reportModal";
 
 const Home = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [report, setReport] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [reportModal, setReportModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
@@ -57,13 +42,11 @@ const Home = () => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    setIsLoading(true);
     dispatch(fetchFeed());
-    setIsLoading(false);
   }, [dispatch]);
 
   const user = useSelector((state) => state.auth.user);
-  const { posts } = useSelector((state) => state.feed);
+  const { posts, feedLoading } = useSelector((state) => state.feed);
   const count = useSelector((state) => state.notif.count);
 
   const handleTap = (post) => {
@@ -95,12 +78,13 @@ const Home = () => {
   return (
     <View style={[homeStyles.home, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
-      <Loader visible={isLoading} />
+
       <View style={[homeStyles.header]}>
-        <View>
+        <View style={commonStyles.center}>
           <Text style={homeStyles.h2}>
-            CLOUT<Text style={homeStyles.logoSide}>Grid</Text>
+            CLOUT<Text style={homeStyles.logoSide}>Grid </Text>
           </Text>
+          {feedLoading && <ActivityIndicator />}
         </View>
         <TouchableOpacity
           style={[homeStyles.bell, commonStyles.center]}
@@ -223,16 +207,37 @@ const Home = () => {
                     <Text style={homeStyles.postFooterTextBold}>
                       {post.author.username}
                     </Text>
-                    <Text style={{ textAlign: "left", fontWeight: 400 }}>
-                      {post.caption}
-                    </Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("PostDetail", { id: post.id })
+                      }
+                    >
+                      <Text style={{ textAlign: "left", fontWeight: 400 }}>
+                        {post.caption.length < 200
+                          ? post.caption
+                          : post.caption.slice(0, 150) + "......."}
+                      </Text>
+                      {post.caption.length > 199 && (
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            color: "#888",
+                            fontWeight: "700",
+                          }}
+                        >
+                          .......read more.......
+                        </Text>
+                      )}
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
             </View>
           ))
         ) : (
-          <Text>No Posts Found</Text>
+          <Text style={commonStyles.h4}>
+            {feedLoading ? "Loading..." : "No Posts Found"}
+          </Text>
         )}
       </ScrollView>
 
@@ -337,45 +342,15 @@ const Home = () => {
         </View>
       </Modalize>
 
-      <Modal visible={reportModal} transparent={true} animationType="fade">
-        <KeyboardAvoidingView
-          style={profileStyles.modalContainer}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={profileStyles.modalContent}>
-            <Text style={profileStyles.modalTitle}>Report Form</Text>
-            <TextInput
-              style={[authStyles.input, { height: 200 }]}
-              placeholder={
-                "If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
-              }
-              placeholderTextColor={"#999"}
-              textAlign="justify"
-              value={report}
-              onChangeText={(value) => setReport(value)}
-              multiline
-            />
-            <View style={commonStyles.center}>
-              <CustomButton
-                title={"Close"}
-                onPress={() => setReportModal(false)}
-              />
-              <CustomButton
-                title={"Submit"}
-                disabled={report.length < 1}
-                onPress={() => {
-                  setReport("");
-                  setReportModal(false);
-                  Alert.alert(
-                    "Request Received",
-                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
-                  );
-                }}
-              />
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+      {reportModal && (
+        <ReportModal
+          reportModal={reportModal}
+          report={report}
+          setReport={setReport}
+          onClose={() => setReportModal(false)}
+          body="If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
+        />
+      )}
     </View>
   );
 };

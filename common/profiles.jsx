@@ -12,6 +12,7 @@ import {
   Modal,
   TextInput,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import Hyperlink from "react-native-hyperlink";
@@ -63,9 +64,8 @@ const Profiles = ({ route }) => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const { otherProfile, otherPosts, otherCollabs } = useSelector(
-    (state) => state.profiles
-  );
+  const { otherProfile, otherPosts, otherCollabs, profilesLoading } =
+    useSelector((state) => state.profiles);
 
   useEffect(() => {
     dispatch(fetchOtherProfile(username));
@@ -191,6 +191,7 @@ const Profiles = ({ route }) => {
             style={{ marginRight: 20 }}
           />
           <Text style={commonStyles.backText}>Profile</Text>
+          {profilesLoading && <ActivityIndicator />}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
           <FontAwesomeIcon icon={faEllipsisVertical} size={20} />

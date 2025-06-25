@@ -16,9 +16,9 @@ const homeStyles = StyleSheet.create({
     width: width,
     paddingHorizontal: 20,
     // backgroundColor: "#f0f0f0",
-    borderBottomColor: "#ddd",
-    borderBottomWidth: 1,
-    paddingBottom: 5
+    // borderBottomColor: "#ddd",
+    // borderBottomWidth: 1,
+    paddingVertical: 5
   },
   bell: {
     color: "green",
@@ -169,7 +169,6 @@ const homeStyles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderTopColor: "#ddd",
-    paddingHorizontal: 10,
   },
   commentInput: {
     flex: 1,
@@ -177,8 +176,8 @@ const homeStyles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 10,
-    marginRight: 10,
-    // fontFamily: "sen-400",
+    margin: 10,
+    color: "#000"
   },
 });
 

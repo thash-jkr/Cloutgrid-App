@@ -232,6 +232,7 @@ const Settings = () => {
               textAlign="justify"
               value={help}
               onChangeText={(value) => setHelp(value)}
+              textAlignVertical="top"
               multiline
             />
             <View style={commonStyles.center}>
@@ -477,6 +478,7 @@ const Settings = () => {
               textAlign="justify"
               value={feedback}
               onChangeText={(value) => setFeedback(value)}
+              textAlignVertical="top"
               multiline
             />
             <View style={commonStyles.center}>

@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import JobDetails from "../common/jobDetails";
 import EditProfile from "../common/editProfile";
 import JobApplications from "../common/jobApplications";
+import PostDetail from "../common/postDetail";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -37,6 +38,7 @@ const HomeStack = () => {
         name="ProfilePostsDetails"
         component={ProfilePostsDetails}
       />
+      <Stack.Screen name="PostDetail" component={PostDetail} />
     </Stack.Navigator>
   );
 };
@@ -93,6 +95,7 @@ const ProfileStack = () => {
       />
       <Stack.Screen name="Comments" component={Comments} />
       <Stack.Screen name="EditProfile" component={EditProfile} />
+      <Stack.Screen name="PostDetail" component={PostDetail} />
     </Stack.Navigator>
   );
 };

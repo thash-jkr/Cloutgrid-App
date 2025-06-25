@@ -15,8 +15,8 @@ import { setCredentiels } from "./authentication/authSlice";
 import { fetchNotifications } from "./slices/notificationSlice";
 
 export default function App() {
-  Text.defaultProps = Text.defaultProps || {};
-  Text.defaultProps.allowFontScaling = false;
+  // Text.defaultProps = Text.defaultProps || {};
+  // Text.defaultProps.allowFontScaling = false;
 
   const [rehydrated, setRehydrated] = useState(false);
   const [fontsLoaded] = useFonts({

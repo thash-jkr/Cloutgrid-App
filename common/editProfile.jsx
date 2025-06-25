@@ -9,6 +9,7 @@ import {
   Modal,
   Dimensions,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,6 +27,7 @@ import { updateProfile } from "../slices/profileSlice";
 import Loader from "./loading";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import PickerModal from "../modals/pickerModal";
 
 const MAX_SIZE_MB = 5;
 
@@ -33,6 +35,7 @@ const EditProfile = () => {
   const [imageModal, setImageModal] = useState(false);
   const [categoryModal, setCategoryModal] = useState(false);
   const [localUri, setLocalUri] = useState("");
+  const [pickerModal, setPickerModal] = useState(false);
 
   const manipulator = useImageManipulator(localUri);
 
@@ -190,18 +193,7 @@ const EditProfile = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={[commonStyles.container, { paddingTop: insets.top }]}
     >
-      <Loader visible={profileLoading} />
-
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          paddingLeft: 20,
-          padding: 10,
-        }}
-      >
+      <View style={commonStyles.pageHeader}>
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
@@ -214,12 +206,13 @@ const EditProfile = () => {
             style={{ marginRight: 20 }}
           />
           <Text style={commonStyles.backText}>Edit Profile</Text>
+          {profileLoading && <ActivityIndicator />}
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity
         onPress={() => setImageModal(true)}
-        style={{ position: "relative" }}
+        style={{ position: "relative", marginTop: 10 }}
       >
         <Image
           source={{
@@ -293,7 +286,7 @@ const EditProfile = () => {
         >
           <CustomButton
             title={"Category"}
-            onPress={() => setCategoryModal(true)}
+            onPress={() => setPickerModal(true)}
           />
           <Text
             style={[
@@ -352,56 +345,17 @@ const EditProfile = () => {
         </View>
       </Modal>
 
-      <Modal visible={categoryModal} transparent={true} animationType="slide">
-        <View style={profileStyles.modalContainer}>
-          <View style={profileStyles.modalContent}>
-            <View
-              style={
-                Platform.OS === "ios"
-                  ? {}
-                  : [
-                      commonStyles.input,
-                      { width: width * 0.7, flexDirection: "column" },
-                    ]
-              }
-            >
-              {Platform.OS === "android" && (
-                <Text>Select from dropdown 👉🏻</Text>
-              )}
-              <Picker
-                selectedValue={
-                  type === "creator" ? formData.area : formData.target_audience
-                }
-                style={[
-                  commonStyles.picker,
-                  { marginBottom: Platform.OS === "ios" ? 250 : 10 },
-                ]}
-                onValueChange={(value) => {
-                  type === "creator"
-                    ? handleChange("area", value)
-                    : handleChange("target_audience", value);
-                  Platform.OS === "android" && setCategoryModal(false);
-                }}
-              >
-                {AREA_OPTIONS.map((area) => (
-                  <Picker.Item
-                    key={area.value}
-                    label={area.label}
-                    value={area.value}
-                  />
-                ))}
-              </Picker>
-            </View>
-
-            <View style={profileStyles.button}>
-              <CustomButton
-                title={"Close"}
-                onPress={() => setCategoryModal(false)}
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      {pickerModal && (
+        <PickerModal
+          pickerModal={pickerModal}
+          onClose={() => setPickerModal(false)}
+          category={
+            type === "creator" ? formData.area : formData.target_audience
+          }
+          handleChange={handleChange}
+          type={type}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };

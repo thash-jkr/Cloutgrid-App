@@ -29,9 +29,8 @@ import QuestionModal from "../modals/questionModal";
 import { handleApplication } from "../slices/jobSlice";
 import profileStyles from "../styles/profile";
 import authStyles from "../styles/auth";
-import {
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ReportModal from "../modals/reportModal";
 
 const JobDetails = ({ route }) => {
   const [report, setReport] = useState("");
@@ -69,19 +68,9 @@ const JobDetails = ({ route }) => {
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" />
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          paddingLeft: 20,
-          padding: 10,
-        }}
-      >
+      <View style={commonStyles.pageHeader}>
         <TouchableOpacity
           onPress={() => {
-            // dispatch(clearProfiles());
             navigation.goBack();
           }}
           style={commonStyles.center}
@@ -206,46 +195,15 @@ const JobDetails = ({ route }) => {
         </View>
       </Modalize>
 
-      <Modal visible={reportModal} transparent={true} animationType="fade">
-        <KeyboardAvoidingView
-          style={profileStyles.modalContainer}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={profileStyles.modalContent}>
-            <Text style={profileStyles.modalTitle}>Report Form</Text>
-            <TextInput
-              style={[authStyles.input, { height: 200 }]}
-              placeholder={
-                "If you believe this collaboration post or business user has violated our community guidelines, please report it using this form"
-              }
-              placeholderTextColor={"#999"}
-              textAlign="justify"
-              value={report}
-              onChangeText={(value) => setReport(value)}
-              textAlignVertical="top"
-              multiline
-            />
-            <View style={commonStyles.center}>
-              <CustomButton
-                title={"Close"}
-                onPress={() => setReportModal(false)}
-              />
-              <CustomButton
-                title={"Submit"}
-                disabled={report.length < 1}
-                onPress={() => {
-                  setReport("");
-                  setReportModal(false);
-                  Alert.alert(
-                    "Request Received",
-                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
-                  );
-                }}
-              />
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+      {reportModal && (
+        <ReportModal
+          reportModal={reportModal}
+          report={report}
+          setReport={setReport}
+          onClose={() => setReportModal(false)}
+          body="If you believe this collaboration post or business user has violated our community guidelines, please report it using this form"
+        />
+      )}
 
       {questionModal && (
         <QuestionModal

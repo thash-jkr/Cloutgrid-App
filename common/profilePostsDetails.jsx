@@ -5,10 +5,6 @@ import {
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
-  Platform,
-  KeyboardAvoidingView,
-  Modal,
-  TextInput,
   Alert,
 } from "react-native";
 import React, { useRef, useState } from "react";
@@ -16,13 +12,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowLeft,
   faEllipsisVertical,
-  faHeart as faHeartSolid,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faHeart,
-  faComment,
-  faSquare,
-} from "@fortawesome/free-regular-svg-icons";
+import { faSquare } from "@fortawesome/free-regular-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
@@ -33,11 +24,9 @@ import homeStyles from "../styles/home";
 import Config from "../config";
 import { Modalize } from "react-native-modalize";
 import { useDispatch, useSelector } from "react-redux";
-import profileStyles from "../styles/profile";
-import authStyles from "../styles/auth";
-import CustomButton from "./customButton";
 import { deletePost } from "../slices/profileSlice";
 import Triangle from "./triangle";
+import ReportModal from "../modals/reportModal";
 
 const ProfilePostsDetails = ({ route }) => {
   const { postss } = route.params;
@@ -181,15 +170,34 @@ const ProfilePostsDetails = ({ route }) => {
                   <FontAwesomeIcon icon={faSquare} size={25} />
                 </TouchableOpacity>
               </View>
-              
+
               <View style={homeStyles.postFooterText}>
                 <View>
                   <Text style={homeStyles.postFooterTextBold}>
                     {post.author.username}
                   </Text>
-                  <Text style={{ textAlign: "left", fontWeight: 400 }}>
-                    {post.caption}
-                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("PostDetail", { id: post.id })
+                    }
+                  >
+                    <Text style={{ textAlign: "left", fontWeight: 400 }}>
+                      {post.caption.length < 200
+                        ? post.caption
+                        : post.caption.slice(0, 150) + ".......\n"}
+                    </Text>
+                    {post.caption.length > 199 && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "#888",
+                          fontWeight: "700",
+                        }}
+                      >
+                        .......read more.......
+                      </Text>
+                    )}
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -271,45 +279,15 @@ const ProfilePostsDetails = ({ route }) => {
         </View>
       </Modalize>
 
-      <Modal visible={reportModal} transparent={true} animationType="fade">
-        <KeyboardAvoidingView
-          style={profileStyles.modalContainer}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <View style={profileStyles.modalContent}>
-            <Text style={profileStyles.modalTitle}>Report Form</Text>
-            <TextInput
-              style={[authStyles.input, { height: 200 }]}
-              placeholder={
-                "If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
-              }
-              placeholderTextColor={"#999"}
-              textAlign="justify"
-              value={report}
-              onChangeText={(value) => setReport(value)}
-              multiline
-            />
-            <View style={commonStyles.center}>
-              <CustomButton
-                title={"Close"}
-                onPress={() => setReportModal(false)}
-              />
-              <CustomButton
-                title={"Submit"}
-                disabled={report.length < 1}
-                onPress={() => {
-                  setReport("");
-                  setReportModal(false);
-                  Alert.alert(
-                    "Request Received",
-                    "Thank you for reaching out. Our support team has received your message and will take necessary actions"
-                  );
-                }}
-              />
-            </View>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
+      {reportModal && (
+        <ReportModal
+          reportModal={reportModal}
+          report={report}
+          setReport={setReport}
+          onClose={() => setReportModal(false)}
+          body="If you believe this post, profile, or user activity violates our community guidelines, please report it using this form"
+        />
+      )}
     </View>
   );
 };

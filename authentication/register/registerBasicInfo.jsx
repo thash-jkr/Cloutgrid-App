@@ -148,7 +148,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             value={formData.user.name}
             onChangeText={(value) => handleChange("name", value)}
             style={commonStyles.input}
-            placeholderTextColor={"#999"}
+            placeholderTextColor={"#888"}
           />
         </View>
 
@@ -172,7 +172,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             value={formData.user.email}
             onChangeText={(value) => handleChange("email", value)}
             style={commonStyles.input}
-            placeholderTextColor={"#999"}
+            placeholderTextColor={"#888"}
           />
         </View>
 
@@ -196,7 +196,7 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             value={formData.user.username}
             onChangeText={(value) => handleChange("username", value)}
             style={commonStyles.input}
-            placeholderTextColor={"#999"}
+            placeholderTextColor={"#888"}
           />
         </View>
 

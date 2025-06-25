@@ -9,6 +9,7 @@ const commonStyles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     width: width,
+    height: height,
   },
   containerCenter: {
     flex: 1,
@@ -32,7 +33,7 @@ const commonStyles = StyleSheet.create({
   centerVertical: {
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 5
+    marginVertical: 5,
   },
   centerLeft: {
     justifyContent: "center",
@@ -86,6 +87,7 @@ const commonStyles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
+    color: "#000",
   },
   inputLarge: {
     width: width * 0.9,
@@ -98,6 +100,20 @@ const commonStyles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
+    color: "#000",
+  },
+  inputLargest: {
+    width: width * 0.9,
+    height: 200,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    color: "#000",
   },
   picker: {
     width: width * 0.65,
@@ -118,7 +134,7 @@ const commonStyles = StyleSheet.create({
   },
   modalBody: {
     padding: 10,
-    paddingBottom: 50
+    paddingBottom: 50,
   },
   modalBodyText: {
     textAlign: "justify",
