@@ -9,6 +9,7 @@ import {
   RefreshControl,
   Modal,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -35,7 +36,6 @@ import {
 } from "../slices/profileSlice";
 
 const Profile = () => {
-  const [modalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("posts");
   const [refreshing, setRefreshing] = useState(false);
   const [inModal, setInModal] = useState(false);
@@ -46,9 +46,9 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   const { user, type } = useSelector((state) => state.auth);
-  const { posts } = useSelector((state) => state.profile);
-  const { collabs } = useSelector((state) => state.profile);
-  const { updateStatus, updateError } = useSelector((state) => state.profile);
+  const { posts, collabs, profileLoading } = useSelector(
+    (state) => state.profile
+  );
 
   const { width } = Dimensions.get("screen");
 
@@ -58,22 +58,6 @@ const Profile = () => {
     dispatch(fetchPosts());
     type === "business" && dispatch(fetchCollabs());
   }, [user, dispatch]);
-
-  useEffect(() => {
-    if (updateStatus === "failed") {
-      Alert.alert("Error", "Something went wrong");
-      dispatch(resetUpdateStatus);
-    } else if (updateStatus === "succeeded") {
-      setModalVisible(false);
-      Alert.alert("Success", "Profile updated successfully!");
-      dispatch(resetUpdateStatus);
-    }
-  }, [updateStatus]);
-
-  const handleSave = (updatedProfile) => {
-    dispatch(updateProfile(updatedProfile));
-    setModalVisible(false);
-  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -228,7 +212,9 @@ const Profile = () => {
             <Text style={{ fontWeight: "600", fontSize: 13 }}>
               {user.user.name} | @{user.user.username}
             </Text>
+
             <Text style={{ fontSize: 12 }}>{user.user.bio}</Text>
+
             {user.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
                 <Text
@@ -241,12 +227,16 @@ const Profile = () => {
                 </Text>
               </Hyperlink>
             )}
-            <View style={profileStyles.profileArea}>
-              <Text style={{ fontWeight: 600, fontSize: 12 }}>
-                {type === "creator"
-                  ? AREA_OPTIONS_OBJECT[user.area]
-                  : AREA_OPTIONS_OBJECT[user.target_audience]}
-              </Text>
+
+            <View style={commonStyles.center}>
+              <View style={profileStyles.profileArea}>
+                <Text style={{ fontWeight: 600, fontSize: 12 }}>
+                  {type === "creator"
+                    ? AREA_OPTIONS_OBJECT[user.area]
+                    : AREA_OPTIONS_OBJECT[user.target_audience]}
+                </Text>
+              </View>
+              {profileLoading && <ActivityIndicator />}
             </View>
           </View>
           <View style={profileStyles.button}>

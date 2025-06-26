@@ -143,9 +143,6 @@ const profileSlice = createSlice({
     clearProfile(state) {
       Object.assign(state, initialState);
     },
-    resetUpdateStatus(state) {
-      (state.updateStatus = "idle"), (state.updateError = null);
-    },
   },
   extraReducers: (builder) => {
     builder

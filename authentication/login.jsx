@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import LoginBusiness from "./loginBusiness";
 import LoginCreator from "./loginCreator";
 import authStyles from "../styles/auth";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -20,6 +21,8 @@ const Login = () => {
   const [type, setType] = useState("creator");
   const translateX = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+
+  const insets = useSafeAreaInsets();
 
   const animateTransition = (nextType) => {
     Animated.timing(translateX, {
@@ -39,8 +42,9 @@ const Login = () => {
 
   return (
     <KeyboardAvoidingView
-      style={authStyles.container}
+      style={[authStyles.container]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
     >
       <Animated.View
         style={{
@@ -68,6 +72,7 @@ const Login = () => {
           </Text>
         </TouchableOpacity>
       </View>
+
       <View style={authStyles.footer}>
         <TouchableOpacity
           onPress={() => {

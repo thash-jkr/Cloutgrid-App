@@ -23,9 +23,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-logo.png",
-        "backgroundColor": "#fff"
+        "backgroundColor": "#ffffff"
       },
-      "package": "com.cloutgrid.Cloutgrid",
+      "package": "com.cloutgrid.androidapp",
       "edgeToEdgeEnabled": true
     },
     "androidNavigationBar": {

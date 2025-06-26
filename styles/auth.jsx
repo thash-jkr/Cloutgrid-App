@@ -7,8 +7,8 @@ const authStyles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     backgroundColor: "#fff",
-    flex: 1,
     justifyContent: "center",
+    flex: 1,
   },
   loginContainer: {
     padding: 20,

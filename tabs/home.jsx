@@ -235,9 +235,13 @@ const Home = () => {
             </View>
           ))
         ) : (
-          <Text style={commonStyles.h4}>
-            {feedLoading ? "Loading..." : "No Posts Found"}
-          </Text>
+          <View style={commonStyles.center}>
+            {feedLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={commonStyles.h4}>"No Posts Found"</Text>
+            )}
+          </View>
         )}
       </ScrollView>
 

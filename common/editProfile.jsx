@@ -305,7 +305,7 @@ const EditProfile = () => {
           style={{ width: "100%", borderTopColor: "#ddd", borderTopWidth: 1 }}
         >
           <CustomButton
-            title="Save"
+            title={profileLoading ? "Loading..." : "Save"}
             onPress={() => {
               dispatch(updateProfile(formData));
               if (profileError) {
@@ -315,6 +315,7 @@ const EditProfile = () => {
                 navigation.goBack();
               }
             }}
+            disabled={profileLoading}
           />
         </View>
       </View>

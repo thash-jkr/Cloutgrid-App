@@ -7,6 +7,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -79,10 +80,12 @@ const JobList = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <View>
-            <Text style={{ textAlign: "center", marginTop: 20 }}>
-              No Jobs Found
-            </Text>
+          <View style={commonStyles.center}>
+            {jobLoading ? (
+              <ActivityIndicator />
+            ) : (
+              <Text style={commonStyles.h4}>No Jobs Found</Text>
+            )}
           </View>
         )}
       </ScrollView>

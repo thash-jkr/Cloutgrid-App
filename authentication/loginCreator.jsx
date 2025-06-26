@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Alert } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
-import axios from "axios";
 
 import authStyles from "../styles/auth";
 import CustomButton from "../common/customButton";
-import Config from "../config";
 import Loader from "../common/loading";
 import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "./authSlice";

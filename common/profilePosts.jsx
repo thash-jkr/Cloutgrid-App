@@ -5,15 +5,22 @@ import {
   Image,
   Dimensions,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 
 import Config from "../config";
 import { useNavigation } from "@react-navigation/native";
 import commonStyles from "../styles/common";
+import { useSelector } from "react-redux";
 
 const ProfilePosts = ({ posts }) => {
   const { height, width } = Dimensions.get("window");
+
+  const profileLoading = useSelector((state) => state.profile.profileLoading);
+  const profilesLoading = useSelector(
+    (state) => state.profiles.profilesLoading
+  );
 
   const navigation = useNavigation();
 
@@ -57,7 +64,13 @@ const ProfilePosts = ({ posts }) => {
           <React.Fragment key={index}>{renderRow(rowPosts)}</React.Fragment>
         ))
       ) : (
-        <Text style={commonStyles.h4}>No posts found!</Text>
+        <View style={commonStyles.center}>
+          {profileLoading || profilesLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <Text style={commonStyles.h4}>No posts found!</Text>
+          )}
+        </View>
       )}
     </ScrollView>
   );

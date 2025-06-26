@@ -5,6 +5,8 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  View,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import searchStyles from "../styles/search";
@@ -14,46 +16,31 @@ import * as SecureStore from "expo-secure-store";
 
 import Config from "../config";
 import commonStyles from "../styles/common";
+import { useSelector } from "react-redux";
 
 const Search = () => {
-  const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  
+  const [loading, setLoading] = useState(false);
+
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const accessToken = await SecureStore.getItemAsync("access");
-        const response = await axios.get(`${Config.BASE_URL}`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        if (response.status == 200) {
-          setUser(response.data.user);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+  const user = useSelector((state) => state.auth.user);
 
   const handleSearch = async (query) => {
     setSearchQuery(query);
 
-    if (query.length > 1) {
+    if (query.length > 0) {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${Config.BASE_URL}/search?q=${query}`
         );
         setSearchResults(response.data);
       } catch (error) {
         console.error("Error fetching search results:", error);
+      } finally {
+        setLoading(false);
       }
     } else {
       setSearchResults([]);
@@ -84,6 +71,7 @@ const Search = () => {
   );
 
   let combinedResults = [];
+
   if (searchResults.creators) {
     combinedResults = [
       ...searchResults.creators.map((creator) => ({
@@ -92,6 +80,7 @@ const Search = () => {
       })),
     ];
   }
+
   if (searchResults.businesses) {
     combinedResults = [
       ...combinedResults,
@@ -109,13 +98,33 @@ const Search = () => {
         placeholder="Search users..."
         value={searchQuery}
         onChangeText={handleSearch}
+        placeholderTextColor={"#888"}
       />
+
       <FlatList
         data={combinedResults}
         keyExtractor={(item, index) => `${item.user.id}-${index}`}
-        renderItem={({ item }) => renderResult({ item, type: item.type })}
+        renderItem={({ item }) =>
+          searchQuery.length > 0 ? (
+            renderResult({ item, type: item.type })
+          ) : (
+            <Text style={commonStyles.h4}>
+              Search for Creators and Businesses.
+            </Text>
+          )
+        }
         ListEmptyComponent={() => (
-          <Text style={searchStyles.emptyText}>No users found.</Text>
+          <View style={commonStyles.center}>
+            {loading ? (
+              <ActivityIndicator />
+            ) : searchQuery ? (
+              <Text style={commonStyles.h4}>No users found.</Text>
+            ) : (
+              <Text style={commonStyles.h4}>
+                Search for Creators and Businesses.
+              </Text>
+            )}
+          </View>
         )}
       />
     </SafeAreaView>

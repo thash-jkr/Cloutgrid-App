@@ -56,6 +56,7 @@ const Comments = ({ route }) => {
   const { width } = Dimensions.get("window");
 
   useEffect(() => {
+    dispatch(clearComments());
     dispatch(fetchComments(post.id));
   }, []);
 
@@ -84,9 +85,10 @@ const Comments = ({ route }) => {
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={Platform.OS == "ios" ? 0 : 45}
+        keyboardVerticalOffset={
+          Platform.OS == "ios" ? 0 : insets.bottom === 0 ? 45 : 0
+        }
       >
         <View style={{ alignItems: "center", flex: 1 }}>
           <View style={commonStyles.pageHeader}>
