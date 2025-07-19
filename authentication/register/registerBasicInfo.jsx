@@ -6,22 +6,33 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
-import axios from "axios";
 import React, { useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faCheckCircle,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import CustomButton from "../../common/customButton";
 import AboutModal from "../../modals/aboutModal";
 import commonStyles from "../../styles/common";
-import OTPModal from "../../modals/otpModal";
-import Config from "../../config";
+import { useDispatch, useSelector } from "react-redux";
+import { handleSendOTP, handleVerifyOTP } from "../authSlice";
 
-const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
-  const [isLoading, setIsLoading] = useState(false);
+const BasicInfo = ({
+  nextStep,
+  formData,
+  handleChange,
+  emailVerified,
+  setEmailVerified,
+  type,
+}) => {
   const [aboutContent, setAboutContent] = useState({
     title: "",
     body: "",
@@ -32,8 +43,11 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const aboutModalize = useRef(null);
+  const dispatch = useDispatch();
 
-  const handleContinue = async () => {
+  const { authLoading } = useSelector((state) => state.auth);
+
+  const sendOTP = () => {
     if (
       !formData.user.name ||
       !formData.user.username ||
@@ -43,74 +57,46 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
       return;
     }
 
-    try {
-      setIsLoading(true);
-      const data = new FormData();
-      data.append("name", formData.user.name);
-      data.append("username", formData.user.username);
-      data.append("email", formData.user.email);
+    const data = new FormData();
+    data.append("name", formData.user.name);
+    data.append("username", formData.user.username);
+    data.append("email", formData.user.email);
 
-      const response = await axios.post(`${Config.BASE_URL}/otp/send/`, data);
-
-      if (response.status === 203) {
-        Alert.alert("Error", response.data.message);
-      }
-
-      if (response.status === 200) {
+    dispatch(handleSendOTP(data))
+      .unwrap()
+      .then(() => {
         setShowOTPModal(true);
-      }
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || error.response?.data?.email[0]
-      );
-    } finally {
-      setIsLoading(false);
-    }
+        setEmailVerified(false);
+      })
+      .catch((error) => {
+        Alert.alert("Error", error);
+      });
   };
 
-  const handleOTP = async () => {
-    try {
-      setIsLoading(true);
-      const data = new FormData();
-      data.append("username", formData.user.username);
-      data.append("otp", OTP);
+  const verifyOTP = () => {
+    const data = new FormData();
+    data.append("username", formData.user.username);
+    data.append("otp", OTP);
 
-      const response = await axios.post(
-        `${Config.BASE_URL}/otp/verify/`,
-        data,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      Alert.alert("Message", response.data.message);
-
-      if (response.status == 200) {
+    dispatch(handleVerifyOTP(data))
+      .unwrap()
+      .then(() => {
         setShowOTPModal(false);
+        setEmailVerified(true);
         nextStep();
-      }
-    } catch (error) {
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "An error occurred"
-      );
-    } finally {
-      setIsLoading(false);
-    }
+      })
+      .catch((error) => {
+        Alert.alert("Error", error);
+      });
   };
 
-  const handleNoOTP = async () => {
+  const handleNoOTP = () => {
     try {
       setShowOTPModal(false);
-      setIsLoading(true);
+      setEmailVerified(true);
       nextStep();
     } catch (error) {
       Alert.alert("Error", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -137,7 +123,14 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={commonStyles.centerVertical}>
+      <KeyboardAwareScrollView
+        enableOnAndroid
+        keyboardOpeningTime={0}
+        contentContainerStyle={[
+          commonStyles.centerVertical,
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={commonStyles.centerLeft}>
           <View style={commonStyles.center}>
             <Text style={commonStyles.h4}>Name: </Text>
@@ -147,30 +140,6 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
             placeholder="Enter your name"
             value={formData.user.name}
             onChangeText={(value) => handleChange("name", value)}
-            style={commonStyles.input}
-            placeholderTextColor={"#888"}
-          />
-        </View>
-
-        <View style={commonStyles.centerLeft}>
-          <View style={commonStyles.center}>
-            <Text style={commonStyles.h4}>Email: </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setAboutContent({
-                  title: "Email Address",
-                  body: "This email will be used to verify your account and help you log in securely. Make sure to enter an email you actively use",
-                });
-                aboutModalize.current?.open();
-              }}
-            >
-              <FontAwesomeIcon icon={faInfoCircle} size={17} />
-            </TouchableOpacity>
-          </View>
-          <TextInput
-            placeholder="Enter your Email"
-            value={formData.user.email}
-            onChangeText={(value) => handleChange("email", value)}
             style={commonStyles.input}
             placeholderTextColor={"#888"}
           />
@@ -200,29 +169,82 @@ const BasicInfo = ({ nextStep, formData, handleChange, type }) => {
           />
         </View>
 
+        <View style={commonStyles.centerLeft}>
+          <View style={commonStyles.center}>
+            <Text style={commonStyles.h4}>Email: </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setAboutContent({
+                  title: "Email Address",
+                  body: "This email will be used to verify your account and help you log in securely. Make sure to enter an email you actively use",
+                });
+                aboutModalize.current?.open();
+              }}
+            >
+              <FontAwesomeIcon icon={faInfoCircle} size={17} />
+            </TouchableOpacity>
+            {emailVerified && (
+              <View style={commonStyles.center}>
+                <Text
+                  style={{
+                    color: "green",
+                    marginLeft: 10,
+                    fontFamily: "Poppins_500Medium",
+                  }}
+                >
+                  Verified
+                </Text>
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  size={15}
+                  style={{ marginLeft: 5, color: "green" }}
+                />
+              </View>
+            )}
+          </View>
+          <TextInput
+            placeholder="Enter your Email"
+            value={formData.user.email}
+            onChangeText={(value) => {
+              setShowOTPModal(false);
+              handleChange("email", value);
+            }}
+            style={[commonStyles.input, emailVerified && { opacity: 0.5 }]}
+            placeholderTextColor={"#888"}
+            keyboardType="email-address"
+            editable={!emailVerified}
+          />
+        </View>
+
+        {showOTPModal && (
+          <View style={commonStyles.centerLeft}>
+            <View style={commonStyles.center}>
+              <Text style={commonStyles.h4}>OTP: </Text>
+            </View>
+            <TextInput
+              placeholder="Enter the OTP sent to your email"
+              value={OTP}
+              onChangeText={(value) => setOTP(value)}
+              style={commonStyles.input}
+              placeholderTextColor={"#888"}
+            />
+          </View>
+        )}
+
         <CustomButton
-          title={isLoading ? "Loading..." : "Continue"}
-          onPress={handleContinue}
-          disabled={isLoading}
+          title={"Continue"}
+          onPress={() =>
+            emailVerified ? nextStep() : showOTPModal ? verifyOTP() : sendOTP()
+          }
+          isLoading={authLoading}
         />
-      </View>
+      </KeyboardAwareScrollView>
 
       <AboutModal
         modalizeRef={aboutModalize}
         title={aboutContent.title}
         body={aboutContent.body}
       />
-
-      {showOTPModal && (
-        <OTPModal
-          showOTPModal={showOTPModal}
-          onClose={() => setShowOTPModal(false)}
-          onSubmit={handleOTP}
-          OTP={OTP}
-          setOTP={setOTP}
-          isLoading={isLoading}
-        />
-      )}
     </KeyboardAvoidingView>
   );
 };

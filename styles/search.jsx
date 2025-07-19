@@ -21,12 +21,11 @@ const searchStyles = StyleSheet.create({
   searchResult: {
     padding: 10,
     backgroundColor: "#fff",
-    margin: 5,
-    borderRadius: 10,
-    elevation: 5,
     flexDirection: "row",
     alignItems: "center",
-    width: width * 0.95,
+    borderBottomWidth: 1,
+    width: "100%",
+    borderBottomColor: "#ddd"
   },
   emptyText: {
     textAlign: "center",

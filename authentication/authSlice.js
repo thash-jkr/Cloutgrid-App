@@ -44,14 +44,66 @@ export const loginThunk = createAsyncThunk(
         type: type,
       };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data.message || "Something went wrong!"
+      );
+    }
+  }
+);
+
+export const handleSendOTP = createAsyncThunk(
+  "auth/handleSendOTP",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${Config.BASE_URL}/otp/send/`, data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.status !== 200) {
+        return rejectWithValue(response.data.message || "Failed to send OTP");
+      }
+
+      return true;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data.message || "Something went wrong!"
+      );
+    }
+  }
+);
+
+export const handleVerifyOTP = createAsyncThunk(
+  "auth/handleVerifyOTP",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${Config.BASE_URL}/otp/verify/`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        return rejectWithValue("Invalid OTP");
+      }
+
+      return true;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data.message || "Something went wrong!"
+      );
     }
   }
 );
 
 export const logoutThunk = createAsyncThunk(
   "auth/logoutThunk",
-  async (_, { getState, rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const token = await SecureStore.getItemAsync("access");
       const refresh = await SecureStore.getItemAsync("refresh");
@@ -77,7 +129,9 @@ export const logoutThunk = createAsyncThunk(
 
       return true;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data.message || "Something went wrong!"
+      );
     }
   }
 );
@@ -87,8 +141,8 @@ const initialState = {
   token: null,
   refresh: null,
   type: null,
-  status: "idle",
-  error: null,
+  authLoading: false,
+  authError: null,
 };
 
 const authSlice = createSlice({
@@ -100,8 +154,8 @@ const authSlice = createSlice({
       state.token = null;
       state.refresh = null;
       state.type = null;
-      state.status = "idle";
-      state.error = null;
+      state.authLoading = false;
+      state.authError = null;
     },
 
     setCredentiels(state, action) {
@@ -110,26 +164,27 @@ const authSlice = createSlice({
       state.token = token;
       state.refresh = refresh;
       state.type = type;
-      state.status = "succeeded";
-      state.error = null;
+      state.authLoading = false;
+      state.authError = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(loginThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.authLoading = true;
+        state.authError = null;
       })
       .addCase(loginThunk.fulfilled, (state, action) => {
-        state.status = "succeeded";
+        state.authLoading = false;
+        state.authError = null;
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.refresh = action.payload.refresh;
         state.type = action.payload.type;
       })
       .addCase(loginThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.authLoading = false;
+        state.authError = action.payload;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.user = action.payload;
@@ -139,21 +194,49 @@ const authSlice = createSlice({
       });
 
     builder
+      .addCase(handleSendOTP.pending, (state) => {
+        state.authLoading = true;
+        state.authError = null;
+      })
+      .addCase(handleSendOTP.fulfilled, (state) => {
+        state.authLoading = false;
+        state.authError = null;
+      })
+      .addCase(handleSendOTP.rejected, (state, action) => {
+        state.authLoading = false;
+        state.authError = action.payload;
+      });
+
+    builder
+      .addCase(handleVerifyOTP.pending, (state) => {
+        state.authLoading = true;
+        state.authError = null;
+      })
+      .addCase(handleVerifyOTP.fulfilled, (state) => {
+        state.authLoading = false;
+        state.authError = null;
+      })
+      .addCase(handleVerifyOTP.rejected, (state, action) => {
+        state.authLoading = false;
+        state.authError = action.payload;
+      });
+
+    builder
       .addCase(logoutThunk.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.authLoading = true;
+        state.authError = null;
       })
       .addCase(logoutThunk.fulfilled, (state) => {
         state.user = null;
         state.token = null;
         state.refresh = null;
         state.type = null;
-        state.status = "idle";
-        state.error = null;
+        state.authLoading = false;
+        state.authError = null;
       })
       .addCase(logoutThunk.rejected, (state, action) => {
-        state.status = "failed";
-        state.error = action.payload;
+        state.authLoading = false;
+        state.authError = action.payload;
       });
   },
 });

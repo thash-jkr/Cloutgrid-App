@@ -157,11 +157,9 @@ const feedSlice = createSlice({
       })
 
       .addCase(likePost.pending, (state) => {
-        state.feedLoading = true;
         state.feedError = null;
       })
       .addCase(likePost.fulfilled, (state, action) => {
-        state.feedLoading = false;
         state.feedError = null;
         const { postId, is_liked, like_count } = action.payload;
         state.posts = state.posts.map((post) =>
@@ -169,7 +167,6 @@ const feedSlice = createSlice({
         );
       })
       .addCase(likePost.rejected, (state, action) => {
-        state.feedLoading = false;
         state.feedError = action.payload;
       })
 

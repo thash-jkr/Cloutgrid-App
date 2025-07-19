@@ -41,7 +41,7 @@ const MAX_SIZE_MB = 5;
 const PostCreate = ({ route }) => {
   const { imageUri } = route.params;
 
-  const { width } = Dimensions.get("screen");
+  const { width, height } = Dimensions.get("screen");
 
   const { type } = useSelector((state) => state.auth);
 
@@ -96,7 +96,7 @@ const PostCreate = ({ route }) => {
   const handleSearch = async (q) => {
     setQuery(q);
 
-    if (q.length > 1) {
+    if (q.length > 0) {
       try {
         const response = await axios.get(
           `${Config.BASE_URL}/search-business?q=${q}`
@@ -288,9 +288,9 @@ const PostCreate = ({ route }) => {
             <View
               style={{
                 display: query.length > 0 ? "flex" : "none",
-                height: 150,
+                height: 300,
                 position: "absolute",
-                top: -150,
+                top: -300,
                 width: "90%",
                 backgroundColor: "#fff",
                 justifyContent: "flex-start",
@@ -303,35 +303,58 @@ const PostCreate = ({ route }) => {
                 elevation: 5,
               }}
             >
-              <ScrollView>
+              <ScrollView
+                style={{ width: "100%" }}
+                contentContainerStyle={{ width: "100%" }}
+              >
                 {results.length > 0 ? (
                   results.map((item) => (
                     <TouchableOpacity
                       key={item.user.username}
                       style={{
-                        width: width * 0.85,
+                        width: "100%",
                         padding: 10,
-                        backgroundColor: "#CAF0F8",
-                        margin: 5,
-                        borderRadius: 10,
-                        // shadowColor: "#000",
-                        // shadowOffset: { width: 2, height: 2 },
-                        // shadowOpacity: 0.5,
-                        // shadowRadius: 2,
-                        // elevation: 5,
+                        borderBottomWidth: 1,
+                        flexDirection: "row",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                        borderBottomColor: "#ddd",
                       }}
                       onPress={() => {
                         setCollab(item.user.username);
                         setQuery("");
                       }}
                     >
-                      <Text style={{ fontWeight: "500" }}>
-                        {item.user.username}
+                      <Image
+                        source={{
+                          uri: `${Config.BASE_URL}${item.user.profile_photo}`,
+                        }}
+                        style={{ width: 35, height: 35, borderRadius: 70 }}
+                      />
+                      <Text
+                        style={{
+                          fontFamily: "Poppins_500Medium",
+                          marginLeft: 10,
+                          fontSize: 14,
+                        }}
+                      >
+                        {item.user.name}
                       </Text>
                     </TouchableOpacity>
                   ))
                 ) : (
-                  <Text>No results</Text>
+                  <View
+                    style={[
+                      commonStyles.center,
+                      { width: "100%", padding: 20 },
+                    ]}
+                  >
+                    <Text
+                      style={{ color: "#777", fontFamily: "Poppins_700Bold" }}
+                    >
+                      No results
+                    </Text>
+                  </View>
                 )}
               </ScrollView>
             </View>
@@ -351,36 +374,51 @@ const PostCreate = ({ route }) => {
               </TouchableOpacity>
             </View>
 
-            <TextInput
-              placeholder={collab ? "" : "Start typing to search..."}
-              value={query}
-              onChangeText={handleSearch}
-              style={commonStyles.input}
-              editable={!collab}
-            />
-
-            {collab && (
+            {collab ? (
               <View
                 style={{
-                  backgroundColor: "#CAF0F8",
-                  position: "absolute",
                   padding: 7,
-                  borderRadius: 15,
-                  top: 31,
-                  left: 10,
+                  borderRadius: 10,
                   paddingHorizontal: 10,
                   flexDirection: "row",
-                  justifyContent: "center",
+                  justifyContent: "flex-start",
                   alignItems: "center",
+                  width: width * 0.9,
+                  height: height * 0.06,
+                  borderWidth: 1,
+                  borderColor: "#000",
+                  marginBottom: 20,
                 }}
               >
-                <Text style={{ fontWeight: 600, marginRight: 5 }}>
-                  {collab}
-                </Text>
-                <TouchableOpacity onPress={() => setCollab(null)}>
-                  <FontAwesomeIcon icon={faXmark} size={14} />
-                </TouchableOpacity>
+                <View
+                  style={[
+                    commonStyles.center,
+                    {
+                      backgroundColor: "rgb(249 115 22)",
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 20
+                    },
+                  ]}
+                >
+                  <Text
+                    style={{ fontFamily: "Poppins_600SemiBold", marginRight: 5, color: "#fff" }}
+                  >
+                    {collab}
+                  </Text>
+                  <TouchableOpacity onPress={() => setCollab(null)}>
+                    <FontAwesomeIcon icon={faXmark} size={14} color="#fff"/>
+                  </TouchableOpacity>
+                </View>
               </View>
+            ) : (
+              <TextInput
+                placeholder={collab ? "" : "Start typing to search..."}
+                value={query}
+                onChangeText={handleSearch}
+                style={commonStyles.input}
+                editable={!collab}
+              />
             )}
           </View>
         )}

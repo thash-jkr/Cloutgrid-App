@@ -11,8 +11,7 @@ import {
 import axios from "axios";
 import searchStyles from "../styles/search";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import * as SecureStore from "expo-secure-store";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Config from "../config";
 import commonStyles from "../styles/common";
@@ -24,6 +23,7 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
 
   const user = useSelector((state) => state.auth.user);
 
@@ -53,7 +53,7 @@ const Search = () => {
       onPress={() => {
         setSearchQuery("");
         setSearchResults([]);
-        if (user.username === item.user.username) {
+        if (user?.user.username === item.user.username) {
           navigation.navigate("Profile");
           return;
         }
@@ -66,7 +66,38 @@ const Search = () => {
         }}
         style={searchStyles.searchImage}
       />
-      <Text style={searchStyles.resultText}>{item.user.name}</Text>
+      <View style={[commonStyles.centerLeft, { marginLeft: 10 }]}>
+        <Text style={{ fontWeight: 600, marginBottom: 5  }}>
+          {item.user.name}
+        </Text>
+        <View
+          style={[
+            commonStyles.center,
+            {
+              backgroundColor: "rgb(249 115 22)",
+              paddingHorizontal: 7,
+              paddingVertical: 3,
+              borderRadius: 12,
+            },
+          ]}
+        >
+          <Text
+            style={{
+              fontWeight: 600,
+              fontSize: 10,
+              color: "#fff",
+            }}
+          >
+            {
+              AREA_OPTIONS_OBJECT[
+                item.user.user_type === "creator"
+                  ? item.area
+                  : item.target_audience
+              ]
+            }
+          </Text>
+        </View>
+      </View>
     </TouchableOpacity>
   );
 
@@ -91,15 +122,51 @@ const Search = () => {
     ];
   }
 
+  const AREA_OPTIONS = [
+    { value: "", label: "Select Target Audience" },
+    { value: "art", label: "Art and Photography" },
+    { value: "automotive", label: "Automotive" },
+    { value: "beauty", label: "Beauty and Makeup" },
+    { value: "business", label: "Business" },
+    { value: "diversity", label: "Diversity and Inclusion" },
+    { value: "education", label: "Education" },
+    { value: "entertainment", label: "Entertainment" },
+    { value: "fashion", label: "Fashion" },
+    { value: "finance", label: "Finance" },
+    { value: "food", label: "Food and Beverage" },
+    { value: "gaming", label: "Gaming" },
+    { value: "health", label: "Health and Wellness" },
+    { value: "home", label: "Home and Gardening" },
+    { value: "outdoor", label: "Outdoor and Nature" },
+    { value: "parenting", label: "Parenting and Family" },
+    { value: "pets", label: "Pets" },
+    { value: "sports", label: "Sports and Fitness" },
+    { value: "technology", label: "Technology" },
+    { value: "travel", label: "Travel" },
+    { value: "videography", label: "Videography" },
+  ];
+
+  const AREA_OPTIONS_OBJECT = AREA_OPTIONS.reduce((acc, curr) => {
+    acc[curr.value] = curr.label;
+    return acc;
+  }, {});
+
   return (
-    <SafeAreaView style={searchStyles.container}>
-      <TextInput
-        style={commonStyles.input}
-        placeholder="Search users..."
-        value={searchQuery}
-        onChangeText={handleSearch}
-        placeholderTextColor={"#888"}
-      />
+    <View style={[commonStyles.container, { paddingTop: insets.top }]}>
+      <View
+        style={[
+          commonStyles.center,
+          { borderBottomWidth: 0.5, width: "100%", borderBottomColor: "#ddd" },
+        ]}
+      >
+        <TextInput
+          style={commonStyles.input}
+          placeholder="Search users..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+          placeholderTextColor={"#888"}
+        />
+      </View>
 
       <FlatList
         data={combinedResults}
@@ -114,7 +181,7 @@ const Search = () => {
           )
         }
         ListEmptyComponent={() => (
-          <View style={commonStyles.center}>
+          <View style={[commonStyles.center, { marginTop: 10 }]}>
             {loading ? (
               <ActivityIndicator />
             ) : searchQuery ? (
@@ -126,8 +193,9 @@ const Search = () => {
             )}
           </View>
         )}
+        style={{ width: "100%" }}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

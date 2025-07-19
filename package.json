@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/poppins": "^0.4.0",
     "@expo-google-fonts/rufina": "^0.2.3",
     "@expo/metro-runtime": "~5.0.4",
     "@expo/vector-icons": "^14.1.0",
@@ -29,9 +30,10 @@
     "expo": "^53.0.12",
     "expo-dev-client": "~5.2.1",
     "expo-file-system": "~18.1.10",
-    "expo-font": "~13.3.1",
+    "expo-font": "~13.3.2",
     "expo-image-manipulator": "~13.1.7",
     "expo-image-picker": "~16.1.4",
+    "expo-linear-gradient": "~14.1.5",
     "expo-secure-store": "~14.2.3",
     "expo-status-bar": "~2.2.3",
     "expo-updates": "~0.28.15",
@@ -42,6 +44,7 @@
     "react-native-edge-to-edge": "^1.6.0",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-hyperlink": "^0.0.22",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modalize": "^2.1.1",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",

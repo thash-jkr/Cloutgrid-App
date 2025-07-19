@@ -5,6 +5,7 @@ import BasicInfo from "./registerBasicInfo";
 
 const RegisterCreator = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [emailVerified, setEmailVerified] = useState(false);
   const [formData, setFormData] = useState({
     user: {
       name: "",
@@ -41,6 +42,8 @@ const RegisterCreator = () => {
           nextStep={nextStep}
           formData={formData}
           handleChange={handleChange}
+          emailVerified={emailVerified}
+          setEmailVerified={setEmailVerified}
           type="creator"
         />
       );

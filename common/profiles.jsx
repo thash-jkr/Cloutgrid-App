@@ -67,7 +67,13 @@ const Profiles = ({ route }) => {
   const { otherProfile, otherPosts, otherCollabs, profilesLoading } =
     useSelector((state) => state.profiles);
 
+  const { user } = useSelector((state) => state.auth);
+
   useEffect(() => {
+    if (user?.user.username === username) {
+      navigation.navigate("Profile");
+      return;
+    }
     dispatch(fetchOtherProfile(username));
     dispatch(fetchOtherPosts(username));
   }, []);
@@ -224,39 +230,35 @@ const Profiles = ({ route }) => {
 
             <View style={profileStyles.profileData}>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>
-                  {otherPosts.length}
-                </Text>
-                <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
+                <Text style={{ fontWeight: 500 }}>{otherPosts.length}</Text>
+                <Text style={{ fontWeight: 500 }}>Posts</Text>
               </View>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>
+                <Text style={{ fontWeight: 500 }}>
                   {otherProfile.user.followers_count}
                 </Text>
-                <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
+                <Text style={{ fontWeight: 500 }}>Followers</Text>
               </View>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>
+                <Text style={{ fontWeight: 500 }}>
                   {otherProfile.user.following_count}
                 </Text>
-                <Text style={{ fontFamily: "sen-400" }}>Following</Text>
+                <Text style={{ fontWeight: 500 }}>Following</Text>
               </View>
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontFamily: "sen-500" }}>
-              {otherProfile.user.name}
+            <Text style={{ fontWeight: 600 }}>
+              {otherProfile.user.name} • @{otherProfile?.user.username}
             </Text>
-            <Text style={{ fontFamily: "sen-400" }}>
-              {otherProfile.user.bio}
-            </Text>
+            <Text style={{ fontWeight: 400 }}>{otherProfile.user.bio}</Text>
             {otherProfile.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
                 <Text
                   style={{
                     justifyContent: "center",
                     alignItems: "center",
-                    fontFamily: "sen-400",
+                    fontWeight: 600,
                   }}
                 >
                   <FontAwesomeIcon icon={faLink} />{" "}
@@ -265,7 +267,7 @@ const Profiles = ({ route }) => {
               </Hyperlink>
             )}
             <View style={profileStyles.profileArea}>
-              <Text style={{ fontFamily: "sen-600" }}>
+              <Text style={{ fontWeight: 600, color: "#fff" }}>
                 {otherProfile && otherProfile.user.user_type === "creator"
                   ? AREA_OPTIONS_OBJECT[otherProfile.area]
                   : AREA_OPTIONS_OBJECT[otherProfile.target_audience]}
@@ -306,30 +308,48 @@ const Profiles = ({ route }) => {
                 ]}
                 onPress={() => setActiveTab("posts")}
               >
-                <Text style={profileStyles.tabText}>Posts</Text>
+                <Text
+                  style={{
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: activeTab === "posts" ? "#fff" : "#000",
+                  }}
+                >
+                  Posts
+                </Text>
               </TouchableOpacity>
 
               {otherProfile && otherProfile.user.user_type === "creator" && (
                 <TouchableOpacity
                   style={[
+                    commonStyles.center,
                     profileStyles.tabButton,
                     activeTab === "instagram" && profileStyles.activeTab,
                   ]}
                   onPress={() => setActiveTab("instagram")}
                 >
-                  <FontAwesomeIcon icon={faInstagram} size={20} />
+                  <FontAwesomeIcon
+                    icon={faInstagram}
+                    size={20}
+                    color={activeTab === "instagram" ? "#fff" : "#000"}
+                  />
                 </TouchableOpacity>
               )}
 
               {otherProfile && otherProfile.user.user_type === "creator" && (
                 <TouchableOpacity
                   style={[
+                    commonStyles.center,
                     profileStyles.tabButton,
                     activeTab === "youtube" && profileStyles.activeTab,
                   ]}
                   onPress={() => setActiveTab("youtube")}
                 >
-                  <FontAwesomeIcon icon={faYoutube} size={20} />
+                  <FontAwesomeIcon
+                    icon={faYoutube}
+                    size={20}
+                    color={activeTab === "youtube" ? "#fff" : "#000"}
+                  />
                 </TouchableOpacity>
               )}
 
@@ -343,8 +363,9 @@ const Profiles = ({ route }) => {
                 >
                   <Text
                     style={{
-                      fontFamily: "sen-600",
-                      fontSize: 15,
+                      fontWeight: 600,
+                      fontSize: 14,
+                      color: activeTab === "collabs" ? "#fff" : "#000",
                     }}
                   >
                     Collabs

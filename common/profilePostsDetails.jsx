@@ -12,8 +12,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowLeft,
   faEllipsisVertical,
+  faCircleUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { faSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  faSquare,
+  faCircleUp as unlike,
+} from "@fortawesome/free-regular-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
@@ -142,7 +146,9 @@ const ProfilePostsDetails = ({ route }) => {
                 <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
               </TouchableOpacity>
             </View>
-            <TouchableWithoutFeedback onPress={() => handleTap(post)}>
+            <TouchableWithoutFeedback
+              onPress={() => !post.is_liked && handleTap(post)}
+            >
               <Image
                 style={homeStyles.postImage}
                 source={{ uri: `${post.image}` }}
@@ -152,9 +158,13 @@ const ProfilePostsDetails = ({ route }) => {
               <View style={homeStyles.postFooterIcons}>
                 <TouchableOpacity onPress={() => handleLike(post.id)}>
                   {post.is_liked ? (
-                    <Triangle color="#0077B6" size={25} filled={true} />
+                    <FontAwesomeIcon
+                      icon={faCircleUp}
+                      size={25}
+                      color="rgb(249 115 22)"
+                    />
                   ) : (
-                    <Triangle color="#0077B6" size={25} filled={false} />
+                    <FontAwesomeIcon icon={unlike} size={25} />
                   )}
                 </TouchableOpacity>
                 <Text style={[commonStyles.center, { fontWeight: 500 }]}>

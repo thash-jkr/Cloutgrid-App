@@ -23,7 +23,6 @@ const authStyles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#CAF0F8",
     shadowColor: "#000",
     shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.5,
@@ -33,20 +32,18 @@ const authStyles = StyleSheet.create({
   h1: {
     fontSize: 30,
     marginBottom: 20,
-    // fontFamily: "sen-600",
-    fontWeight: "700"
+    fontFamily: "Poppins_600SemiBold",
   },
   h2: {
     fontSize: 25,
     marginBottom: 20,
-    // fontFamily: "sen-500",
+    fontFamily: "Poppins_500Medium",
     color: "#000",
-    fontWeight: "700"
   },
   h3: {
     fontSize: 15,
     marginBottom: 20,
-    // fontFamily: "sen-400",
+    fontFamily: "Poppins",
   },
   loginButtons: {
     flexDirection: "row",
@@ -56,7 +53,7 @@ const authStyles = StyleSheet.create({
   title: {
     fontSize: 30,
     marginBottom: 20,
-    // fontFamily: "sen-600",
+    fontFamily: "Poppins",
   },
   input: {
     width: width * 0.9,
@@ -102,7 +99,7 @@ const authStyles = StyleSheet.create({
     color: "#000",
   },
   footer: {
-    marginTop: 20,
+    marginTop: 10,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -110,7 +107,7 @@ const authStyles = StyleSheet.create({
   footerText: {
     color: "#000",
     marginRight: 5,
-    // fontFamily: "sen-400",
+    fontFamily: "Poppins_500Medium",
   },
 });
 

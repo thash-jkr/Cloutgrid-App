@@ -4,7 +4,6 @@ import { CommonActions, useNavigation } from "@react-navigation/native";
 
 import authStyles from "../styles/auth";
 import CustomButton from "../common/customButton";
-import Loader from "../common/loading";
 import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "./authSlice";
 import commonStyles from "../styles/common";
@@ -12,40 +11,33 @@ import commonStyles from "../styles/common";
 const LoginCreator = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const { status, error } = useSelector((s) => s.auth);
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      setIsLoading(false)
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: "AppTabs" }],
-        })
-      );
-    } else if (status === "failed") {
-      setIsLoading(false)
-      Alert.alert("Login Failed", "Please check your details!")
-    }
-  }, [status, navigation]);
+  const { authLoading, authError } = useSelector((s) => s.auth);
 
   const handleSubmit = async () => {
-    setIsLoading(true)
-    const type = "creator";
-    dispatch(loginThunk({ email, password, type }));
+    dispatch(loginThunk({ email, password, type: "creator" }))
+      .unwrap()
+      .then(() =>
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "AppTabs" }],
+          })
+        )
+      )
+      .catch((error) => {
+        Alert.alert("Login Failed", error);
+      });
   };
 
   return (
     <View style={authStyles.loginContainer}>
-      <Loader visible={isLoading} />
       <Text style={authStyles.h1}>Creator Login</Text>
       <TextInput
-        style={[commonStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "100%" }]}
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
@@ -54,19 +46,14 @@ const LoginCreator = () => {
         autoCapitalize="none"
       />
       <TextInput
-        style={[commonStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "100%" }]}
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
         placeholderTextColor={"#888"}
         secureTextEntry={true}
-        
       />
-      <CustomButton
-        title={isLoading ? "Loading" : "Login"}
-        onPress={handleSubmit}
-        disabled={isLoading}
-      />
+      <CustomButton title={"Login"} onPress={handleSubmit} isLoading={authLoading} />
     </View>
   );
 };

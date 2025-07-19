@@ -13,40 +13,33 @@ import commonStyles from "../styles/common";
 const LoginBusiness = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const { status, error } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (status === "succeeded") {
-      setIsLoading(false);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: "AppTabs" }],
-        })
-      );
-    } else if (status === "failed") {
-      setIsLoading(false);
-      Alert.alert("Login Failed", "Please check your details!");
-    }
-  }, [status]);
+  const { authLoading, authError } = useSelector((s) => s.auth);
 
   const handleSubmit = async () => {
-    setIsLoading(true);
-    const type = "business";
-    dispatch(loginThunk({ email, password, type }));
+    dispatch(loginThunk({ email, password, type: "business" }))
+      .unwrap()
+      .then(() =>
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "AppTabs" }],
+          })
+        )
+      )
+      .catch((error) => {
+        Alert.alert("Login Failed", error);
+      });
   };
 
   return (
     <View style={authStyles.loginContainer}>
-      <Loader visible={isLoading} />
       <Text style={authStyles.h1}>Business Login</Text>
       <TextInput
-        style={[commonStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "100%" }]}
         value={email}
         onChangeText={setEmail}
         placeholder="Enter your email"
@@ -55,14 +48,18 @@ const LoginBusiness = () => {
         autoCapitalize="none"
       />
       <TextInput
-        style={[commonStyles.input, { width: "95%" }]}
+        style={[commonStyles.input, { width: "100%" }]}
         value={password}
         onChangeText={setPassword}
         placeholder="Enter your password"
         placeholderTextColor={"#888"}
         secureTextEntry={true}
       />
-      <CustomButton title="Login" onPress={handleSubmit} />
+      <CustomButton
+        title="Login"
+        onPress={handleSubmit}
+        isLoading={authLoading}
+      />
     </View>
   );
 };

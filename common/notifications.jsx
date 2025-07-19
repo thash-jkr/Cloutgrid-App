@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, TouchableOpacity, Switch } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+  Dimensions,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,10 +16,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import commonStyles from "../styles/common";
 import { useNavigation } from "@react-navigation/native";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 const Notifications = () => {
-  const [showAll, setShowAll] = useState(false);
-
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -21,8 +27,8 @@ const Notifications = () => {
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
-    dispatch(fetchNotifications(showAll));
-  }, [dispatch, showAll]);
+    dispatch(fetchNotifications(false));
+  }, [dispatch]);
 
   const handleClose = (id) => {
     dispatch(markAsRead(id));
@@ -30,16 +36,7 @@ const Notifications = () => {
 
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          width: "100%",
-          paddingLeft: 20,
-          padding: 10,
-        }}
-      >
+      <View style={commonStyles.pageHeader}>
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
@@ -54,17 +51,7 @@ const Notifications = () => {
           <Text style={commonStyles.backText}>Notifications</Text>
         </TouchableOpacity>
       </View>
-      <View style={homeStyles.toggle}>
-        <Text style={homeStyles.toggleText}>Show All</Text>
-        <Switch
-          value={!showAll}
-          onChange={() => setShowAll(!showAll)}
-          trackColor={{ false: "#ddd", true: "#0077B6" }}
-          thumbColor="#03045E"
-          ios_backgroundColor="#3e3e3e"
-        />
-        <Text style={homeStyles.toggleText}>Show unread</Text>
-      </View>
+
       <ScrollView
         style={homeStyles.bars}
         contentContainerStyle={{
@@ -82,15 +69,13 @@ const Notifications = () => {
             }}
           >
             {items.map((notification) => (
-              <TouchableOpacity
-                key={notification.id}
-                style={homeStyles.bar}
-                disabled={showAll}
-                onPress={() => handleClose(notification.id)}
-              >
-                <Text style={{ fontFamily: "sen-400" }}>
+              <TouchableOpacity key={notification.id} style={homeStyles.bar}>
+                <Text style={[commonStyles.text, { maxWidth: "90%" }]}>
                   {notification.message}
                 </Text>
+                <TouchableOpacity onPress={() => handleClose(notification.id)}>
+                  <FontAwesomeIcon icon={faTrashCan} />
+                </TouchableOpacity>
               </TouchableOpacity>
             ))}
           </View>

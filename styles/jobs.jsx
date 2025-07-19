@@ -17,20 +17,15 @@ const jobsStyles = StyleSheet.create({
     fontWeight: "700"
   },
   jobs: {
-    width: width * 0.95,
+    width: width,
   },
   job: {
     padding: 10,
     backgroundColor: "#fff",
-    margin: 5,
-    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 2,
-    elevation: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd"
   },
   jobImage: {
     width: 50,

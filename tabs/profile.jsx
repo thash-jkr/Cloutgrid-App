@@ -16,24 +16,16 @@ import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { faLink, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 import Hyperlink from "react-native-hyperlink";
 
 import profileStyles from "../styles/profile";
 import CustomButton from "../common/customButton";
-import EditProfileModal from "../modals/editProfileModal";
 import ProfilePosts from "../common/profilePosts";
 import Config from "../config";
-import LoadingSpinner from "../common/loading";
 import commonStyles from "../styles/common";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchCollabs,
-  fetchPosts,
-  fetchProfile,
-  resetUpdateStatus,
-  updateProfile,
-} from "../slices/profileSlice";
+import { fetchCollabs, fetchPosts, fetchProfile } from "../slices/profileSlice";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("posts");
@@ -80,11 +72,12 @@ const Profile = () => {
                 style={{
                   fontWeight: "600",
                   paddingBottom: 5,
+                  fontSize: 15,
                 }}
               >
                 Showcase your influence with real-time Instagram insights.
               </Text>
-              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+              <Text style={{ textAlign: "justify", fontSize: 13 }}>
                 By connecting your Instagram account, you can let businesses see
                 your follower count, engagement rate, and reach — all from your
                 profile. This boosts your credibility and increases your chances
@@ -109,11 +102,12 @@ const Profile = () => {
                 style={{
                   fontWeight: "600",
                   paddingBottom: 5,
+                  fontSize: 15,
                 }}
               >
                 Highlight your reach and impact with YouTube analytics.
               </Text>
-              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+              <Text style={{ textAlign: "justify", fontSize: 13 }}>
                 When you link your YouTube channel, CloutGrid displays key
                 metrics like subscriber count, views, and watch time directly on
                 your profile. This helps brands see the real value of your
@@ -191,29 +185,29 @@ const Profile = () => {
             </TouchableOpacity>
             <View style={profileStyles.profileData}>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>{posts.length}</Text>
-                <Text style={{ fontFamily: "sen-400" }}>Posts</Text>
+                <Text style={{ fontWeight: 600 }}>{posts.length}</Text>
+                <Text style={{ fontWeight: 600 }}>Posts</Text>
               </View>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>
+                <Text style={{ fontWeight: 600 }}>
                   {user.user.followers_count}
                 </Text>
-                <Text style={{ fontFamily: "sen-400" }}>Followers</Text>
+                <Text style={{ fontWeight: 600 }}>Followers</Text>
               </View>
               <View style={profileStyles.profileCount}>
-                <Text style={{ fontFamily: "sen-400" }}>
+                <Text style={{ fontWeight: 600 }}>
                   {user.user.following_count}
                 </Text>
-                <Text style={{ fontFamily: "sen-400" }}>Following</Text>
+                <Text style={{ fontWeight: 600 }}>Following</Text>
               </View>
             </View>
           </View>
           <View style={profileStyles.profileBio}>
-            <Text style={{ fontWeight: "600", fontSize: 13 }}>
-              {user.user.name} | @{user.user.username}
+            <Text style={{ fontWeight: 600 }}>
+              {user.user.name} • @{user.user.username}
             </Text>
 
-            <Text style={{ fontSize: 12 }}>{user.user.bio}</Text>
+            <Text style={{}}>{user.user.bio}</Text>
 
             {user.website && (
               <Hyperlink linkDefault={true} linkStyle={{ color: "#2980b9" }}>
@@ -230,7 +224,7 @@ const Profile = () => {
 
             <View style={commonStyles.center}>
               <View style={profileStyles.profileArea}>
-                <Text style={{ fontWeight: 600, fontSize: 12 }}>
+                <Text style={{ fontWeight: 600, color: "#fff" }}>
                   {type === "creator"
                     ? AREA_OPTIONS_OBJECT[user.area]
                     : AREA_OPTIONS_OBJECT[user.target_audience]}
@@ -250,10 +244,12 @@ const Profile = () => {
             />
           </View>
         </View>
+
         <View style={profileStyles.profileBottom}>
           <View style={profileStyles.tabsContainer}>
             <TouchableOpacity
               style={[
+                commonStyles.center,
                 profileStyles.tabButton,
                 activeTab === "posts" && profileStyles.activeTab,
               ]}
@@ -261,8 +257,9 @@ const Profile = () => {
             >
               <Text
                 style={{
-                  fontWeight: "600",
+                  fontWeight: 600,
                   fontSize: 14,
+                  color: activeTab === "posts" ? "#fff" : "#000",
                 }}
               >
                 Posts
@@ -272,30 +269,41 @@ const Profile = () => {
             {type === "creator" && (
               <TouchableOpacity
                 style={[
+                  commonStyles.center,
                   profileStyles.tabButton,
                   activeTab === "instagram" && profileStyles.activeTab,
                 ]}
                 onPress={() => setActiveTab("instagram")}
               >
-                <FontAwesomeIcon icon={faInstagram} size={20} />
+                <FontAwesomeIcon
+                  icon={faInstagram}
+                  size={20}
+                  color={activeTab === "instagram" ? "#fff" : "#000"}
+                />
               </TouchableOpacity>
             )}
 
             {type === "creator" && (
               <TouchableOpacity
                 style={[
+                  commonStyles.center,
                   profileStyles.tabButton,
                   activeTab === "youtube" && profileStyles.activeTab,
                 ]}
                 onPress={() => setActiveTab("youtube")}
               >
-                <FontAwesomeIcon icon={faYoutube} size={20} />
+                <FontAwesomeIcon
+                  icon={faYoutube}
+                  size={20}
+                  color={activeTab === "youtube" ? "#fff" : "#000"}
+                />
               </TouchableOpacity>
             )}
 
             {type === "business" && (
               <TouchableOpacity
                 style={[
+                  commonStyles.center,
                   profileStyles.tabButton,
                   activeTab === "collabs" && profileStyles.activeTab,
                 ]}
@@ -303,8 +311,9 @@ const Profile = () => {
               >
                 <Text
                   style={{
-                    fontFamily: "sen-600",
-                    fontSize: 15,
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: activeTab === "collabs" ? "#fff" : "#000",
                   }}
                 >
                   Collabs
@@ -325,11 +334,12 @@ const Profile = () => {
                 style={{
                   fontWeight: "600",
                   paddingBottom: 5,
+                  fontSize: 15,
                 }}
               >
                 Instagram insights integration is almost ready
               </Text>
-              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+              <Text style={{ textAlign: "justify", fontSize: 12 }}>
                 We’re finalizing a secure way to display your Instagram
                 performance on your profile. This feature is currently in
                 development to ensure the best experience. Thank you for your
@@ -354,13 +364,14 @@ const Profile = () => {
                 style={{
                   fontWeight: "600",
                   paddingBottom: 5,
+                  fontSize: 15,
                 }}
               >
                 YouTube analytics integration is on its way
               </Text>
-              <Text style={{ textAlign: "justify", fontSize: 10 }}>
+              <Text style={{ textAlign: "justify", fontSize: 12 }}>
                 We’re working on making your YouTube performance visible on your
-                CloutGrid profile — securely and seamlessly. This feature is
+                Cloutgrid profile — securely and seamlessly. This feature is
                 being carefully built and tested to support better
                 collaborations. We appreciate your understanding
               </Text>

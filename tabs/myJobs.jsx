@@ -121,7 +121,14 @@ const MyJobs = () => {
 
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
-      <Text style={commonStyles.h1}>Your Collaborations</Text>
+      <View
+        style={[
+          commonStyles.center,
+          { borderBottomWidth: 0.5, borderBottomColor: "#ddd", width: "100%" },
+        ]}
+      >
+        <Text style={commonStyles.h1}>Your Collaborations</Text>
+      </View>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}

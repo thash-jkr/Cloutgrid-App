@@ -19,11 +19,11 @@ const commonStyles = StyleSheet.create({
     width: width,
   },
   text: {
-    // fontFamily: "sen-400",
+    fontWeight: 500
   },
   backText: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 17,
+    fontWeight: 600
   },
   center: {
     flexDirection: "row",
@@ -62,9 +62,8 @@ const commonStyles = StyleSheet.create({
   },
   h4: {
     fontSize: 16,
-    // fontFamily: "sen-600",
+    fontWeight: 600,
     marginVertical: 1,
-    fontWeight: "600",
   },
   h5: {
     fontSize: 14,

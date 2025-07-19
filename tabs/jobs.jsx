@@ -28,22 +28,26 @@ const JobList = () => {
 
   const insets = useSafeAreaInsets();
 
-  const { jobs, jobLoading, jobError } = useSelector((state) => state.job);
+  const { jobs, jobLoading } = useSelector((state) => state.job);
 
   useEffect(() => {
     setLoading(true);
     dispatch(fetchJobs());
     setLoading(false);
-    if (jobError) {
-      Alert.alert("Error", jobError);
-    }
   }, []);
 
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
       <StatusBar backgroundColor="#fff" />
       <Loader visible={loading} />
-      <Text style={commonStyles.h1}>Apply for Collaborations</Text>
+      <View
+        style={[
+          commonStyles.center,
+          { borderBottomWidth: 0.5, borderBottomColor: "#ddd", width: "100%" },
+        ]}
+      >
+        <Text style={commonStyles.h1}>Apply for Collaborations</Text>
+      </View>
       <ScrollView
         style={jobsStyles.jobs}
         showsVerticalScrollIndicator={false}
@@ -84,7 +88,9 @@ const JobList = () => {
             {jobLoading ? (
               <ActivityIndicator />
             ) : (
-              <Text style={commonStyles.h4}>No Jobs Found</Text>
+              <Text style={commonStyles.h4}>
+                No New Collaborations Available
+              </Text>
             )}
           </View>
         )}

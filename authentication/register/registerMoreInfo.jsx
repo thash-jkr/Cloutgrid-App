@@ -219,7 +219,8 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
             style={[
               commonStyles.text,
               profileStyles.profileArea,
-              { marginRight: 15 },
+              commonStyles.center,
+              { marginRight: 15, fontFamily: "Poppins_600SemiBold" },
             ]}
           >
             {type === "creator"
@@ -230,24 +231,26 @@ const AdditionalInfo = ({ formData, handleChange, prevStep, type }) => {
       </View>
 
       <View style={commonStyles.centerVertical}>
-        <Text>By clicking Register, you agree to our </Text>
+        <Text style={{ fontFamily: "Poppins_500Medium" }}>
+          By clicking Register, you agree to our{" "}
+        </Text>
         <View style={commonStyles.center}>
           <TouchableOpacity
             onPress={() => {
               setPrivacyModal(true);
             }}
           >
-            <Text style={{ fontWeight: "600", color: "blue" }}>
+            <Text style={{ color: "blue", fontFamily: "Poppins_500Medium" }}>
               Privacy Policy
             </Text>
           </TouchableOpacity>
-          <Text> and </Text>
+          <Text style={{ fontFamily: "Poppins_500Medium" }}> and </Text>
           <TouchableOpacity
             onPress={() => {
               setEulaModal(true);
             }}
           >
-            <Text style={{ fontWeight: "600", color: "blue" }}>
+            <Text style={{ color: "blue", fontFamily: "Poppins_500Medium" }}>
               End User License Agreement
             </Text>
           </TouchableOpacity>

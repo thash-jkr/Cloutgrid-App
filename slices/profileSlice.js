@@ -103,7 +103,6 @@ export const updateProfile = createAsyncThunk(
       data.append("user[bio]", updates.user.bio);
 
       if (type == "creator") {
-        data.append("date_of_birth", updates.date_of_birth);
         data.append("area", updates.area);
       } else {
         data.append("website", updates.website);

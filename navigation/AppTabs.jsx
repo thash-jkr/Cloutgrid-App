@@ -22,6 +22,8 @@ import JobDetails from "../common/jobDetails";
 import EditProfile from "../common/editProfile";
 import JobApplications from "../common/jobApplications";
 import PostDetail from "../common/postDetail";
+import JobQuestions from "../common/jobQuestions";
+import JobAnswers from "../common/jobAnswers";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -69,6 +71,7 @@ const CreatorJobStack = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="JobsMain" component={Jobs} />
       <Stack.Screen name="JobDetails" component={JobDetails} />
+      <Stack.Screen name="JobQuestions" component={JobQuestions} />
       <Stack.Screen name="Profiles" component={Profiles} />
     </Stack.Navigator>
   );
@@ -80,6 +83,7 @@ const BusinessJobStack = () => {
       <Stack.Screen name="MyJobsMain" component={MyJobs} />
       <Stack.Screen name="Profiles" component={Profiles} />
       <Stack.Screen name="Applications" component={JobApplications} />
+      <Stack.Screen name="JobAnswers" component={JobAnswers} />
     </Stack.Navigator>
   );
 };

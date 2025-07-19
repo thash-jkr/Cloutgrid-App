@@ -15,10 +15,9 @@ const homeStyles = StyleSheet.create({
     alignItems: "center",
     width: width,
     paddingHorizontal: 20,
-    // backgroundColor: "#f0f0f0",
-    // borderBottomColor: "#ddd",
-    // borderBottomWidth: 1,
-    paddingVertical: 5
+    borderBottomColor: "#eee",
+    borderBottomWidth: 1,
+    paddingVertical: 5,
   },
   bell: {
     color: "green",
@@ -36,8 +35,8 @@ const homeStyles = StyleSheet.create({
     fontFamily: "sen-600",
   },
   logoSide: {
-    color: "grey",
-    fontFamily: "sen-700",
+    color: "rgb(249 115 22)",
+    fontFamily: "Poppins_700Bold",
   },
   h1: {
     fontSize: 40,
@@ -72,13 +71,14 @@ const homeStyles = StyleSheet.create({
   },
   bar: {
     padding: 10,
-    backgroundColor: "#CAF0F8",
-    marginVertical: 5,
-    borderRadius: 10,
-    elevation: 2,
+    paddingVertical: 15,
     flexDirection: "row",
     alignItems: "center",
-    width: "90%",
+    justifyContent: "space-between",
+    width: "100%",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    // backgroundColor: "#ddd"
   },
   toggle: {
     display: "flex",

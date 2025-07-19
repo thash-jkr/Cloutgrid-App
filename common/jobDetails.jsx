@@ -6,13 +6,9 @@ import {
   Alert,
   ScrollView,
   Dimensions,
-  Platform,
-  KeyboardAvoidingView,
-  Modal,
-  TextInput,
 } from "react-native";
 import commonStyles from "../styles/common";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -25,43 +21,33 @@ import homeStyles from "../styles/home";
 import jobsStyles from "../styles/jobs";
 import { handleBlock } from "../slices/profilesSlice";
 import CustomButton from "./customButton";
-import QuestionModal from "../modals/questionModal";
 import { handleApplication } from "../slices/jobSlice";
-import profileStyles from "../styles/profile";
-import authStyles from "../styles/auth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ReportModal from "../modals/reportModal";
 
 const JobDetails = ({ route }) => {
   const [report, setReport] = useState("");
   const [reportModal, setReportModal] = useState(false);
-  const [questionModal, setQuestionModal] = useState(false);
-  const [answers, setAnswers] = useState({});
 
   const { job } = route.params;
 
   const insets = useSafeAreaInsets();
-
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
   const aboutModalize = useRef(null);
 
   const { width } = Dimensions.get("window");
 
-  useEffect(() => {
-    for (const q of job.questions) {
-      setAnswers((prevState) => ({
-        ...prevState,
-        [q.id]: "",
-      }));
-    }
-  }, []);
-
   const submitApplication = () => {
-    dispatch(handleApplication({ id: job.id, answers }));
-    setQuestionModal(false);
-    setAnswers({});
+    dispatch(handleApplication({ id: job.id, answers: {} }))
+      .unwrap()
+      .then(() => {
+        Alert.alert(
+          "Success",
+          "Your application has been submitted successfully."
+        );
+      })
+      .catch((error) => Alert.alert("Error", error));
     navigation.goBack();
   };
 
@@ -123,7 +109,7 @@ const JobDetails = ({ route }) => {
             title={job.is_applied ? "Applied" : "Apply"}
             onPress={() =>
               job?.questions.length > 0
-                ? setQuestionModal(true)
+                ? navigation.navigate("JobQuestions", { job: job })
                 : submitApplication()
             }
             disabled={job.is_applied}
@@ -175,7 +161,6 @@ const JobDetails = ({ route }) => {
                   onPress: () => {
                     dispatch(handleBlock(job?.posted_by.user.username));
                     aboutModalize.current?.close();
-                    setAnswers({});
                     navigation.goBack();
                   },
                 },
@@ -202,17 +187,6 @@ const JobDetails = ({ route }) => {
           setReport={setReport}
           onClose={() => setReportModal(false)}
           body="If you believe this collaboration post or business user has violated our community guidelines, please report it using this form"
-        />
-      )}
-
-      {questionModal && (
-        <QuestionModal
-          job={job}
-          showQuestion={questionModal}
-          onClose={() => setQuestionModal(false)}
-          answers={answers}
-          setAnswers={setAnswers}
-          onSubmit={submitApplication}
         />
       )}
     </View>

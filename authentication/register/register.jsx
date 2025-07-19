@@ -1,14 +1,10 @@
-import {
-  Text,
-  Animated,
-  StatusBar,
-  TouchableOpacity,
-} from "react-native";
+import { Text, Animated, StatusBar, TouchableOpacity } from "react-native";
 import React, { useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { LinearGradient } from "expo-linear-gradient";
 
 import authStyles from "../../styles/auth";
 import homeStyles from "../../styles/home";
@@ -72,36 +68,48 @@ const SignUp = () => {
       <StatusBar backgroundColor={"#fff"} barStyle={"dark-content"} />
       <Text style={authStyles.h1}>
         Join{" "}
-        <Text style={{ color: "#03045E", fontFamily: "sen-600" }}>CLOUT</Text>
+        <Text
+          style={{ color: "rgb(23 37 84)", fontFamily: "Poppins_700Bold" }}
+        >
+          CLOUT
+        </Text>
         <Text style={homeStyles.logoSide}>Grid</Text>
       </Text>
       <TouchableOpacity
-        style={authStyles.card}
-        activeOpacity={0.8}
+        activeOpacity={1}
         onPressIn={creatorHandlePressIn}
         onPressOut={creatorHandlePressOut}
         onPress={() => navigration.navigate("RegisterCreator")}
       >
-        <Text style={authStyles.h2}>Creator</Text>
-        <Animated.View
-          style={{ transform: [{ translateX: creatorArrowPosition }] }}
+        <LinearGradient
+          colors={["rgba(143, 128, 255, 1) 0%", "rgba(206, 193, 248, 1) 51%"]}
+          style={authStyles.card}
         >
-          <FontAwesomeIcon icon={faArrowRight} />
-        </Animated.View>
+          <Text style={authStyles.h2}>Creator</Text>
+          <Animated.View
+            style={{ transform: [{ translateX: creatorArrowPosition }] }}
+          >
+            <FontAwesomeIcon icon={faArrowRight} size={17} />
+          </Animated.View>
+        </LinearGradient>
       </TouchableOpacity>
       <TouchableOpacity
-        style={authStyles.card}
-        activeOpacity={0.8}
+        activeOpacity={1}
         onPressIn={businessHandlePressIn}
         onPressOut={businessHandlePressOut}
         onPress={() => navigration.navigate("RegisterBusiness")}
       >
-        <Text style={authStyles.h2}>Business</Text>
-        <Animated.View
-          style={{ transform: [{ translateX: businessArrowPosition }] }}
+        <LinearGradient
+          colors={["rgba(143, 128, 255, 1) 0%", "rgba(206, 193, 248, 1) 51%"]}
+          style={authStyles.card}
         >
-          <FontAwesomeIcon icon={faArrowRight} />
-        </Animated.View>
+          <Text style={authStyles.h2}>Business</Text>
+          <Animated.View
+            style={{ transform: [{ translateX: businessArrowPosition }] }}
+          >
+            <FontAwesomeIcon icon={faArrowRight} size={17} />
+          </Animated.View>
+        </LinearGradient>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => navigration.navigate("Login")}

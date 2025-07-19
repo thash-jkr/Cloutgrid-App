@@ -14,6 +14,16 @@ import "./interceptor/axios";
 import { setCredentiels } from "./authentication/authSlice";
 import { fetchNotifications } from "./slices/notificationSlice";
 
+import { Poppins_100Thin } from "@expo-google-fonts/poppins/100Thin";
+import { Poppins_200ExtraLight } from "@expo-google-fonts/poppins/200ExtraLight";
+import { Poppins_300Light } from "@expo-google-fonts/poppins/300Light";
+import { Poppins_400Regular } from "@expo-google-fonts/poppins/400Regular";
+import { Poppins_500Medium } from "@expo-google-fonts/poppins/500Medium";
+import { Poppins_600SemiBold } from "@expo-google-fonts/poppins/600SemiBold";
+import { Poppins_700Bold } from "@expo-google-fonts/poppins/700Bold";
+import { Poppins_800ExtraBold } from "@expo-google-fonts/poppins/800ExtraBold";
+import { Poppins_900Black } from "@expo-google-fonts/poppins/900Black";
+
 export default function App() {
   // Text.defaultProps = Text.defaultProps || {};
   // Text.defaultProps.allowFontScaling = false;
@@ -25,6 +35,15 @@ export default function App() {
     "sen-600": require("./assets/Fonts/sen/Sen-SemiBold.ttf"),
     "sen-700": require("./assets/Fonts/sen/Sen-Bold.ttf"),
     "sen-800": require("./assets/Fonts/sen/Sen-ExtraBold.ttf"),
+    Poppins_100Thin,
+    Poppins_200ExtraLight,
+    Poppins_300Light,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_800ExtraBold,
+    Poppins_900Black,
   });
 
   useEffect(() => {

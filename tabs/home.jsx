@@ -12,8 +12,15 @@ import {
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faBell, faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
-import { faSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  faBell,
+  faEllipsisVertical,
+  faCircleUp,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faSquare,
+  faCircleUp as unlike,
+} from "@fortawesome/free-regular-svg-icons";
 import { TouchableOpacity } from "react-native";
 import { Modalize } from "react-native-modalize";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -24,7 +31,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchFeed, likePost } from "../slices/feedSlice";
 import { handleBlock } from "../slices/profilesSlice";
 import { deletePost } from "../slices/profileSlice";
-import Triangle from "../common/triangle";
 import ReportModal from "../modals/reportModal";
 
 const Home = () => {
@@ -32,6 +38,7 @@ const Home = () => {
   const [report, setReport] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [reportModal, setReportModal] = useState(false);
+  const [animatingId, setAnimatingId] = useState(-1);
 
   const aboutModalize = useRef(null);
   const lastTapRef = useRef(null);
@@ -80,12 +87,18 @@ const Home = () => {
       <StatusBar backgroundColor="#fff" barStyle={"dark-content"} />
 
       <View style={[homeStyles.header]}>
-        <View style={commonStyles.center}>
-          <Text style={homeStyles.h2}>
-            CLOUT<Text style={homeStyles.logoSide}>Grid </Text>
+        <Text style={[commonStyles.center, { fontSize: 22 }]}>
+          <Text
+            style={{
+              color: "rgb(23 37 84)",
+              fontFamily: "Poppins_700Bold",
+            }}
+          >
+            CLOUT
           </Text>
+          <Text style={homeStyles.logoSide}>Grid</Text>
           {feedLoading && <ActivityIndicator />}
-        </View>
+        </Text>
         <TouchableOpacity
           style={[homeStyles.bell, commonStyles.center]}
           onPress={() => navigation.navigate("Notifications")}
@@ -95,7 +108,7 @@ const Home = () => {
             style={[
               commonStyles.center,
               {
-                backgroundColor: "red",
+                backgroundColor: "rgb(249 115 22)",
                 borderRadius: "50%",
                 height: 15,
                 width: 15,
@@ -174,7 +187,9 @@ const Home = () => {
                   <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
                 </TouchableOpacity>
               </View>
-              <TouchableWithoutFeedback onPress={() => handleTap(post)}>
+              <TouchableWithoutFeedback
+                onPress={() => !post.is_liked && handleTap(post)}
+              >
                 <Image
                   style={homeStyles.postImage}
                   source={{ uri: `${post.image}` }}
@@ -184,9 +199,13 @@ const Home = () => {
                 <View style={homeStyles.postFooterIcons}>
                   <TouchableOpacity onPress={() => handleLike(post.id)}>
                     {post.is_liked ? (
-                      <Triangle color="#0077B6" size={25} filled={true} />
+                      <FontAwesomeIcon
+                        icon={faCircleUp}
+                        size={25}
+                        color="rgb(249 115 22)"
+                      />
                     ) : (
-                      <Triangle color="#0077B6" size={25} filled={false} />
+                      <FontAwesomeIcon icon={unlike} size={25} />
                     )}
                   </TouchableOpacity>
                   <Text style={[commonStyles.center, { fontWeight: 500 }]}>

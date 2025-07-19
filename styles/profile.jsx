@@ -14,7 +14,7 @@ const profileStyles = StyleSheet.create({
     marginVertical: 10,
     textAlign: "center",
     // fontFamily: "sen-600",
-    fontWeight: "600"
+    fontWeight: "600",
   },
   h2: {
     fontSize: 20,
@@ -26,7 +26,7 @@ const profileStyles = StyleSheet.create({
     padding: 10,
     paddingBottom: 0,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   profileDetails: {
     flexDirection: "row",
@@ -57,9 +57,10 @@ const profileStyles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 5,
     padding: 5,
-    backgroundColor: "#CAF0F8",
+    backgroundColor: "rgb(249 115 22)",
     borderRadius: 50,
     paddingHorizontal: 10,
+    color: "#fff",
   },
   button: {
     flexDirection: "row",
@@ -106,15 +107,15 @@ const profileStyles = StyleSheet.create({
     margin: 10,
   },
   tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
+    minWidth: 60
   },
   activeTab: {
-    backgroundColor: "#CAF0F8",
-    color: "#000",
+    backgroundColor: "rgb(249 115 22)",
   },
   tabText: {
     fontWeight: "600",

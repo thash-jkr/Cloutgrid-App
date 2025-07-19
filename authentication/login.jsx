@@ -14,6 +14,7 @@ import LoginBusiness from "./loginBusiness";
 import LoginCreator from "./loginCreator";
 import authStyles from "../styles/auth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 const { width } = Dimensions.get("window");
 
@@ -49,12 +50,9 @@ const Login = () => {
       <Animated.View
         style={{
           transform: [{ translateX }],
-          margin: 10,
-          borderRadius: 20,
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#ADE8F4",
           shadowColor: "#000",
           shadowOffset: { width: 2, height: 2 },
           shadowOpacity: 0.5,
@@ -62,7 +60,12 @@ const Login = () => {
           elevation: 5,
         }}
       >
-        {type === "creator" ? <LoginCreator /> : <LoginBusiness />}
+        <LinearGradient
+          colors={["rgba(143, 128, 255, 1) 0%", "rgba(206, 193, 248, 1) 51%"]}
+          style={{ margin: 10, borderRadius: 20 }}
+        >
+          {type === "creator" ? <LoginCreator /> : <LoginBusiness />}
+        </LinearGradient>
       </Animated.View>
 
       <View style={authStyles.footer}>

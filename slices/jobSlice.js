@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import Config from "../config";
 import { handleBlock } from "./profilesSlice";
-import { Alert } from "react-native";
 
 export const fetchJobs = createAsyncThunk(
   "job/fetchJobs",
@@ -18,7 +17,9 @@ export const fetchJobs = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
     }
   }
 );
@@ -39,12 +40,11 @@ export const handleApplication = createAsyncThunk(
         }
       );
 
-      Alert.alert("Application Successful", "You have applied for the job.");
-
       return id;
     } catch (error) {
-      Alert.alert("Error", error.response?.data?.message);
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
     }
   }
 );
@@ -63,7 +63,9 @@ export const fetchBusinessJobs = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
     }
   }
 );
@@ -85,7 +87,30 @@ export const fetchApplications = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
+    }
+  }
+);
+
+export const handleCreateCollaboration = createAsyncThunk(
+  "job/handleCreateCollaboration",
+  async (data, { getState, rejectWithValue }) => {
+    try {
+      const { token } = getState().auth;
+      await axios.post(`${Config.BASE_URL}/jobs/`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return true;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
     }
   }
 );
@@ -104,7 +129,9 @@ export const handleDeleteJob = createAsyncThunk(
 
       return id;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.detail ?? error.message);
+      return rejectWithValue(
+        error.response?.data?.message ?? "Something went wrong"
+      );
     }
   }
 );

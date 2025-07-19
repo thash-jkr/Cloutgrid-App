@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  View,
+} from "react-native";
+import commonStyles from "../styles/common";
 
-const CustomButton = ({ title, onPress, disabled }) => {
+const CustomButton = ({ title, onPress, disabled, isLoading }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   return (
@@ -9,17 +16,19 @@ const CustomButton = ({ title, onPress, disabled }) => {
       onPressIn={() => setIsPressed(true)}
       onPressOut={() => setIsPressed(false)}
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       activeOpacity={1}
       style={[
         styles.button,
         isPressed && styles.buttonPressed,
         disabled && styles.buttonDisabled,
+        isLoading && styles.buttonDisabled,
       ]}
     >
-      <Text style={styles.buttonText} allowFontScaling={false}>
-        {title}
-      </Text>
+      <View style={commonStyles.center} allowFontScaling={false}>
+        <Text style={styles.buttonText}>{title}</Text>
+        {isLoading && <ActivityIndicator style={{ marginLeft: 3 }} />}
+      </View>
     </TouchableOpacity>
   );
 };
@@ -28,23 +37,18 @@ export default CustomButton;
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: "#03045E",
-    borderRadius: 20,
-    paddingVertical: 10,
+    backgroundColor: "rgb(23 37 84)",
+    borderRadius: 19,
+    height: 38,
     paddingHorizontal: 15,
     textAlign: "center",
     justifyContent: "center",
-    shadowColor: "rgba(166, 175, 195, 0.25)",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 1,
-    shadowRadius: 2,
     margin: 10,
   },
   buttonText: {
     color: "#ECEEEA",
-    fontWeight: "700",
     fontSize: 14,
-    // fontFamily: "sen-500",
+    fontWeight: 600
   },
   buttonPressed: {
     backgroundColor: "#023E8A",

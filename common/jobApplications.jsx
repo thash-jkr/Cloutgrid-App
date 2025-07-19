@@ -5,6 +5,7 @@ import {
   ScrollView,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import commonStyles from "../styles/common";
@@ -18,9 +19,7 @@ import {
 import jobsStyles from "../styles/jobs";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchApplications, handleDeleteJob } from "../slices/jobSlice";
-import Loader from "./loading";
 import Config from "../config";
-import AnswerModal from "../modals/answerModal";
 import { Modalize } from "react-native-modalize";
 
 const JobApplications = ({ route }) => {
@@ -28,12 +27,6 @@ const JobApplications = ({ route }) => {
   const navigation = useNavigation();
   const { id } = route.params;
   const dispatch = useDispatch();
-  const [answerModal, setAnswerModal] = useState({
-    visible: false,
-    questions: [],
-    answers: [],
-    username: null,
-  });
   const aboutModalize = useRef(null);
 
   const { applications, jobLoading, jobError } = useSelector(
@@ -79,10 +72,7 @@ const JobApplications = ({ route }) => {
 
   return (
     <View style={[commonStyles.container, { paddingTop: insets.top }]}>
-      <Loader visible={jobLoading} />
-      <View
-        style={commonStyles.pageHeader}
-      >
+      <View style={commonStyles.pageHeader}>
         <TouchableOpacity
           onPress={() => {
             navigation.goBack();
@@ -95,6 +85,7 @@ const JobApplications = ({ route }) => {
             style={{ marginRight: 20 }}
           />
           <Text style={commonStyles.backText}>Applications</Text>
+          {jobLoading && <ActivityIndicator />}
         </TouchableOpacity>
         <TouchableOpacity onPress={() => aboutModalize.current?.open()}>
           <FontAwesomeIcon icon={faEllipsisVertical} size={20} />
@@ -110,12 +101,7 @@ const JobApplications = ({ route }) => {
                 style={jobsStyles.job}
                 onPress={() => {
                   app.job.questions.length > 0
-                    ? setAnswerModal({
-                        visible: true,
-                        questions: app.job.questions,
-                        answers: app.answers,
-                        username: app.creator.user.username,
-                      })
+                    ? navigation.navigate("JobAnswers", { application: app })
                     : navigation.navigate("Profiles", {
                         username: app.creator.user.username,
                       });
@@ -168,16 +154,6 @@ const JobApplications = ({ route }) => {
           </TouchableOpacity>
         </View>
       </Modalize>
-
-      {answerModal.visible && (
-        <AnswerModal
-          showAnswer={answerModal.visible}
-          onClose={() => setAnswerModal({ ...AnswerModal, visible: false })}
-          questions={answerModal.questions}
-          answers={answerModal.answers}
-          username={answerModal.username}
-        />
-      )}
     </View>
   );
 };

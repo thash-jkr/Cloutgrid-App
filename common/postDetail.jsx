@@ -13,11 +13,15 @@ import { useNavigation } from "@react-navigation/native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faArrowLeft,
+  faCircleUp,
   faEllipsisVertical,
 } from "@fortawesome/free-solid-svg-icons";
 import homeStyles from "../styles/home";
 import Triangle from "./triangle";
-import { faSquare } from "@fortawesome/free-regular-svg-icons";
+import {
+  faSquare,
+  faCircleUp as unlike,
+} from "@fortawesome/free-regular-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { likePost, selectPostById } from "../slices/feedSlice";
 
@@ -72,7 +76,7 @@ const PostDetail = ({ route }) => {
 
       <ScrollView>
         <View style={homeStyles.post}>
-          <TouchableWithoutFeedback onPress={() => handleTap(post)}>
+          <TouchableWithoutFeedback onPress={() => !post.is_liked && handleTap(post)}>
             <Image
               style={homeStyles.postImage}
               source={{ uri: `${post.image}` }}
@@ -83,9 +87,13 @@ const PostDetail = ({ route }) => {
             <View style={homeStyles.postFooterIcons}>
               <TouchableOpacity onPress={() => handleLike(post.id)}>
                 {post.is_liked ? (
-                  <Triangle color="#0077B6" size={25} filled={true} />
+                  <FontAwesomeIcon
+                    icon={faCircleUp}
+                    size={25}
+                    color="rgb(249 115 22)"
+                  />
                 ) : (
-                  <Triangle color="#0077B6" size={25} filled={false} />
+                  <FontAwesomeIcon icon={unlike} size={25} />
                 )}
               </TouchableOpacity>
               <Text style={[commonStyles.center, { fontWeight: 500 }]}>

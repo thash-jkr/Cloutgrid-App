@@ -48,30 +48,34 @@ const PickerModal = ({
     <Modal visible={pickerModal} transparent={true} animationType="fade">
       <View style={commonStyles.modalContainer}>
         <View style={commonStyles.modalContent}>
-          <Text style={commonStyles.h1}>Change Category</Text>
+          <Text style={commonStyles.h1}>Select Category</Text>
 
           <ScrollView
             style={{ height: height * 0.5, width: "100%" }}
             contentContainerStyle={commonStyles.centerVertical}
+            showsVerticalScrollIndicator={false}
           >
             {AREA_OPTIONS.map((obj) => (
               <TouchableOpacity
                 key={obj.value}
                 style={{
                   padding: 10,
-                  backgroundColor: obj.value === selected ? "#CAF0F8" : "#fff",
-                  margin: 10,
-                  width: "90%",
-                  borderRadius: 10,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 2, height: 2 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 2,
-                  elevation: 5,
+                  backgroundColor:
+                    obj.value === selected ? "rgb(249 115 22)" : "#fff",
+                  width: "100%",
+                  borderBottomColor: "#ddd",
+                  borderBottomWidth: 1,
                 }}
                 onPress={() => setSelected(obj.value)}
               >
-                <Text style={commonStyles.h4}>{obj.label}</Text>
+                <Text
+                  style={[
+                    commonStyles.h4,
+                    { color: obj.value === selected ? "#fff" : "#000" },
+                  ]}
+                >
+                  {obj.label}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -84,7 +88,9 @@ const PickerModal = ({
               onPress={() => {
                 type === "creator"
                   ? handleChange("area", selected)
-                  : handleChange("target_audience", selected);
+                  : type === "business"
+                  ? handleChange("target_audience", selected)
+                  : handleChange("target_creator", selected);
                 onClose();
               }}
             />
